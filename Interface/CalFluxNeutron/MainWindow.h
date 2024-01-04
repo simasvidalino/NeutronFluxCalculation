@@ -13,17 +13,19 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private:
-    Ui::MainWindow *ui;
-
+private slots:
     void changeFont();
 
     void changeViewMode();
 
     void changePaletteToDarkStyle();
 
+    void updateChart();
+
+private:
+    Ui::MainWindow *ui;
+
     void init();
 
     void setConnections();
-
-};
+ };

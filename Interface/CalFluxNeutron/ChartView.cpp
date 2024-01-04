@@ -12,7 +12,9 @@ ChartView::ChartView(QWidget *parent)
     axisX = std::make_unique<QValueAxis>();
     axisY = std::make_unique<QValueAxis>();
 
-    series = std::make_unique<QLineSeries>();
+    axisX->setLabelFormat("%.2f");
+    axisY->setLabelFormat("%.2f");
+    chart->legend()->hide();
 }
 
 ChartView::~ChartView()
@@ -20,11 +22,15 @@ ChartView::~ChartView()
 
 }
 
-void ChartView::setInputData(double &maxY, std::unique_ptr<QLineSeries> &&value)
+void ChartView::setInputData(QList<QPointF> &value, int group)
 {
-    series = std::move(value);
+    auto serie = std::make_unique<QLineSeries>();
 
-    this->maxY = maxY;
+    for (const auto &point : value)
+        serie->append(point);
+
+    auto pair = std::make_pair(group, std::move(serie));
+    seriesByGroup.emplace(std::move(pair));
 }
 
 QChart *ChartView::getChart()
@@ -32,14 +38,22 @@ QChart *ChartView::getChart()
     return chart.get();
 }
 
+void ChartView::setXLabel(const QString &name)
+{
+    xLabel = name;
+    axisX->setTitleText(xLabel);
+}
+
 void ChartView::setProjectionTitle(const QString value)
 {
     projectionTitle = value;
+    chart->setTitle(projectionTitle);
 }
 
-void ChartView::setGradesLabel(const QString &name)
+void ChartView::setYLabel(const QString &name)
 {
-    gradeLabel = name;
+    yLabel = name;
+    axisY->setTitleText(yLabel);
 }
 
 void ChartView::setChart()
@@ -47,39 +61,49 @@ void ChartView::setChart()
     if (!chart->axes().isEmpty())
         clearChart();
 
-    chart->legend()->hide();
-    chart->setTitle(projectionTitle);
-    chart->addSeries(series.get());
+    for (const auto &pair : seriesByGroup)
+    {
+        auto serie = pair.second.get();
 
-    setAxes();
+        qInfo()<<serie;
+        chart->addSeries(serie);
+
+        chart->addAxis(axisX.get(), Qt::AlignBottom);
+        serie->attachAxis(axisX.get());
+
+        axisY->setRange(0, maxY);
+        chart->addAxis(axisY.get(), Qt::AlignLeft);
+
+        serie->attachAxis(axisY.get());
+    }
 
     QChartView::setChart(chart.get());
 }
 
 void ChartView::clearChart()
 {
-    chart->removeSeries(series.get());
+    //chart->removeSeries(series.get());
     chart->removeAxis(axisX.get());
     chart->removeAxis(axisY.get());
+    //chart = std::make_unique<QChart>();
 }
 
 void ChartView::setAxes()
 {
-    axisX->setTitleText("Position x (cm)");
-    axisX->setLabelFormat("%i");
+//    chart->addAxis(axisX.get(), Qt::AlignBottom);
 
-    int tickNumber = 12;
+//    series->attachAxis(axisX.get());
+
+//    axisY->setRange(0, maxY);
+//    chart->addAxis(axisY.get(), Qt::AlignLeft);
+
+//    series->attachAxis(axisY.get());
+}
+
+void ChartView::setTickNumber(int newTickNumber)
+{
+    tickNumber = newTickNumber;
     axisX->setTickCount(tickNumber);
-    chart->addAxis(axisX.get(), Qt::AlignBottom);
-
-    series->attachAxis(axisX.get());
-
-    axisY->setTitleText(gradeLabel);
-    axisY->setLabelFormat("%.2f");
-    axisY->setRange(0, maxY + 2);
-    chart->addAxis(axisY.get(), Qt::AlignLeft);
-
-    series->attachAxis(axisY.get());
 }
 
 

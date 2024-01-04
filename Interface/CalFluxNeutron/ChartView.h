@@ -1,5 +1,6 @@
 #pragma once
 
+#include "qlineseries.h"
 #include <QtCharts/QChartView>
 
 #include <QLocale>
@@ -17,35 +18,41 @@ public:
 
     ~ChartView();
 
-    void setInputData(double &maxY, std::unique_ptr<QLineSeries> &&value);
+    void setInputData(QList<QPointF> &points, int group);
 
     QChart *getChart();
 
-    void setGradesLabel(const QString &name);
+    void setXLabel(const QString &name);
+
+    void setYLabel(const QString &name);
 
     void setProjectionTitle(const QString value);
+
+    void setTickNumber(int newTickNumber);
 
 public slots:
     void setChart();
 
 private:
+    void clearChart();
+
+    void setAxes();
+
     QString projectionTitle;
-    QString gradeLabel;
+    QString xLabel;
+    QString yLabel;
     QString unit;
 
     QLocale locale;
 
-    double maxY;
+    double maxY = 1;
+    int tickNumber;
 
     std::unique_ptr<QChart> chart;
 
     std::unique_ptr<QValueAxis> axisX;
     std::unique_ptr<QValueAxis> axisY;
 
-    std::unique_ptr<QLineSeries> series;;
-
-    void clearChart();
-
-    void setAxes();
+    std::map<int, std::unique_ptr<QLineSeries>> seriesByGroup;
 };
 

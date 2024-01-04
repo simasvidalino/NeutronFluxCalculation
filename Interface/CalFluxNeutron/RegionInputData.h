@@ -6,6 +6,8 @@
 
 #include <memory.h>
 
+#include "VariablesUsed.h"
+
 namespace Ui {
 class RegionInputData;
 }
@@ -18,6 +20,18 @@ public:
     explicit RegionInputData(QWidget *parent = nullptr);
     ~RegionInputData();
 
+    std::unique_ptr<dados_entrada> getDdValues() const;
+
+private slots:
+    void clear();
+
+    void setGraphicScene(int region);
+
+    void calculateEscalarNeutronFlux();
+
+signals:
+    void updateChartSignal();
+
 private:
     Ui::RegionInputData *ui;
 
@@ -29,17 +43,11 @@ private:
 
     std::vector<int> calculateRegionHeights();
 
-    void clear();
-
-    void calculateEscalarNeutronFlux();
-
     void createSpinBoxes();
 
     void init();
 
     void setConnections();
-
-    void setGraphicScene(int region);
 
     void setRegion(int regionNumber,
                    int left   = 0,
@@ -61,4 +69,8 @@ private:
     std::array<QDoubleSpinBox*, 10> quoteSpinBoxes;
 
     int regionQuant;
+
+    std::unique_ptr<dados_entrada>ddValues ;  // Declaração externa da variável global
+    dados_entrada DDValues ;  // Declaração externa da variável global
+
 };

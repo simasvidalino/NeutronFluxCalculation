@@ -1,10 +1,12 @@
 #include "MainWindow.h"
 #include "./ui_MainWindow.h"
-
-#include "ChartView.h"
+#include "VariablesUsed.h"
 
 #include <QColorDialog>
 #include <QFontDialog>
+#include <QLineSeries>
+
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -97,8 +99,8 @@ void MainWindow::init()
     setConnections();
 
     ui->widgetChart->setProjectionTitle("Scalar Flux of Neutral particles (DD method)");
-    ui->widgetChart->setGradesLabel("Scalar Flux");
-    ui->widgetChart->setChart();
+    ui->widgetChart->setXLabel("Position x (cm)");
+    ui->widgetChart->setYLabel("Scalar Flux");
 }
 
 void MainWindow::setConnections()
@@ -106,6 +108,53 @@ void MainWindow::setConnections()
     connect(ui->actionFont, &QAction::triggered, this, &MainWindow::changeFont);
     connect(ui->actionPalette, &QAction::triggered, this, &MainWindow::changePaletteToDarkStyle);
     connect(ui->actionScreenMode, &QAction::triggered, this, &MainWindow::changeViewMode);  // Coloca a janela em fullscreen
+    connect(ui->widgetRegion, &RegionInputData::updateChartSignal, this, &MainWindow::updateChart);
+}
+
+void MainWindow::updateChart()
+{
+    int i = 0;
+    float t = 0;
+
+    auto valor = ui->widgetRegion->getDdValues();
+
+
+    double maxY = 1; //@TBD
+
+    QList<int> valueX;
+
+    while(t <= valor->TAM_TOTAL)
+    {
+        valueX.append(t);
+        t = t + valor->periodicidade;
+        i++;
+    }
+
+
+    for(int g = 0; g < valor->G; ++g)
+    {
+        QList<QPointF> points;
+
+        int nod = 0;
+        for(int n = 0; n < i; n++)
+        {
+            float fluxValor = valor->FLUXO_ESCALAR[g][nod];
+
+            QPointF point(valueX.at(n), fluxValor);
+            points.append(point);
+
+            std::cout<<"( "<<nod<<" - "<<valor->FLUXO_ESCALAR[g][nod]<<" )  "<<point.x()<<std::endl;
+            nod = nod + (valor->NODOSX*valor->periodicidade)/valor->TAM_TOTAL;
+        }
+
+        ui->widgetChart->setInputData(points, g);
+        ui->widgetChart->setTickNumber(i);
+    }
+
+
+
+    std::cout<<"tick number "<<valor->TAM_TOTAL<<" "<<valor->G<<std::endl;
+    ui->widgetChart->setChart();
 }
 
 

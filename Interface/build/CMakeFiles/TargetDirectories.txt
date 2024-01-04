@@ -1,0 +1,9 @@
+/home/andreiasimas/Documentos/NeutronFluxCalculation/Interface/build/CMakeFiles/CalFluxNeutron.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/Interface/build/CMakeFiles/edit_cache.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/Interface/build/CMakeFiles/rebuild_cache.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/Interface/build/CMakeFiles/list_install_components.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/Interface/build/CMakeFiles/install.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/Interface/build/CMakeFiles/install/local.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/Interface/build/CMakeFiles/install/strip.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/Interface/build/CMakeFiles/CalFluxNeutron_autogen_timestamp_deps.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/Interface/build/CMakeFiles/CalFluxNeutron_autogen.dir

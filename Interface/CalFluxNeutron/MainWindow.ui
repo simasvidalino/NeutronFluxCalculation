@@ -64,9 +64,6 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="2" rowspan="4">
-         <widget class="RegionInputData" name="widget" native="true"/>
-        </item>
         <item row="1" column="0">
          <widget class="QGroupBox" name="groupBox">
           <property name="title">
@@ -270,6 +267,9 @@
            </item>
           </layout>
          </widget>
+        </item>
+        <item row="0" column="2" rowspan="4">
+         <widget class="RegionInputData" name="widgetRegion" native="true"/>
         </item>
        </layout>
       </widget>

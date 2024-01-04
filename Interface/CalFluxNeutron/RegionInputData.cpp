@@ -65,8 +65,17 @@ void RegionInputData::clear()
 
 void RegionInputData::calculateEscalarNeutronFlux()
 {
-    construir_dados("/home/andreiasimas/Documentos/TCCFluxEscalar/Calc_fluxo_de_particulas_neutras/CalNeutFlux/Arquivo_de_entrada.txt", valor);
-    DD();
+    //@todo change input and output of data
+    construir_dados("/home/andreiasimas/Documentos/TCCFluxEscalar/Calc_fluxo_de_particulas_neutras/CalNeutFlux/Arquivo_de_entrada.txt", DDValues);
+    //construir_dados("/home/andreiasimas/Documentos/Bibliografia/DadosdeEntradaJesus", valor);
+
+    DD(DDValues);
+
+    ddValues = std::make_unique<dados_entrada>();
+
+    *ddValues.get() = DDValues;
+
+    emit updateChartSignal();
 }
 
 void RegionInputData::init()
@@ -189,3 +198,9 @@ void RegionInputData::setSpinBoxQuota(int regionNumber, int left, int top, int w
 
     scene->addItem(proxyWidget);
 }
+
+std::unique_ptr<dados_entrada> RegionInputData::getDdValues() const
+{
+    return std::make_unique<dados_entrada>(*ddValues);
+}
+
