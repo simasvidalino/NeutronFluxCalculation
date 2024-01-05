@@ -20,6 +20,8 @@ set(PROJECT_SOURCES
     main.cpp
     ChartView.cpp
     ChartView.h
+    InterFaceDefinitions.cpp
+    InterFaceDefinitions.h
     MainWindow.cpp
     MainWindow.h
     MainWindow.ui

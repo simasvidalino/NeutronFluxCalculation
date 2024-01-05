@@ -23,6 +23,12 @@ private slots:
     void updateChart();
 
 private:
+    enum tabs
+    {
+        tabInputData,
+        TabResult
+    };
+
     Ui::MainWindow *ui;
 
     void init();

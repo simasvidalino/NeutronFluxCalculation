@@ -18,7 +18,9 @@ public:
 
     ~ChartView();
 
-    void setInputData(QList<QPointF> &points, int group);
+    void clearChart();
+
+    void setInputData(QList<QPointF> &points, QList<int> &regions, int group);
 
     QChart *getChart();
 
@@ -34,9 +36,6 @@ public slots:
     void setChart();
 
 private:
-    void clearChart();
-
-    void setAxes();
 
     QString projectionTitle;
     QString xLabel;
@@ -48,11 +47,16 @@ private:
     double maxY = 1;
     int tickNumber;
 
-    std::unique_ptr<QChart> chart;
+    QChart* chart;
 
-    std::unique_ptr<QValueAxis> axisX;
-    std::unique_ptr<QValueAxis> axisY;
+    QValueAxis* axisX;
+    QValueAxis* axisY;
 
-    std::map<int, std::unique_ptr<QLineSeries>> seriesByGroup;
+    std::map<int, QLineSeries*> seriesByGroup;
+
+    QList<int> regionSize;
+
+    QList<QColor> colors = {Qt::blue, Qt::red, Qt::cyan};
+
 };
 

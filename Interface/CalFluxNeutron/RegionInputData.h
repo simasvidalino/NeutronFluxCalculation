@@ -20,7 +20,7 @@ public:
     explicit RegionInputData(QWidget *parent = nullptr);
     ~RegionInputData();
 
-    std::unique_ptr<dados_entrada> getDdValues() const;
+    std::shared_ptr<dados_entrada> getDdValues() const;
 
 private slots:
     void clear();
@@ -69,8 +69,5 @@ private:
     std::array<QDoubleSpinBox*, 10> quoteSpinBoxes;
 
     int regionQuant;
-
-    std::unique_ptr<dados_entrada>ddValues ;  // Declaração externa da variável global
-    dados_entrada DDValues ;  // Declaração externa da variável global
-
+    std::shared_ptr<dados_entrada> DDValues;
 };

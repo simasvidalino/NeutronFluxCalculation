@@ -6,36 +6,31 @@
 #include <QtCharts/QValueAxis>
 
 ChartView::ChartView(QWidget *parent)
-    : QChartView{parent}
+    : QChartView{parent},
+      chart(new QChart()),
+      axisX(new QValueAxis()),
+      axisY(new QValueAxis())
 {
-    chart = std::make_unique<QChart>();
-    axisX = std::make_unique<QValueAxis>();
-    axisY = std::make_unique<QValueAxis>();
-
     axisX->setLabelFormat("%.2f");
     axisY->setLabelFormat("%.2f");
     chart->legend()->hide();
+
+    this->setRenderHint(QPainter::Antialiasing);
 }
 
 ChartView::~ChartView()
 {
-
 }
 
-void ChartView::setInputData(QList<QPointF> &value, int group)
+void ChartView::setInputData(QList<QPointF> &value, QList<int> &regions, int group)
 {
-    auto serie = std::make_unique<QLineSeries>();
+    QLineSeries *serie = new QLineSeries();
+    regionSize = regions;
 
     for (const auto &point : value)
         serie->append(point);
 
-    auto pair = std::make_pair(group, std::move(serie));
-    seriesByGroup.emplace(std::move(pair));
-}
-
-QChart *ChartView::getChart()
-{
-    return chart.get();
+    seriesByGroup[group] = serie;
 }
 
 void ChartView::setXLabel(const QString &name)
@@ -44,60 +39,15 @@ void ChartView::setXLabel(const QString &name)
     axisX->setTitleText(xLabel);
 }
 
-void ChartView::setProjectionTitle(const QString value)
-{
-    projectionTitle = value;
-    chart->setTitle(projectionTitle);
-}
-
 void ChartView::setYLabel(const QString &name)
 {
     yLabel = name;
     axisY->setTitleText(yLabel);
 }
-
-void ChartView::setChart()
+void ChartView::setProjectionTitle(const QString value)
 {
-    if (!chart->axes().isEmpty())
-        clearChart();
-
-    for (const auto &pair : seriesByGroup)
-    {
-        auto serie = pair.second.get();
-
-        qInfo()<<serie;
-        chart->addSeries(serie);
-
-        chart->addAxis(axisX.get(), Qt::AlignBottom);
-        serie->attachAxis(axisX.get());
-
-        axisY->setRange(0, maxY);
-        chart->addAxis(axisY.get(), Qt::AlignLeft);
-
-        serie->attachAxis(axisY.get());
-    }
-
-    QChartView::setChart(chart.get());
-}
-
-void ChartView::clearChart()
-{
-    //chart->removeSeries(series.get());
-    chart->removeAxis(axisX.get());
-    chart->removeAxis(axisY.get());
-    //chart = std::make_unique<QChart>();
-}
-
-void ChartView::setAxes()
-{
-//    chart->addAxis(axisX.get(), Qt::AlignBottom);
-
-//    series->attachAxis(axisX.get());
-
-//    axisY->setRange(0, maxY);
-//    chart->addAxis(axisY.get(), Qt::AlignLeft);
-
-//    series->attachAxis(axisY.get());
+    projectionTitle = value;
+    chart->setTitle(projectionTitle);
 }
 
 void ChartView::setTickNumber(int newTickNumber)
@@ -106,6 +56,37 @@ void ChartView::setTickNumber(int newTickNumber)
     axisX->setTickCount(tickNumber);
 }
 
+void ChartView::setChart()
+{
+    for (const auto &pair : seriesByGroup)
+    {
+        QLineSeries *serie = pair.second;
 
+        if (serie && chart)
+        {
+            chart->addSeries(serie);
 
+            chart->addAxis(axisX, Qt::AlignBottom);
+            serie->attachAxis(axisX);
 
+            chart->addAxis(axisY, Qt::AlignLeft);
+            serie->attachAxis(axisY);
+        }
+        else
+        {
+            qWarning() << "Serie is Null";
+        }
+    }
+
+    QChartView::setChart(chart);
+}
+
+void ChartView::clearChart()
+{
+    if (!chart->axes().isEmpty())
+    {
+        chart->removeAllSeries();
+
+        seriesByGroup.clear();
+    }
+}

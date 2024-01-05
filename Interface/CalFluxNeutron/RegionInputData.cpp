@@ -8,6 +8,7 @@
 
 #include "DataMatrices.h" //construir dados de entrada
 #include "DDNumericalMethold.h" //método Diamond Difference
+#include "InterFaceDefinitions.h"
 #include "VariablesUsed.h"
 
 #define sizeBar 100;
@@ -19,6 +20,8 @@ RegionInputData::RegionInputData(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->graphicsView->setPalette(Interface::getLightPalette()); //@TBD Even with the dark palette, the graphics must be clear
+
     setConnections();
 
     init();
@@ -27,6 +30,11 @@ RegionInputData::RegionInputData(QWidget *parent) :
 RegionInputData::~RegionInputData()
 {
     delete ui;
+}
+
+std::shared_ptr<dados_entrada> RegionInputData::getDdValues() const
+{
+    return DDValues;
 }
 
 std::vector<int> RegionInputData::calculateRegionHeights()
@@ -66,21 +74,20 @@ void RegionInputData::clear()
 void RegionInputData::calculateEscalarNeutronFlux()
 {
     //@todo change input and output of data
-    construir_dados("/home/andreiasimas/Documentos/TCCFluxEscalar/Calc_fluxo_de_particulas_neutras/CalNeutFlux/Arquivo_de_entrada.txt", DDValues);
+
+    DDValues.reset();
+    DDValues = std::make_shared<dados_entrada>();
+
+    construir_dados("/home/andreiasimas/Documentos/TCCFluxEscalar/Calc_fluxo_de_particulas_neutras/CalNeutFlux/Arquivo_de_entrada.txt", *DDValues);
     //construir_dados("/home/andreiasimas/Documentos/Bibliografia/DadosdeEntradaJesus", valor);
 
-    DD(DDValues);
-
-    ddValues = std::make_unique<dados_entrada>();
-
-    *ddValues.get() = DDValues;
+    DD(*DDValues);
 
     emit updateChartSignal();
 }
 
 void RegionInputData::init()
 {
-
     regionData dataInitial{50, 50};
 
     std::fill(regionArray.begin(), regionArray.end(), dataInitial);
@@ -133,6 +140,8 @@ void RegionInputData::setGraphicScene(int region)
 void RegionInputData::setRegion(int regionNumber, int left, int top, int width, int height)
 {
     QGraphicsRectItem *rectItem = new QGraphicsRectItem( left, top, width, height);
+
+    rectItem->setBrush(QColor(135, 206, 250));  // LightSkyBlue
 
     scene->addItem(rectItem);
 }
@@ -197,10 +206,5 @@ void RegionInputData::setSpinBoxQuota(int regionNumber, int left, int top, int w
     proxyWidget->setPos(begin, top + 2);
 
     scene->addItem(proxyWidget);
-}
-
-std::unique_ptr<dados_entrada> RegionInputData::getDdValues() const
-{
-    return std::make_unique<dados_entrada>(*ddValues);
 }
 
