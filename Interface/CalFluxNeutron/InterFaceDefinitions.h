@@ -8,4 +8,5 @@ namespace Interface {
     QPalette getDarkPalette();
     QPalette getLightPalette();
     const char * getDefaultZoneString();
+    const char * getAboutApp();
 }

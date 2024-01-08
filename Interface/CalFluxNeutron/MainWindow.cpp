@@ -7,6 +7,7 @@
 #include <QColorDialog>
 #include <QFontDialog>
 #include <QLineSeries>
+#include <QMessageBox>
 
 #include <iostream>
 
@@ -87,6 +88,9 @@ void MainWindow::setConnections()
     connect(ui->actionPalette, &QAction::triggered, this, &MainWindow::changePaletteToDarkStyle);
     connect(ui->actionScreenMode, &QAction::triggered, this, &MainWindow::changeViewMode);  // Coloca a janela em fullscreen
     connect(ui->widgetRegion, &RegionInputData::updateChartSignal, this, &MainWindow::updateChart);
+    connect(ui->actionThe_app, &QAction::triggered, this, [this](){
+        QMessageBox::information(this, "About", Interface::getAboutApp());
+    });
 }
 
 void MainWindow::updateChart()
