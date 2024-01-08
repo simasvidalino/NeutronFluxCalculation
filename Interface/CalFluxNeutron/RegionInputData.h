@@ -25,9 +25,13 @@ public:
 private slots:
     void clear();
 
+    void mapRegions();
+
     void setGraphicScene(int region);
 
     void calculateEscalarNeutronFlux();
+
+    void onSelectionRegionChange();
 
 signals:
     void updateChartSignal();

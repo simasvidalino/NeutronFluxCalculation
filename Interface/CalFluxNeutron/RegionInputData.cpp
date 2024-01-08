@@ -10,6 +10,7 @@
 #include "DDNumericalMethold.h" //método Diamond Difference
 #include "InterFaceDefinitions.h"
 #include "VariablesUsed.h"
+#include "MapRegion.h"
 
 #define sizeBar 100;
 
@@ -86,6 +87,22 @@ void RegionInputData::calculateEscalarNeutronFlux()
     emit updateChartSignal();
 }
 
+void RegionInputData::onSelectionRegionChange()
+{
+    QList<QGraphicsItem*> selectedItems = ui->graphicsView->scene()->selectedItems();
+
+    if (!selectedItems.empty())
+    {
+        MapRegion dlg(this);
+        dlg.load(DDValues);
+
+        if (!dlg.exec())
+            return;
+
+        DDValues =  dlg.save();
+    }
+}
+
 void RegionInputData::init()
 {
     regionData dataInitial{50, 50};
@@ -104,10 +121,13 @@ void RegionInputData::init()
 
 void RegionInputData::setConnections()
 {
+    connect(ui->pushButtonMapRegions, &QPushButton::clicked, this, &RegionInputData::mapRegions);
     connect(ui->spinBoxRegionQtt, &QSpinBox::valueChanged, this, &RegionInputData::setGraphicScene);
     connect(ui->pushButtonClear, &QPushButton::clicked, this,  &RegionInputData::clear);
     connect(ui->pushButtonCalculateFlux, &QPushButton::clicked, this,
             &RegionInputData::calculateEscalarNeutronFlux);
+    connect(scene.get(), &QGraphicsScene::selectionChanged, this,
+            &RegionInputData::onSelectionRegionChange);
 }
 
 void RegionInputData::setGraphicScene(int region)

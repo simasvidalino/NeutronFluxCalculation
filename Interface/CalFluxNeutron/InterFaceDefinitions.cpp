@@ -36,4 +36,42 @@ QPalette getLightPalette()
     return lightPalette;
 }
 
+const char* getDefaultZoneString()
+{
+    const char* str = "UNKNOWN";
+    return str;
+}
+
+const char *getAboutApp()
+{
+    const char* str = "<p><strong>Welcome to NeutronFlowPro</strong></p>"
+                      "<p><strong>Version:</strong> 1.0.0</p>"
+                      "<p><strong>Description:</strong></p>"
+                      "<div align='justify'>NeutronFlowPro is a didactic and user-friendly tool for calculating neutron scalar flux "
+                      "using the Diamond Difference Method for neutron transport problems. "
+                      "This application provides an intuitive interface that allows users to input data, run "
+                      "simulations, and visualize results in an effective manner.</p>"
+                      "<p><strong>Key Features:</strong></div>"
+                      "<ul>"
+                        "<li><strong>Diamond Difference Method (SN) for neutron scalar flux calculation.</strong></li>"
+                        "<li><strong>Interactive and user-friendly graphical interface.</strong></li>"
+                        "<li><strong>Visualization of results through intuitive charts.</strong></li>"
+                        "<li><strong>Parameter customization to meet user-specific needs.</strong></li>"
+                      "</ul>"
+                      "<p><strong>How to Use:</strong></p>"
+                      "<ol>"
+                        "<li><strong>Enter the necessary data for the simulation.</strong></li>"
+                        "<li><strong>Configure simulation options according to your preferences.</strong></li>"
+                        "<li><strong>Run the simulation and wait for the results.</strong></li>"
+                        "<li><strong>Explore generated charts for visual analysis.</strong></li>"
+                      "</ol>"
+                      "<div align='justify'>Thank you for choosing NeutronFlowPro. If you have any questions or feedback, "
+                      "please contact us at <strong>andreia.vidalino@grad.iprj.uerj.br</strong>.</div>"
+                      "<p>Enjoy your experience with NeutronFlowPro!</p>";
+
+
+    return str;
+
+}
+
 }

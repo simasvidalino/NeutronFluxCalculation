@@ -25,6 +25,9 @@ set(PROJECT_SOURCES
     MainWindow.cpp
     MainWindow.h
     MainWindow.ui
+    MapRegion.cpp
+    MapRegion.h
+    MapRegion.ui
     RegionInputData.cpp
     RegionInputData.h
     RegionInputData.ui
