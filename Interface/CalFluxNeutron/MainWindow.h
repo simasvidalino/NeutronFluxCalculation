@@ -13,12 +13,18 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+
+
 private slots:
     void changeFont();
 
     void changeViewMode();
 
     void changePaletteToDarkStyle();
+
+    void onCreateCrossSectionFile();
+
+    void onNJOYClicked();
 
     void updateChart();
 

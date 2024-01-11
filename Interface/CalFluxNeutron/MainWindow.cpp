@@ -73,6 +73,13 @@ void MainWindow::changePaletteToDarkStyle()
     }
 }
 
+void MainWindow::onCreateCrossSectionFile()
+{
+    CrossSectionFileDlg dlg(this);
+
+    dlg.exec();
+}
+
 void MainWindow::init()
 {
     setConnections();
@@ -88,6 +95,8 @@ void MainWindow::setConnections()
     connect(ui->actionPalette, &QAction::triggered, this, &MainWindow::changePaletteToDarkStyle);
     connect(ui->actionScreenMode, &QAction::triggered, this, &MainWindow::changeViewMode);  // Coloca a janela em fullscreen
     connect(ui->widgetRegion, &RegionInputData::updateChartSignal, this, &MainWindow::updateChart);
+    connect(ui->pushButtonCreateCrossSection, &QPushButton::clicked, this, &MainWindow::onCreateCrossSectionFile);
+    connect(ui->pushButtonNJOY, &QPushButton::clicked, this, &MainWindow::onNJOYClicked);
     connect(ui->actionThe_app, &QAction::triggered, this, [this](){
         QMessageBox::information(this, "About", Interface::getAboutApp());
     });
