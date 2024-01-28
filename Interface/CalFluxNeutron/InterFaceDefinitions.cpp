@@ -53,17 +53,17 @@ const char *getAboutApp()
                       "simulations, and visualize results in an effective manner.</p>"
                       "<p><strong>Key Features:</strong></div>"
                       "<ul>"
-                        "<li><strong>Diamond Difference Method (SN) for neutron scalar flux calculation.</strong></li>"
-                        "<li><strong>Interactive and user-friendly graphical interface.</strong></li>"
-                        "<li><strong>Visualization of results through intuitive charts.</strong></li>"
-                        "<li><strong>Parameter customization to meet user-specific needs.</strong></li>"
+                      "<li><strong>Diamond Difference Method (SN) for neutron scalar flux calculation.</strong></li>"
+                      "<li><strong>Interactive and user-friendly graphical interface.</strong></li>"
+                      "<li><strong>Visualization of results through intuitive charts.</strong></li>"
+                      "<li><strong>Parameter customization to meet user-specific needs.</strong></li>"
                       "</ul>"
                       "<p><strong>How to Use:</strong></p>"
                       "<ol>"
-                        "<li><strong>Enter the necessary data for the simulation.</strong></li>"
-                        "<li><strong>Configure simulation options according to your preferences.</strong></li>"
-                        "<li><strong>Run the simulation and wait for the results.</strong></li>"
-                        "<li><strong>Explore generated charts for visual analysis.</strong></li>"
+                      "<li><strong>Enter the necessary data for the simulation.</strong></li>"
+                      "<li><strong>Configure simulation options according to your preferences.</strong></li>"
+                      "<li><strong>Run the simulation and wait for the results.</strong></li>"
+                      "<li><strong>Explore generated charts for visual analysis.</strong></li>"
                       "</ol>"
                       "<div align='justify'>Thank you for choosing NeutronFlowPro. If you have any questions or feedback, "
                       "please contact us at <strong>andreia.vidalino@grad.iprj.uerj.br</strong>.</div>"
@@ -72,6 +72,19 @@ const char *getAboutApp()
 
     return str;
 
+}
+
+const char *getZoneTableToolTip()
+{
+    const char* str = "Drag and drop the material from the list below";
+
+    return str;
+
+}
+
+const int getMaxRegionQtt()
+{
+    return 10;
 }
 
 }

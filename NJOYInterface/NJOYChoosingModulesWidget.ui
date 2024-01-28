@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NJOYChoosingModulesWidget</class>
+ <widget class="QWidget" name="NJOYChoosingModulesWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>550</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" rowstretch="1,0,0,0,0,0,0,0,0,0,0,0,0">
+   <item row="7" column="0">
+    <widget class="QCheckBox" name="checkBoxPlotr">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="4">
+    <widget class="QPushButton" name="pushButtonPurr">
+     <property name="text">
+      <string>PURR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="9" column="0">
+    <widget class="QCheckBox" name="checkBoxError">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="12" column="1">
+    <widget class="QPushButton" name="pushButtonMixr">
+     <property name="text">
+      <string>MIXR</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="3">
+    <widget class="QCheckBox" name="checkBoxWimsr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="11" column="3">
+    <widget class="QCheckBox" name="checkBoxGaspr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="10" column="4">
+    <widget class="QPushButton" name="pushButtonLeapr">
+     <property name="text">
+      <string>LEAPR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="6" column="3">
+    <widget class="QCheckBox" name="checkBoxPowr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="7" column="4">
+    <widget class="QPushButton" name="pushButtonViewr">
+     <property name="text">
+      <string>VIEWR</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3">
+    <widget class="QCheckBox" name="checkBoxDtfr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QCheckBox" name="checkBoxUnresr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QCheckBox" name="checkBoxBroadr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="5" column="4">
+    <widget class="QPushButton" name="pushButtonAcer">
+     <property name="text">
+      <string>ACER</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="10" column="1">
+    <widget class="QPushButton" name="pushButtonCovr">
+     <property name="text">
+      <string>COVR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QPushButton" name="pushButtonReconr">
+     <property name="text">
+      <string>RECONR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="12" column="0">
+    <widget class="QCheckBox" name="checkBoxMixr">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QCheckBox" name="checkBoxGaminr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QCheckBox" name="checkBoxGroupr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QPushButton" name="pushButtonThermr">
+     <property name="text">
+      <string>THERMR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QPushButton" name="pushButtonGroupr">
+     <property name="text">
+      <string>GROUPR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="8" column="1">
+    <widget class="QPushButton" name="pushButtonGaminr">
+     <property name="text">
+      <string>GAMINR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="11" column="1">
+    <widget class="QPushButton" name="pushButtonModer">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>MODER</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="3" column="4">
+    <widget class="QPushButton" name="pushButtonMatxsr">
+     <property name="text">
+      <string>MATXSR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="11" column="0">
+    <widget class="QCheckBox" name="checkBoxModer">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QPushButton" name="pushButtonHeatr">
+     <property name="text">
+      <string>HEATR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="7" column="3">
+    <widget class="QCheckBox" name="checkBoxViewr">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="5">
+    <widget class="QPushButton" name="pushButtonCleanAllSelection">
+     <property name="text">
+      <string>Clean Selection</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QCheckBox" name="checkBoxHeatr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QCheckBox" name="checkBoxThermr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="10" column="0">
+    <widget class="QCheckBox" name="checkBoxCovr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QPushButton" name="pushButtonBroadr">
+     <property name="text">
+      <string>BROADR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="1" column="4">
+    <widget class="QPushButton" name="pushButtonDtfr">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>DTFR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="2" column="4">
+    <widget class="QPushButton" name="pushButtonCcccr">
+     <property name="text">
+      <string>CCCCR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="10" column="3">
+    <widget class="QCheckBox" name="checkBoxLeapr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="2" column="3">
+    <widget class="QCheckBox" name="checkBoxCcccr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="9" column="1">
+    <widget class="QPushButton" name="pushButtonError">
+     <property name="text">
+      <string>ERRORR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="9" column="3">
+    <widget class="QCheckBox" name="checkBoxPurr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="7" column="1">
+    <widget class="QPushButton" name="pushButtonPlotr">
+     <property name="text">
+      <string>PLOTR</string>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="4">
+    <widget class="QPushButton" name="pushButtonGaspr">
+     <property name="text">
+      <string>GASPR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="4" column="3">
+    <widget class="QCheckBox" name="checkBoxResxsr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="4" column="4">
+    <widget class="QPushButton" name="pushButtonResxsr">
+     <property name="text">
+      <string>RESXSR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="5" column="3">
+    <widget class="QCheckBox" name="checkBoxAcer">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="8" column="4">
+    <widget class="QPushButton" name="pushButtonWimsr">
+     <property name="text">
+      <string>WIMSR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="6" column="4">
+    <widget class="QPushButton" name="pushButtonPowr">
+     <property name="text">
+      <string>POWR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="1" column="2" rowspan="12">
+    <widget class="Line" name="line">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QPushButton" name="pushButtonUnresr">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>UNRESR</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupButtons</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QCheckBox" name="checkBoxReconr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="3" column="3">
+    <widget class="QCheckBox" name="checkBoxMatxsr">
+     <property name="text">
+      <string/>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroupCheckBoxes</string>
+     </attribute>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroupButtons"/>
+  <buttongroup name="buttonGroupCheckBoxes">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+ </buttongroups>
+</ui>

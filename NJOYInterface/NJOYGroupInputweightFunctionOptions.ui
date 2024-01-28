@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NJOYGroupInputweightFunctionOptions</class>
+ <widget class="QWidget" name="NJOYGroupInputweightFunctionOptions">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>585</width>
+    <height>670</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="8" column="5" colspan="2">
+      <widget class="QSpinBox" name="spinBoxBeta"/>
+     </item>
+     <item row="7" column="0" colspan="5">
+      <widget class="QLabel" name="labelSam">
+       <property name="text">
+        <string>Admixed moderator xsec in barns per absorber
+atom (def=0=none) (sam):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="15" column="5" colspan="2">
+      <widget class="QSpinBox" name="spinBox"/>
+     </item>
+     <item row="14" column="5" colspan="2">
+      <widget class="QSpinBox" name="spinBoxFissionTemperature">
+       <property name="suffix">
+        <string>eV</string>
+       </property>
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="0" colspan="5">
+      <widget class="QLabel" name="labelEc">
+       <property name="text">
+        <string>Fission break (ec):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="5" colspan="2">
+      <widget class="QSpinBox" name="spinBoxFehi">
+       <property name="suffix">
+        <string>eV</string>
+       </property>
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="5" colspan="2">
+      <widget class="QSpinBox" name="spinBoxNflmax">
+       <property name="suffix">
+        <string>eV</string>
+       </property>
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="5" colspan="2">
+      <widget class="QSpinBox" name="spinBoxAlphaForExternalModerator"/>
+     </item>
+     <item row="9" column="0" colspan="5">
+      <widget class="QLabel" name="labelAlpha3">
+       <property name="text">
+        <string>Alpha for extern moderator (alpha3):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="5" colspan="2">
+      <widget class="QSpinBox" name="spinBoxFractionOfAdmixed"/>
+     </item>
+     <item row="11" column="5" colspan="2">
+      <widget class="QSpinBox" name="spinBoxThermalBreak">
+       <property name="suffix">
+        <string>eV</string>
+       </property>
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0" colspan="5">
+      <widget class="QLabel" name="labelNinwt">
+       <property name="text">
+        <string>Tape unit for new flux parameters (ninwt):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="14" column="0" colspan="5">
+      <widget class="QLabel" name="labelTc">
+       <property name="text">
+        <string>Fission temperature (tc):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="5" colspan="2">
+      <widget class="QSpinBox" name="spinBoxNinwt">
+       <property name="maximum">
+        <number>200</number>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0" colspan="5">
+      <widget class="QLabel" name="labelEb">
+       <property name="text">
+        <string>Thermal break (eb):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="5" colspan="2">
+      <widget class="QSpinBox" name="spinBoxFissionBreak">
+       <property name="suffix">
+        <string>eV</string>
+       </property>
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0" colspan="5">
+      <widget class="QLabel" name="labelBeta">
+       <property name="text">
+        <string>Heterogeneity parameter (def=0=none) (beta):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="18" column="0" colspan="7">
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="5" rowspan="2" colspan="2">
+      <widget class="QSpinBox" name="spinBoxIndexSigmaZero"/>
+     </item>
+     <item row="10" column="0" colspan="5">
+      <widget class="QLabel" name="labelGamma">
+       <property name="text">
+        <string>Fraction of admixed moderator cross section in
+external moderator cross section (gamma):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="5" colspan="2">
+      <widget class="QSpinBox" name="spinBoxSam"/>
+     </item>
+     <item row="6" column="0" colspan="5">
+      <widget class="QLabel" name="labelAlpha2">
+       <property name="text">
+        <string>Alpha for admixed moderator (alpha2):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="5" colspan="2">
+      <widget class="QSpinBox" name="spinBoxThermalTemperature">
+       <property name="suffix">
+        <string>eV</string>
+       </property>
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="5">
+      <widget class="QLabel" name="label_13">
+       <property name="text">
+        <string>Estimate of potential scattering cross section (sigpot):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0" rowspan="2" colspan="5">
+      <widget class="QLabel" name="labelJsigz">
+       <property name="text">
+        <string>Index of reference sigma zero in sigz array (jsigz):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="5" colspan="2">
+      <widget class="QSpinBox" name="spinBoxEstimateOfPotential">
+       <property name="suffix">
+        <string>barns</string>
+       </property>
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="0" colspan="5">
+      <widget class="QLabel" name="labelTb">
+       <property name="text">
+        <string>Thermal temperature (tb):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="5">
+      <widget class="QLabel" name="label_12">
+       <property name="text">
+        <string>Break between computed flux and bondarenko flux (fehi):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="5">
+      <widget class="QLabel" name="labelnflmax">
+       <property name="text">
+        <string>Maximum number of computed flux points (nflmax):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="15" column="0" colspan="5">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item row="16" column="0" colspan="7">
+      <widget class="QLabel" name="labelWeighFunction">
+       <property name="text">
+        <string>Weight function as tab1 record:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="5" colspan="2">
+      <widget class="QSpinBox" name="spinBoxAlphaForAdmixedModerator"/>
+     </item>
+     <item row="17" column="0" colspan="7">
+      <widget class="QPlainTextEdit" name="plainTextEditWeightFunction"/>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

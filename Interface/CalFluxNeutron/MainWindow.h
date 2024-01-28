@@ -1,6 +1,8 @@
 #pragma once
 #include <QMainWindow>
 
+#include "InterFaceDefinitions.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -13,20 +15,15 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-
-
 private slots:
     void changeFont();
-
     void changeViewMode();
-
     void changePaletteToDarkStyle();
-
-    void onCreateCrossSectionFile();
-
-    void onNJOYClicked();
-
+    void openProject();
+    void saveProject();
     void updateChart();
+
+signals:
 
 private:
     enum tabs
@@ -40,4 +37,6 @@ private:
     void init();
 
     void setConnections();
+
+    Interface::projetData projectData;
  };

@@ -1,16 +1,25 @@
 #include "MapRegion.h"
+
 #include "InterFaceDefinitions.h"
+#include "TableInputDlg.h"
 #include "qevent.h"
 #include "qlineedit.h"
 #include "ui_MapRegion.h"
+
 #include <iostream>
+
 #include <QMessageBox>
 
-MapRegion::MapRegion(QWidget *parent) :
+MapRegion::MapRegion(QWidget *parent,
+                     int regionNumber,
+                     int groupNumber) :
     QDialog(parent),
-    ui(new Ui::MapRegion)
+    ui(new Ui::MapRegion),
+    regionNumber(regionNumber),
+    groupNumber(groupNumber)
 {
     ui->setupUi(this);
+
     setConnections();
     initDialog();
 
@@ -22,29 +31,18 @@ MapRegion::~MapRegion()
     delete ui;
 }
 
-std::shared_ptr<dados_entrada> MapRegion::save()
-{
-    auto data = std::make_shared<dados_entrada>();
-    //
-    //@todo
-
-
-    return data;
-}
-
-void MapRegion::load(std::shared_ptr<dados_entrada> choosingIso)
-{
-
-}
 
 void MapRegion::addZones()
 {
-    auto item = new QListWidgetItem;
+    if (ui->listWidget->count() < regionNumber)
+    {
+        auto item = new QListWidgetItem;
 
-    item->setText(Interface::getDefaultZoneString());
-    item->setFlags(item->flags() | Qt::ItemIsEditable);
+        item->setText(Interface::getDefaultZoneString());
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
 
-    ui->listWidget->addItem(item);
+        ui->listWidget->addItem(item);
+    }
 }
 
 void MapRegion::deleteZones()
@@ -62,10 +60,72 @@ void MapRegion::deleteZones()
     }
 }
 
+void MapRegion::onTimer()
+{
+    qInfo()<<"ontimer";
+
+    warningTimer.setInterval(50000);
+
+    if (blinkTimer.isActive())
+    {
+        blinkTimer.stop();
+    }
+    else
+    {
+        blinkingQtt = 0;
+        blinkTimer.start();
+        ui->labelWarning->show();
+    }
+}
+
+void MapRegion::onBlink()
+{
+    isWarning = !isWarning;
+    ++blinkingQtt;
+
+    if (blinkingQtt >= 10)
+    {
+        blinkTimer.stop();
+    }
+
+    if (isWarning)
+    {
+        ui->labelWarning->show();
+        ui->tableWidgetRegion->setStyleSheet("QTableWidget { border: 2px solid red; }");
+        ui->listWidget->setStyleSheet("QListWidget { border: 2px solid red; }");
+    }
+    else
+    {
+        ui->labelWarning->hide();
+        ui->listWidget->setStyleSheet("");
+        ui->tableWidgetRegion->setStyleSheet("");
+    }
+}
+
+void MapRegion::onPhysicalSource()
+{
+    TableInputDlg dlg(this);
+
+    dlg.configTable(groupNumber, QString("Physical Source"), QString("Group"));
+
+//        dlg.setColumnValues(0, bcRight.value());
+
+    if (!dlg.exec())
+        return;
+
+//    bcRight = dlg.getColumnValues(0);
+}
+
 void MapRegion::initDialog()
 {
+    warningTimer.start();
+
+    blinkTimer.setInterval(700);
+
     ui->listWidget->setDragEnabled(true);
     ui->tableWidgetRegion->setAcceptDrops(true);
+
+    ui->tableWidgetRegion->setToolTip(Interface::getZoneTableToolTip());
 
     setAcceptDrops(true);
 
@@ -82,7 +142,8 @@ void MapRegion::initDialog()
     IntDelegate *intDelegate = new IntDelegate;
     ui->tableWidgetRegion->setItemDelegateForRow(1, intDelegate);
 
-    ui->tableWidgetRegion->item(0, 0)->setFlags(ui->tableWidgetRegion->item(0, 0)->flags() & ~Qt::ItemIsEditable);
+    ui->tableWidgetRegion->item(0, 0)->setFlags(
+                ui->tableWidgetRegion->item(0, 0)->flags() & ~Qt::ItemIsEditable);
 }
 
 void MapRegion::isCellUnique(QListWidgetItem *item)
@@ -120,6 +181,16 @@ void MapRegion::setConnections()
     connect(ui->listWidget, &QListWidget::itemDoubleClicked, this, [this](QListWidgetItem *item){
         currentMatZone = item->text();});
     connect(ui->listWidget, &QListWidget::itemChanged, this,  &MapRegion::isCellUnique);
+
+    connect(ui->tableWidgetRegion, &QTableWidget::cellClicked, this, [this](int row, int column)
+    {
+        if (row == 2)
+            onPhysicalSource();
+    });
+
+    connect(&warningTimer, &QTimer::timeout, this,  &MapRegion::onTimer);
+    connect(&blinkTimer, &QTimer::timeout, this,  &MapRegion::onBlink);
+
 }
 bool MapRegion::eventFilter(QObject *watched, QEvent *event)
 {
@@ -129,11 +200,12 @@ bool MapRegion::eventFilter(QObject *watched, QEvent *event)
 
         if (dropEvent)
         {
-            //The first row is not "dropble"
+            //The first row is "dropble"
             QPoint dropPos = dropEvent->position().toPoint();
             int row = ui->tableWidgetRegion->rowAt(dropPos.y());
 
-            if (row == 1)
+            if (row == 1
+                    || row == 2)
             {
                 return true;
             }
@@ -143,8 +215,90 @@ bool MapRegion::eventFilter(QObject *watched, QEvent *event)
     return false;
 }
 
+void MapRegion::paintEvent(QPaintEvent *event)
+{
+    QDialog::paintEvent(event);
 
-QWidget *IntDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+    //    if (isWarning)
+    //    {
+    //        QPainter painter(this);
+
+    //        QRect listRect  = ui->listWidget->geometry();
+    //        QRect tableRect = ui->tableWidgetRegion->geometry();
+
+    //        listRect.adjust(-3, -3, 3, 3);
+    //        tableRect.adjust(-3, -3, 3, 3);
+
+    //        painter.setBrush(Qt::red);
+    //        painter.fillRect(listRect, Qt::red);
+    //    }
+}
+std::unique_ptr<Interface::regionData> MapRegion::getRegionData() const
+{
+    auto data = std::make_unique<Interface::regionData>();
+
+    auto chosenMaterial = ui->tableWidgetRegion->item(eMaterialZone, 0)->text();
+
+    if ( (chosenMaterial != Interface::getDefaultZoneString())
+         && !chosenMaterial.isEmpty() )
+    {
+        bool ok = false;
+
+        data->node = ui->tableWidgetRegion->item(eNodes, 0)->text().toInt(&ok);
+
+        auto items = ui->listWidget->findItems(chosenMaterial, Qt::MatchExactly);
+
+        if (!items.isEmpty()) {
+            auto item = items.at(0);
+            data->zone = ui->listWidget->row(item);
+            data->zoneStr = chosenMaterial;
+        }
+        else
+        {
+            qWarning() << "Item was not find in the list";
+        }
+    }
+    else
+    {
+        data = nullptr;
+    }
+
+    return data;
+}
+
+void MapRegion::setRegionData(std::unique_ptr<Interface::regionData> newRegionData)
+{
+    regionData = std::move(newRegionData);
+
+    if (!regionData)
+        regionData = std::make_unique<Interface::regionData>();
+
+    ui->tableWidgetRegion->item(eMaterialZone, 0)->setText(regionData->zoneStr);
+
+    ui->tableWidgetRegion->item(eNodes, 0)->setText(QString::number(regionData->node));
+}
+
+void MapRegion::setAllZonasStr(const QStringList &newAllZonasStr)
+{
+    allZonasStr = newAllZonasStr;
+
+    ui->listWidget->addItems(allZonasStr);
+}
+
+QList<QString> MapRegion::getAllZonasStr()
+{
+    allZonasStr.clear();
+
+    for (int i = 0; i < ui->listWidget->count(); ++i) {
+        allZonasStr << ui->listWidget->item(i)->text();
+    }
+
+    return allZonasStr;
+}
+
+QWidget *IntDelegate::createEditor(QWidget *parent,
+                                   const QStyleOptionViewItem &option,
+                                   const QModelIndex &index) const
 {
     if (index.row() == 1 && index.column() == 0)
     {

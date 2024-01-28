@@ -1,0 +1,9 @@
+/home/andreiasimas/Documentos/NeutronFluxCalculation/NJOYInterface/build/CMakeFiles/TCC.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/NJOYInterface/build/CMakeFiles/edit_cache.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/NJOYInterface/build/CMakeFiles/rebuild_cache.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/NJOYInterface/build/CMakeFiles/list_install_components.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/NJOYInterface/build/CMakeFiles/install.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/NJOYInterface/build/CMakeFiles/install/local.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/NJOYInterface/build/CMakeFiles/install/strip.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/NJOYInterface/build/CMakeFiles/TCC_autogen_timestamp_deps.dir
+/home/andreiasimas/Documentos/NeutronFluxCalculation/NJOYInterface/build/CMakeFiles/TCC_autogen.dir

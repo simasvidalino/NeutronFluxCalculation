@@ -1,5 +1,6 @@
 /home/andreiasimas/Documentos/NeutronFluxCalculation/Interface/build/CalFluxNeutron_autogen/EWIEGA46WW/moc_MainWindow.cpp: /home/andreiasimas/Documentos/NeutronFluxCalculation/Interface/CalFluxNeutron/MainWindow.h \
   /home/andreiasimas/Documentos/NeutronFluxCalculation/Interface/build/CalFluxNeutron_autogen/moc_predefs.h \
+  /home/andreiasimas/Documentos/NeutronFluxCalculation/Interface/CalFluxNeutron/InterFaceDefinitions.h \
   /home/andreiasimas/Qt/6.5.0/gcc_64/include/QtCore/q20functional.h \
   /home/andreiasimas/Qt/6.5.0/gcc_64/include/QtCore/qalgorithms.h \
   /home/andreiasimas/Qt/6.5.0/gcc_64/include/QtCore/qanystringview.h \
@@ -103,6 +104,8 @@
   /home/andreiasimas/Qt/6.5.0/gcc_64/include/QtCore/qvariant.h \
   /home/andreiasimas/Qt/6.5.0/gcc_64/include/QtCore/qvarlengtharray.h \
   /home/andreiasimas/Qt/6.5.0/gcc_64/include/QtCore/qversiontagging.h \
+  /home/andreiasimas/Qt/6.5.0/gcc_64/include/QtGui/QColor \
+  /home/andreiasimas/Qt/6.5.0/gcc_64/include/QtGui/QPalette \
   /home/andreiasimas/Qt/6.5.0/gcc_64/include/QtGui/qaction.h \
   /home/andreiasimas/Qt/6.5.0/gcc_64/include/QtGui/qbitmap.h \
   /home/andreiasimas/Qt/6.5.0/gcc_64/include/QtGui/qbrush.h \

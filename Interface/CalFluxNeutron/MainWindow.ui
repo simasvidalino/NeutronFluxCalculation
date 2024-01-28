@@ -22,258 +22,17 @@
       </property>
       <widget class="QWidget" name="tabInputData">
        <attribute name="title">
-        <string>Input Data</string>
+        <string>Project Data Entry </string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_6">
+       <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="0">
-         <widget class="QGroupBox" name="groupBox">
-          <property name="title">
-           <string>Boundary conditions</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_5">
-           <item row="0" column="0">
-            <widget class="QGroupBox" name="groupBox_5">
-             <property name="title">
-              <string>Left</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_3">
-              <item row="0" column="0">
-               <widget class="QRadioButton" name="radioButtonBCLeftPrescribed">
-                <property name="text">
-                 <string>Prescribed:</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QSpinBox" name="spinBox_2">
-                <property name="wrapping">
-                 <bool>true</bool>
-                </property>
-                <property name="frame">
-                 <bool>true</bool>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-                <property name="buttonSymbols">
-                 <enum>QAbstractSpinBox::NoButtons</enum>
-                </property>
-                <property name="showGroupSeparator" stdset="0">
-                 <bool>true</bool>
-                </property>
-                <property name="maximum">
-                 <number>1000000</number>
-                </property>
-                <property name="singleStep">
-                 <number>50</number>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QRadioButton" name="radioButtonBCLeftReflexive">
-                <property name="text">
-                 <string>Reflective</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QGroupBox" name="groupBox_6">
-             <property name="title">
-              <string>Right</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_4">
-              <item row="0" column="0">
-               <widget class="QRadioButton" name="radioButtonBCRightPrescribed">
-                <property name="text">
-                 <string>Prescribed:</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QSpinBox" name="spinBox_4">
-                <property name="wrapping">
-                 <bool>true</bool>
-                </property>
-                <property name="frame">
-                 <bool>true</bool>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-                <property name="buttonSymbols">
-                 <enum>QAbstractSpinBox::NoButtons</enum>
-                </property>
-                <property name="showGroupSeparator" stdset="0">
-                 <bool>true</bool>
-                </property>
-                <property name="maximum">
-                 <number>1000000</number>
-                </property>
-                <property name="singleStep">
-                 <number>50</number>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QRadioButton" name="radioButtonBCRightReflexive">
-                <property name="text">
-                 <string>Reflective</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="0" column="1" rowspan="4">
-         <widget class="Line" name="line">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2" rowspan="4">
          <widget class="RegionInputData" name="widgetRegion" native="true"/>
-        </item>
-        <item row="1" column="0">
-         <widget class="QGroupBox" name="groupBox_4">
-          <property name="title">
-           <string>Iterative Process</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_8">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Maximum number of iterations:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QSpinBox" name="spinBox">
-             <property name="wrapping">
-              <bool>true</bool>
-             </property>
-             <property name="frame">
-              <bool>true</bool>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="buttonSymbols">
-              <enum>QAbstractSpinBox::NoButtons</enum>
-             </property>
-             <property name="showGroupSeparator" stdset="0">
-              <bool>true</bool>
-             </property>
-             <property name="maximum">
-              <number>1000000</number>
-             </property>
-             <property name="singleStep">
-              <number>50</number>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>Precision:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QSpinBox" name="spinBox_3">
-             <property name="wrapping">
-              <bool>true</bool>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="buttonSymbols">
-              <enum>QAbstractSpinBox::NoButtons</enum>
-             </property>
-             <property name="showGroupSeparator" stdset="0">
-              <bool>true</bool>
-             </property>
-             <property name="maximum">
-              <number>1000000</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QGroupBox" name="groupBoxBoundayCondition">
-          <property name="title">
-           <string>Boundary condition</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_7">
-           <item row="0" column="0">
-            <widget class="QRadioButton" name="radioButton_3">
-             <property name="text">
-              <string>1 Group</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QRadioButton" name="radioButton_4">
-             <property name="text">
-              <string>2 Group</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QGroupBox" name="groupBoxCrosSection">
-          <property name="title">
-           <string>Cross Section Data</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="0" column="0">
-            <widget class="QPushButton" name="pushButtonCreateCrossSection">
-             <property name="text">
-              <string>Create  File Data</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QPushButton" name="pushButtonNJOY">
-             <property name="text">
-              <string>NJOY</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="pushButtonOpe">
-             <property name="text">
-              <string>Open File Data</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
         </item>
        </layout>
       </widget>
       <widget class="QWidget" name="tabResults">
        <attribute name="title">
-        <string>Results</string>
+        <string>Neutron Escalar Flux Result</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_9">
         <item row="0" column="0" colspan="2">
@@ -287,9 +46,14 @@
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QWidget" name="widget_3" native="true"/>
+         <widget class="QWidget" name="widgetResults" native="true"/>
         </item>
        </layout>
+      </widget>
+      <widget class="QWidget" name="widget">
+       <attribute name="title">
+        <string>Neutron Absorpt Rate</string>
+       </attribute>
       </widget>
      </widget>
     </item>
@@ -387,73 +151,5 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>radioButtonBCLeftReflexive</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>spinBox_2</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>87</x>
-     <y>290</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>266</x>
-     <y>276</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonBCRightReflexive</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>spinBox_4</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>482</x>
-     <y>295</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>685</x>
-     <y>265</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonBCLeftPrescribed</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>spinBox_2</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>86</x>
-     <y>259</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>240</x>
-     <y>261</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonBCRightPrescribed</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>spinBox_4</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>455</x>
-     <y>268</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>614</x>
-     <y>267</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
- <buttongroups>
-  <buttongroup name="buttonGroupTypeOfProblem"/>
- </buttongroups>
+ <connections/>
 </ui>

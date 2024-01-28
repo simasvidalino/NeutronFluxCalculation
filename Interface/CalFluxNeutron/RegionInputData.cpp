@@ -1,4 +1,5 @@
 #include "RegionInputData.h"
+#include "CrossSectionFileDlg.h"
 #include "ui_RegionInputData.h"
 
 #include <QGraphicsRectItem>
@@ -11,6 +12,7 @@
 #include "InterFaceDefinitions.h"
 #include "VariablesUsed.h"
 #include "MapRegion.h"
+#include "TableInputDlg.h"
 
 #define sizeBar 100;
 
@@ -21,16 +23,29 @@ RegionInputData::RegionInputData(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->graphicsView->setPalette(Interface::getLightPalette()); //@TBD Even with the dark palette, the graphics must be clear
-
     setConnections();
 
     init();
+
+    proj = std::make_unique<Interface::projetData>();
 }
 
 RegionInputData::~RegionInputData()
 {
     delete ui;
+}
+void RegionInputData::setGeneralProjectData(std::unique_ptr<Interface::projetData> &&proj)
+{
+    this->proj = std::move(proj);
+
+    loadGUI();
+}
+
+std::unique_ptr<Interface::projetData>&& RegionInputData::getGeneralProjectData()
+{
+    saveGUI();
+
+    return std::move(proj);
 }
 
 std::shared_ptr<dados_entrada> RegionInputData::getDdValues() const
@@ -41,7 +56,7 @@ std::shared_ptr<dados_entrada> RegionInputData::getDdValues() const
 std::vector<int> RegionInputData::calculateRegionHeights()
 {
     std::vector<int> heights;
-    auto extractValue = [](const regionData& myStruct) { return myStruct.quote; };
+    auto extractValue = [](const Interface::regionData& myStruct) { return myStruct.quote; };
 
     if (regionQuant == 1)
     {
@@ -52,7 +67,8 @@ std::vector<int> RegionInputData::calculateRegionHeights()
 
     // Calculate the sum of all quotas
     int sum = std::accumulate(std::begin(regionArray), std::begin(regionArray) + regionQuant, 0,
-                              [&extractValue](int partialSum, const regionData& myStruct) {
+                              [&extractValue](int partialSum, const Interface::regionData& myStruct)
+    {
         return partialSum + extractValue(myStruct);
     });
 
@@ -69,43 +85,168 @@ std::vector<int> RegionInputData::calculateRegionHeights()
 
 void RegionInputData::clear()
 {
+    if (!scene)
+        scene = std::make_unique<QGraphicsScene>();
+    else
+        scene->clear();
+
     init();
+}
+
+void RegionInputData::mapRegions()
+{
+
+}
+
+void RegionInputData::onCreateCrossSectionFile()
+{
+    CrossSectionFileDlg dlg(this, allZonasStr,
+                            ui->spinBoxGroup->value(),
+                            ui->spinBoxLegendreOrder->value());
+    //dlg.saveCrossSectionFileDlgCrossSection(DDValues->s_s);
+
+    if (!dlg.exec())
+        return;
+
+
+}
+
+void RegionInputData::onNJOYClicked()
+{
+
+}
+
+void RegionInputData::onOpenBCRightInputTable()
+{
+    TableInputDlg dlg(this);
+    const int rowCount = ui->spinBoxGroup->value(); //energy group
+
+    dlg.configTable(rowCount, QString("Right Boundary Conditions"), QString("Group"));
+
+    if (bcRight.has_value())
+        dlg.setColumnValues(0, bcRight.value());
+
+    if (!dlg.exec())
+        return;
+
+    bcRight = dlg.getColumnValues(0);
+}
+
+void RegionInputData::onOpenBCLeftInputTable()
+{
+    TableInputDlg dlg(this);
+    const int rowCount = ui->spinBoxGroup->value(); //energy group
+
+    dlg.configTable(rowCount, QString("Left Boundary Conditions"), QString("Group"));
+
+    if (bcLeft.has_value())
+        dlg.setColumnValues(0, bcLeft.value());
+
+    if (!dlg.exec())
+        return;
+
+    bcLeft = dlg.getColumnValues(0);
 }
 
 void RegionInputData::calculateEscalarNeutronFlux()
 {
     //@todo change input and output of data
+    //Calcular taxa de abs nas regiões
+    //Escolher o grau de legendre.
 
-    DDValues.reset();
-    DDValues = std::make_shared<dados_entrada>();
+    try
+    {
+        //Update struct data
+        updateDDValues();
 
-    construir_dados("/home/andreiasimas/Documentos/TCCFluxEscalar/Calc_fluxo_de_particulas_neutras/CalNeutFlux/Arquivo_de_entrada.txt", *DDValues);
-    //construir_dados("/home/andreiasimas/Documentos/Bibliografia/DadosdeEntradaJesus", valor);
+        //Calculate scalar neutron Flux
+        DD(*DDValues);
 
-    DD(*DDValues);
+        //Change the chart
+        emit updateChartSignal();
+    }
+    catch(const std::exception& e)
+    {
+        qCritical() << "Invalid argument: " << e.what();
 
-    emit updateChartSignal();
+    }
+    catch (...)
+    {
+    }
 }
 
 void RegionInputData::onSelectionRegionChange()
 {
-    QList<QGraphicsItem*> selectedItems = ui->graphicsView->scene()->selectedItems();
+    auto selectedItems = ui->graphicsView->scene()->selectedItems();
+    int groupNumber = ui->spinBoxGroup->value();
 
     if (!selectedItems.empty())
     {
-        MapRegion dlg(this);
-        dlg.load(DDValues);
+        auto rectItem = static_cast<QGraphicsRectItem*>(selectedItems.at(0));
+        auto itemNameVariant = rectItem->data(0);
+        bool ok = false;
 
-        if (!dlg.exec())
-            return;
+        int number = itemNameVariant.toString().toInt(&ok);
 
-        DDValues =  dlg.save();
+        qInfo()<<"saiu"<<itemNameVariant<<ok;
+
+        if (itemNameVariant.isValid() && ok)
+        {
+            //Create the dialog
+            MapRegion dlg(this, regionQuant, groupNumber);
+
+            auto regionPtr = std::make_unique<Interface::regionData>(regionArray.at(number));
+            //regionPtr->groupNumber = ui->spinBoxGroup->value();
+
+            dlg.setRegionData(std::move(regionPtr)); //tbd
+            dlg.setAllZonasStr(allZonasStr);
+
+            if (!dlg.exec())
+                return;
+
+            qInfo()<<"indice"<<number<<"array size"<<regionArray.size();
+
+            if (number < regionArray.size())
+            {
+                auto &region = regionArray.at(number);
+                auto regionDataPtr = dlg.getRegionData();
+
+                if (regionDataPtr)
+                {
+                    //Feed region data
+                    region = *std::move(regionDataPtr);
+                    region.region = number; //TBD do we need a number ?
+                    region.materialColor = zoneColors.at(region.zone);
+
+                    //feed all zone data
+                    allZonasStr = dlg.getAllZonasStr();
+
+                    rectItem->setBrush(region.materialColor);  // LightSkyBlue
+
+                    qInfo()<<"Zone selected"<<region.zone<<region.zoneStr;
+                }
+            }
+        }
+        else
+        {
+            qWarning() << "No name associated with the item.";
+        }
     }
 }
 
 void RegionInputData::init()
 {
-    regionData dataInitial{50, 50};
+    ui->buttonGroupLeftBoundaryConditions->setId(ui->radioButtonBCLeftVacuum, 0);
+    ui->buttonGroupLeftBoundaryConditions->setId(ui->radioButtonBCLeftPrescribed, 1);
+    ui->buttonGroupLeftBoundaryConditions->setId(ui->radioButtonBCLeftReflexive, 2);
+
+    ui->buttonGroupRightBoundaryConditions->setId(ui->radioButtonBCRightVacuum, 0);
+    ui->buttonGroupRightBoundaryConditions->setId(ui->radioButtonBCRightPrescribed, 1);
+    ui->buttonGroupRightBoundaryConditions->setId(ui->radioButtonBCRightReflexive, 2);
+
+    ui->graphicsView->setPalette(Interface::getLightPalette()); //@TBD Even with the dark palette, the graphics must be clear
+
+    Interface::regionData dataInitial{50, 50};
 
     std::fill(regionArray.begin(), regionArray.end(), dataInitial);
 
@@ -116,18 +257,59 @@ void RegionInputData::init()
         quoteSpinBoxes.at(iIndex) = quote;
     }
 
+    // scene->setSceneRect(ui->graphicsView->geometry());  // Substitua 'width' e 'height' pelos valores apropriados
+
     ui->spinBoxRegionQtt->setValue(1);
 }
 
 void RegionInputData::setConnections()
 {
+    connect(ui->pushButtonAddLeftPrecribedBCValues, &QPushButton::clicked, this, &RegionInputData::onOpenBCLeftInputTable);
+    connect(ui->pushButtonAddRightPrecribedBCValues, &QPushButton::clicked, this, &RegionInputData::onOpenBCRightInputTable);
+
+    connect(ui->pushButtonCreateCrossSection, &QPushButton::clicked, this, &RegionInputData::onCreateCrossSectionFile);
+
     connect(ui->pushButtonMapRegions, &QPushButton::clicked, this, &RegionInputData::mapRegions);
     connect(ui->spinBoxRegionQtt, &QSpinBox::valueChanged, this, &RegionInputData::setGraphicScene);
     connect(ui->pushButtonClear, &QPushButton::clicked, this,  &RegionInputData::clear);
+
     connect(ui->pushButtonCalculateFlux, &QPushButton::clicked, this,
             &RegionInputData::calculateEscalarNeutronFlux);
+
     connect(scene.get(), &QGraphicsScene::selectionChanged, this,
             &RegionInputData::onSelectionRegionChange);
+
+    connect(ui->buttonGroupLeftBoundaryConditions, &QButtonGroup::buttonClicked,
+            this, [this](auto button)
+    {
+        bool enable = false;
+
+        if (button == ui->radioButtonBCLeftPrescribed)
+            enable = true;
+        else if (button == ui->radioButtonBCLeftReflexive)
+            bcLeft.reset();
+        else
+            bcLeft->clear();
+
+        ui->pushButtonAddLeftPrecribedBCValues->setEnabled(enable);
+    });
+
+    connect(ui->buttonGroupRightBoundaryConditions, &QButtonGroup::buttonClicked,
+            this, [this](auto button)
+    {
+        bool enable = false;
+
+        if (button == ui->radioButtonBCRightPrescribed)
+            enable = true;
+        else if (button == ui->radioButtonBCRightReflexive)
+            bcRight.reset();
+        else
+            bcRight->clear();
+
+        if(button == ui->radioButtonBCRightPrescribed)
+            enable = true;
+        ui->pushButtonAddRightPrecribedBCValues->setEnabled(enable);
+    });
 }
 
 void RegionInputData::setGraphicScene(int region)
@@ -162,6 +344,10 @@ void RegionInputData::setRegion(int regionNumber, int left, int top, int width, 
     QGraphicsRectItem *rectItem = new QGraphicsRectItem( left, top, width, height);
 
     rectItem->setBrush(QColor(135, 206, 250));  // LightSkyBlue
+
+    rectItem->setFlag(QGraphicsItem::ItemIsSelectable);
+
+    rectItem->setData(0, QString::number(regionNumber));
 
     scene->addItem(rectItem);
 }
@@ -198,7 +384,9 @@ void RegionInputData::setSpinBoxQuota(int regionNumber, int left, int top, int w
 
     quote->setValue(regionArray.at(regionNumber).quote);
     quote->setObjectName(QString::number(regionNumber));
-    quote->setStyleSheet("border: 0px solid black; border-bottom-width: 2px;");
+    quote->setStyleSheet("background-color: white; "
+                         "border: 0px solid black; border-bottom-width: 2px;"
+                         "color: #00008B;");
 
     connect(quote, &QDoubleSpinBox::valueChanged, this,
             [quote, this](double value)
@@ -227,4 +415,150 @@ void RegionInputData::setSpinBoxQuota(int regionNumber, int left, int top, int w
 
     scene->addItem(proxyWidget);
 }
+
+void RegionInputData::setZonesLegend(int region)
+{
+    if (!scene)
+        scene = std::make_unique<QGraphicsScene>();
+    else
+        scene->clear();
+
+    int legendTopMargin = 10;
+    for (int i = 0; i < region; ++i) {
+        QGraphicsRectItem *legendItem = new QGraphicsRectItem(0, 0, 30, 30);
+        legendItem->setBrush(zoneColors.at(i));
+
+        // Converter a posição local para posição de cena
+        //  QPointF scenePos = scene->views().first()->mapToScene(10, legendTopMargin + i * 30);
+
+        // Definir a posição na cena
+        //legendItem->setPos(scenePos);
+
+        // Adicionar à cena
+        scene->addItem(legendItem);
+    }
+
+
+    std::vector<int> heights = calculateRegionHeights();
+
+    int top = 0;
+    int width  = 50;
+
+    for (int iIndex = 0; iIndex < region; ++iIndex)
+    {
+        int height = heights.at(iIndex);
+
+        setRegion(iIndex, 0, top, width, height);
+        setQuota(iIndex,  0, top, width, height);
+
+        top += height;
+    }
+
+    ui->graphicsView->setScene(scene.get());
+    // Conectar o sinal clicked para alterar a cor ao clicar
+    //        connect(legendItem, &QGraphicsRectItem::clicked, this, [this, i]() {
+    //            changeColor(i);
+    //        });
+    //    }
+}
+
+void RegionInputData::updateDDValues()
+{
+    DDValues.reset();
+
+    BuildMatrices matrices;
+    string filePath = "/home/andreiasimas/Documentos/NeutronFluxCalculation/Interface/build/DadosEntrada/Dados_1D_MultiGrupo_PM_Siewert1993_R1Z1G6L3upscattering.txt";
+
+    //Save the value in the struct
+    matrices.setAnisotropyOrder(ui->spinBoxAnisotropyOrder->value());
+    matrices.setQuadratureOrder(ui->spinBoxQuadratureOrder->value());
+    matrices.setStopOrder(ui->spinBoxStopOrder->value());
+    matrices.setRegionsNumber(ui->spinBoxRegionQtt->value());
+    matrices.setMaterialNumber(allZonasStr.size());
+    matrices.setIterationNumber(ui->spinBoxMaxNumberIteration->value());
+
+    matrices.run(BuildMatrices::DataOriginType::eUserInterfaceDataAndTextFile, filePath, *DDValues);
+    auto projectData = std::make_unique<Interface::projetData>();
+
+    //    projectData->precision = ui->spinBoxPrecision->value();
+    //    projectData->energyGroup = 2;
+    //    projectData->rightBoundaryConditionsType =
+    //            static_cast<Interface::eBoundaryConditionsType>(ui->buttonGroupRightBoundaryConditions->checkedId());
+    //    projectData->leftBoundaryConditionsType =
+    //            static_cast<Interface::eBoundaryConditionsType>(ui->buttonGroupLeftBoundaryConditions->checkedId());
+    //    projectData->maximumIterationsNumber = ui->spinBoxMaxNumberInteration->value();
+
+    DDValues = std::make_shared<dados_entrada>();
+
+    //    qInfo()<<projectData->precision
+    //          <<projectData->energyGroup
+    //         <<projectData->leftBoundaryConditionsType
+    //        <<projectData->maximumIterationsNumber;
+
+    //    DDValues->G   = projectData->energyGroup;
+    //    DDValues->L   = projectData->legendreOrder;
+    //    DDValues->n_R = projectData->regionNumber;
+    //    DDValues->n_Z = projectData->zoneNumber;
+
+    //    //Save json
+    //    NeutronFlowJsonIO::getInstance()->setGeneralProjectData(std::move(projectData));
+}
+
+void RegionInputData::loadGUI()
+{
+    if (!proj)
+        proj = std::make_unique<Interface::projetData>();
+
+    ui->spinBoxRegionQtt->setValue(proj->regionNumber);
+    ui->spinBoxMaxNumberIteration->setValue(proj->maximumIterationsNumber);
+    ui->spinBoxGroup->setValue(proj->energyGroup);
+    ui->spinBoxQuadratureOrder->setValue(proj->quadratureOrder);
+
+    emit ui->buttonGroupLeftBoundaryConditions->idClicked(proj->leftBoundaryConditionsType);
+    emit ui->buttonGroupRightBoundaryConditions->idClicked(proj->rightBoundaryConditionsType);
+
+    ui->spinBoxStopOrder->setValue(proj->stopOrder);
+
+    allZonasStr.reserve(proj->zoneNumber);
+
+    ui->spinBoxLegendreOrder->setValue(proj->legendreOrder);
+}
+
+void RegionInputData::saveGUI()
+{
+    if (!proj)
+        proj = std::make_unique<Interface::projetData>();
+
+    proj->regionNumber = ui->spinBoxRegionQtt->value();
+    proj->maximumIterationsNumber = ui->spinBoxMaxNumberIteration->value();
+
+    proj->energyGroup = ui->spinBoxGroup->value();
+
+    int leftBC  =  ui->buttonGroupLeftBoundaryConditions->checkedId();
+    int rightBC =  ui->buttonGroupRightBoundaryConditions->checkedId();
+
+    proj->leftBoundaryConditionsType  = Interface::eBoundaryConditionsType(leftBC);
+    proj->rightBoundaryConditionsType = Interface::eBoundaryConditionsType(rightBC);
+
+    proj->scateringFilePath = scatteringPath.toStdString();
+
+    proj->stopOrder = ui->spinBoxStopOrder->value();
+
+    proj->zoneNumber = allZonasStr.size();
+
+    proj->legendreOrder = ui->spinBoxLegendreOrder->value();
+}
+
+int RegionInputData::getRegionQuant() const
+{
+    return regionQuant;
+}
+
+//void RegionInputData::onProjectSave(QString path)
+//{
+//    updateProjectData();
+
+//    NeutronFlowJsonIO::getInstance()->setGeneralProjectData(std::move(proj));
+//    NeutronFlowJsonIO::getInstance()->saveProject(Interface::jsonFormat, path);
+//}
 

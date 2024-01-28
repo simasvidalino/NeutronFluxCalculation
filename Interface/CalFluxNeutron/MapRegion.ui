@@ -6,14 +6,88 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>480</height>
+    <width>802</width>
+    <height>454</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Material Zone</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="0,1,0,0" columnstretch="0,0,0">
+  <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0" columnstretch="0,0,2">
+   <item row="0" column="0" rowspan="4">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Material Zone Edit</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QCommandLinkButton" name="commandLinkButtonAdd">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>10</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Add Zone</string>
+        </property>
+        <property name="icon">
+         <iconset theme="list-add">
+          <normaloff>.</normaloff>.</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QListWidget" name="listWidget"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCommandLinkButton" name="commandLinkButtonDelete">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Delete Zone</string>
+        </property>
+        <property name="icon">
+         <iconset theme="list-remove">
+          <normaloff>.</normaloff>.</iconset>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="1">
     <spacer name="verticalSpacer_2">
      <property name="orientation">
@@ -21,8 +95,8 @@
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>20</width>
-       <height>136</height>
+       <width>17</width>
+       <height>133</height>
       </size>
      </property>
     </spacer>
@@ -34,8 +108,8 @@
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>20</width>
-       <height>136</height>
+       <width>17</width>
+       <height>133</height>
       </size>
      </property>
     </spacer>
@@ -47,6 +121,9 @@
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="cursor" stdset="0">
+      <cursorShape>WhatsThisCursor</cursorShape>
      </property>
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
@@ -106,6 +183,11 @@
        <string>Nodes</string>
       </property>
      </row>
+     <row>
+      <property name="text">
+       <string>Physical Source</string>
+      </property>
+     </row>
      <column>
       <property name="text">
        <string>Region Data</string>
@@ -113,78 +195,12 @@
      </column>
     </widget>
    </item>
-   <item row="3" column="2">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+   <item row="0" column="2">
+    <widget class="QLabel" name="labelWarning">
+     <property name="text">
+      <string>Drag and drop the chosen material into line 1 of the 
+table on the right.</string>
      </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" rowspan="4">
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
-      <string>Material Zone Edit</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QCommandLinkButton" name="commandLinkButtonAdd">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>40</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Add Zone</string>
-        </property>
-        <property name="icon">
-         <iconset theme="list-add">
-          <normaloff>.</normaloff>.</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QCommandLinkButton" name="commandLinkButtonDelete">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>40</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Delete Zone</string>
-        </property>
-        <property name="icon">
-         <iconset theme="list-remove">
-          <normaloff>.</normaloff>.</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QListWidget" name="listWidget"/>
-      </item>
-     </layout>
     </widget>
    </item>
   </layout>

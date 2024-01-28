@@ -8,18 +8,27 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(DD_METHOD_BUILD /home/andreiasimas/Documentos/NeutronFluxCalculation/DDMethod/build)
 set(DD_METHOD /home/andreiasimas/Documentos/NeutronFluxCalculation/DDMethod/DDMethod)
+
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Charts)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Charts)
 
 include_directories(./)
 include_directories(${DD_METHOD}) #tbd
+include_directories(${DD_METHOD_BUILD}) #tbd
+
 
 set(PROJECT_SOURCES
     main.cpp
     ChartView.cpp
     ChartView.h
+    CrossSectionFileDlg.cpp
+    CrossSectionFileDlg.h
+    CrossSectionFileDlg.ui
+    GradesTableModel.cpp
+    GradesTableModel.h
     InterFaceDefinitions.cpp
     InterFaceDefinitions.h
     MainWindow.cpp
@@ -28,9 +37,19 @@ set(PROJECT_SOURCES
     MapRegion.cpp
     MapRegion.h
     MapRegion.ui
+    MapRegionIO.cpp
+    MapRegionIO.h
+    NeutronFlowJsonIO.cpp
+    NeutronFlowJsonIO.h
     RegionInputData.cpp
     RegionInputData.h
     RegionInputData.ui
+    RegionConfigDlg.cpp
+    RegionConfigDlg.h
+    RegionConfigDlg.ui
+    TableInputDlg.cpp
+    TableInputDlg.h
+    TableInputDlg.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -58,7 +77,7 @@ endif()
 
 link_directories(${DD_METHOD})
 target_link_libraries(CalFluxNeutron PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Charts
-    ${DD_METHOD}/libDDMethod.so)
+    ${DD_METHOD_BUILD}/libDDMethod.so)
 
 set_target_properties(CalFluxNeutron PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

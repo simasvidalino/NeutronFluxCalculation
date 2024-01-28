@@ -1,15 +1,17 @@
 #include "MainWindow.h"
 #include "./ui_MainWindow.h"
 
-#include "InterFaceDefinitions.h"
+#include <iostream>
+
+#include "NeutronFlowJsonIO.h"
 #include "VariablesUsed.h"
 
 #include <QColorDialog>
+#include <QFileDialog>
 #include <QFontDialog>
 #include <QLineSeries>
 #include <QMessageBox>
 
-#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -18,6 +20,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     init();
+
+
+    //TBD test delete
+    int amarelo = 16776960;
 }
 
 MainWindow::~MainWindow()
@@ -63,21 +69,40 @@ void MainWindow::changePaletteToDarkStyle()
     {
         ui->actionPalette->setText("Color scheme to Default");
 
-        this->setPalette(Interface::getDarkPalette());
+        QApplication::setPalette(Interface::getDarkPalette());
     }
     else
     {
         ui->actionPalette->setText(darkText);
 
-        this->setPalette(Interface::getLightPalette());
+        QApplication::setPalette(Interface::getLightPalette());
     }
 }
 
-void MainWindow::onCreateCrossSectionFile()
+void MainWindow::openProject()
 {
-    CrossSectionFileDlg dlg(this);
+    QString filter = "Text Files (*.txt);;JSON Files (*.json)";
+    QString fileName = QFileDialog::getOpenFileName(this, "Open File", QDir::homePath(), filter);
 
-    dlg.exec();
+    if (fileName.isEmpty())
+        return;
+
+    NeutronFlowJsonIO::getInstance()->loadProject(Interface::jsonFormat, fileName);
+    auto proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
+    ui->widgetRegion->setGeneralProjectData(std::move(proj));
+}
+
+void MainWindow::saveProject()
+{
+    QString filter = "Text Files (*.txt);;JSON Files (*.json)";
+    QString fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::homePath(), filter);
+
+    if (fileName.isEmpty())
+        return;
+
+    auto proj = ui->widgetRegion->getGeneralProjectData();
+    NeutronFlowJsonIO::getInstance()->setGeneralProjectData(std::move(proj));
+    NeutronFlowJsonIO::getInstance()->saveProject(Interface::jsonFormat, fileName);
 }
 
 void MainWindow::init()
@@ -87,19 +112,33 @@ void MainWindow::init()
     ui->widgetChart->setProjectionTitle("Scalar Flux of Neutral particles (DD method)");
     ui->widgetChart->setXLabel("Position x (cm)");
     ui->widgetChart->setYLabel("Scalar Flux");
+
+    QString tooltipStyle = "QToolTip {"
+                           "  background-color: #F0F0F0;"
+                           "  border: 1px solid #808080;"
+                           "  padding: 2px;"
+                           "};";
+
+    //TBD qApp->setStyleSheet(tooltipStyle);
 }
 
 void MainWindow::setConnections()
 {
     connect(ui->actionFont, &QAction::triggered, this, &MainWindow::changeFont);
+    connect(ui->actionOpen_Project, &QAction::triggered, this, &MainWindow::openProject);  // Coloca a janela em fullscreen
     connect(ui->actionPalette, &QAction::triggered, this, &MainWindow::changePaletteToDarkStyle);
+    connect(ui->actionSave_Project, &QAction::triggered, this, &MainWindow::saveProject);  // Coloca a janela em fullscreen
     connect(ui->actionScreenMode, &QAction::triggered, this, &MainWindow::changeViewMode);  // Coloca a janela em fullscreen
     connect(ui->widgetRegion, &RegionInputData::updateChartSignal, this, &MainWindow::updateChart);
-    connect(ui->pushButtonCreateCrossSection, &QPushButton::clicked, this, &MainWindow::onCreateCrossSectionFile);
-    connect(ui->pushButtonNJOY, &QPushButton::clicked, this, &MainWindow::onNJOYClicked);
+
+    //connect(this, &MainWindow::onProject, ui->widgetRegion, &RegionInputData::onProjectSave);
+
+
     connect(ui->actionThe_app, &QAction::triggered, this, [this](){
         QMessageBox::information(this, "About", Interface::getAboutApp());
     });
+
+
 }
 
 void MainWindow::updateChart()
@@ -161,7 +200,7 @@ void MainWindow::updateChart()
 
     values.reset();
 
-    ui->tabWidget->setCurrentIndex(tabInputData);
+    ui->tabWidget->setCurrentIndex(TabResult);
 }
 
 

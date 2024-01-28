@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Icons/atom.png</file>
+        <file>Help/njoy21.pdf</file>
+        <file>Icons/atomo.jpg</file>
+        <file>Icons/jeremybishopunsplash.jpg</file>
+        <file>Icons/open.png</file>
+        <file>Icons/NewTux.svg</file>
+        <file>Icons/2451996.svg</file>
+    </qresource>
+</RCC>
