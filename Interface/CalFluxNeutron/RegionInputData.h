@@ -102,16 +102,16 @@ private:
     std::shared_ptr<dados_entrada> DDValues;
 
     QVector<QColor> zoneColors = {
-        QColor(31, 120, 180),   // Azul
-        QColor(51, 160, 44),    // Verde
-        QColor(227, 26, 28),    // Vermelho
-        QColor(255, 127, 0),    // Laranja
-        QColor(106, 61, 154),   // Roxo
-        QColor(177, 89, 40),    // Marrom
-        QColor(166, 206, 227),  // Azul claro
-        QColor(178, 223, 138),  // Verde claro
-        QColor(251, 154, 153),  // Rosa claro
-        QColor(253, 191, 111)   // Laranja claro
+        QColor(143, 187, 217), // Pastel Blue
+        QColor(153, 207, 149), // Pastel Green
+        QColor(241, 140, 141), // Pastel Red
+        QColor(255, 191, 127), // Pastel Orange
+        QColor(180, 158, 204), // Pastel Purple
+        QColor(216, 172, 147), // Pastel Brown
+        QColor(211, 230, 241), // Light Pastel Blue
+        QColor(214, 239, 196), // Light Pastel Green
+        QColor(251, 204, 202), // Light Pastel Pink
+        QColor(253, 223, 182)  // Light Pastel Orange
     };
 
     std::unique_ptr<Interface::projetData> proj;
