@@ -96,7 +96,7 @@
    <item row="0" column="4">
     <widget class="QSpinBox" name="spinBoxRegionQtt">
      <property name="minimum">
-      <number>1</number>
+      <number>0</number>
      </property>
      <property name="maximum">
       <number>10</number>

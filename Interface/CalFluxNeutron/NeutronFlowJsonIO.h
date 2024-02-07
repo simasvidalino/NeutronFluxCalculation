@@ -20,31 +20,38 @@ public:
     std::vector<std::shared_ptr<Interface::regionData> > getDataPerRegion();
     void setDataPerRegion(const std::vector<std::shared_ptr<Interface::regionData> > &newDataPerRegion);
 
+    std::array<Interface::regionData, 10> getRegionArray() const;
+    void setRegionArray(const std::array<Interface::regionData, 10> &newRegionArray);
+
 protected:
     void read(const QJsonObject &json);
     void write(QJsonObject &json) const;
 
 private:
-    std::unique_ptr<Interface::projetData> generalProjectData;
-    std::vector<std::shared_ptr<Interface::regionData>> dataPerRegion;
-
     QJsonObject saveGeneralProjectData() const;
     Interface::projetData loadGeneralProjectData(const QJsonObject &obj);
 
     QJsonArray saveDataPerRegion() const;
-    std::vector<std::shared_ptr<Interface::regionData>> loadDataPerRegion(const  QJsonArray &objArray);
+
+    QJsonArray saveRegionArray() const;
+    std::array<Interface::regionData, 10> loadRegionArray(const  QJsonArray &objArray);
 
     static NeutronFlowJsonIO* mClass;
+
+    std::unique_ptr<Interface::projetData> generalProjectData;
+    std::array<Interface::regionData, 10> regionArray;
 
     const char *EnergyGroupKey = "EnergyGroup";
     const char *GeneralProjectDataKey = "GeneralProjectData";
     const char *LeftBoundaryConditionsTypeKey = "LeftBoundaryConditionsType";
+    const char *LeftBoundaryValuesKey = "LeftBoundaryValues";
     const char *QuadratureOrderKey = "QuadratureOrder";
     const char *LegendreOrderKey = "LegendreOrder";
     const char *MaximumIterationsNumberKey = "MaximumIterationsNumber";
     const char *ProjectFileKey = "ProjectFile"; //We can have all project in txt
     const char *DataPerRegionKey = "DataPerRegion";
     const char *RightBoundaryConditionsTypeKey = "RightBoundaryConditionsType";
+    const char *RightBoundaryValuesKey = "RightBoundaryValues";
     const char *ScatteringCrossSectionFileKey = "ScatteringCrossSectionFileType";
     const char *StopOrderKey = "StopOrder";
 

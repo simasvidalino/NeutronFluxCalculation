@@ -10,8 +10,9 @@
 #include "InterFaceDefinitions.h"
 #include "VariablesUsed.h"
 
-namespace Ui {
-class RegionInputData;
+namespace Ui
+{
+    class RegionInputData;
 }
 
 class RegionInputData : public QWidget
@@ -30,7 +31,7 @@ public:
     int getRegionQuant() const;
 
 public slots:
-    //void onProjectSave(QString path);
+    // void onProjectSave(QString path);
 
 private slots:
     void clear();
@@ -68,15 +69,15 @@ private:
     void setConnections();
 
     void setRegion(int regionNumber,
-                   int left   = 0,
-                   int top    = 0,
-                   int width  = 50,
+                   int left = 0,
+                   int top = 0,
+                   int width = 50,
                    int height = 50);
 
     void setQuota(int regionNumber,
-                  int left   = 0,
-                  int top    = 0,
-                  int width  = 50,
+                  int left = 0,
+                  int top = 0,
+                  int width = 50,
                   int height = 50);
 
     void setSpinBoxQuota(int regionNumber,
@@ -90,13 +91,17 @@ private:
 
     void loadGUI();
 
+    void loadDataRegion();
+
     void saveGUI();
+
+    void saveDataRegion();
 
     std::unique_ptr<QGraphicsScene> scene;
 
     std::array<Interface::regionData, 10> regionArray;
 
-    std::array<QDoubleSpinBox*, 10> quoteSpinBoxes;
+    std::array<QDoubleSpinBox *, 10> quoteSpinBoxes;
 
     int regionQuant;
     std::shared_ptr<dados_entrada> DDValues;
@@ -120,4 +125,4 @@ private:
     QString scatteringPath = "";
     std::optional<std::vector<double>> bcLeft;
     std::optional<std::vector<double>> bcRight;
- };
+};

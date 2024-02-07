@@ -35,7 +35,10 @@ struct regionData
     int zone        = 1;
     int node        = 20;
     QString zoneStr;
-    QColor materialColor;
+    QColor materialColor = QColor(135, 206, 250);
+
+    std::optional<std::vector<double>> sourceRight;
+    std::optional<std::vector<double>> sourceLeft;
 };
 
 struct projetData
@@ -53,5 +56,13 @@ struct projetData
     int stopOrder = 50;
 
     std::string scateringFilePath;
+
+    //They are optional because we can have reflexive bc and we don't need to set them
+    std::optional<std::vector<double>> bcLeft;
+    std::optional<std::vector<double>> bcRight;
+
+    std::vector<std::shared_ptr<Interface::regionData>> regionData;
+
+    std::array<Interface::regionData, 10> regionArray;
 };
 };

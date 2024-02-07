@@ -81,7 +81,7 @@ void MainWindow::changePaletteToDarkStyle()
 
 void MainWindow::openProject()
 {
-    QString filter = "Text Files (*.txt);;JSON Files (*.json)";
+    QString filter = "JSON Files (*.json);;Text Files (*.txt)";
     QString fileName = QFileDialog::getOpenFileName(this, "Open File", QDir::homePath(), filter);
 
     if (fileName.isEmpty())
@@ -89,6 +89,11 @@ void MainWindow::openProject()
 
     NeutronFlowJsonIO::getInstance()->loadProject(Interface::jsonFormat, fileName);
     auto proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
+
+    if (!proj)
+        proj = std::make_unique<Interface::projetData>();
+
+    proj->regionArray =  std::move(NeutronFlowJsonIO::getInstance()->getRegionArray());
     ui->widgetRegion->setGeneralProjectData(std::move(proj));
 }
 
@@ -101,6 +106,11 @@ void MainWindow::saveProject()
         return;
 
     auto proj = ui->widgetRegion->getGeneralProjectData();
+
+    if (!proj)
+        proj = std::make_unique<Interface::projetData>();
+
+    NeutronFlowJsonIO::getInstance()->setRegionArray(std::move(proj->regionArray));
     NeutronFlowJsonIO::getInstance()->setGeneralProjectData(std::move(proj));
     NeutronFlowJsonIO::getInstance()->saveProject(Interface::jsonFormat, fileName);
 }
