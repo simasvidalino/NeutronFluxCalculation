@@ -20,7 +20,13 @@
    <string>Cross Section </string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="2" column="3" colspan="3">
+   <property name="horizontalSpacing">
+    <number>1</number>
+   </property>
+   <property name="verticalSpacing">
+    <number>0</number>
+   </property>
+   <item row="1" column="2">
     <spacer name="horizontalSpacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -33,7 +39,7 @@
      </property>
     </spacer>
    </item>
-   <item row="2" column="6">
+   <item row="1" column="3">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -43,61 +49,10 @@
      </property>
     </widget>
    </item>
+   <item row="0" column="2" colspan="2">
+    <widget class="QTextEdit" name="textEdit"/>
+   </item>
    <item row="0" column="0">
-    <widget class="QCommandLinkButton" name="commandLinkButtonLast">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>50</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset theme="go-previous">
-       <normaloff>.</normaloff>.</iconset>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="3" colspan="6">
-    <widget class="QStackedWidget" name="stackedWidget">
-     <widget class="QWidget" name="page_4"/>
-     <widget class="QWidget" name="page3"/>
-     <widget class="QWidget" name="page1"/>
-     <widget class="QWidget" name="page2"/>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QCommandLinkButton" name="commandLinkButtonNext">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>50</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset theme="go-next">
-       <normaloff>.</normaloff>.</iconset>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string/>
@@ -172,44 +127,29 @@
         </property>
        </widget>
       </item>
+      <item row="3" column="0">
+       <widget class="QCommandLinkButton" name="commandLinkButtonParse">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Parse 
+File</string>
+        </property>
+        <property name="icon">
+         <iconset theme="accessories-text-editor">
+          <normaloff>.</normaloff>.</iconset>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>CrossSectionFileDlg</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>390</x>
-     <y>363</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>CrossSectionFileDlg</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>390</x>
-     <y>363</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

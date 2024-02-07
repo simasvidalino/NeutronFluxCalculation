@@ -41,6 +41,8 @@ set(PROJECT_SOURCES
     MapRegionIO.h
     NeutronFlowJsonIO.cpp
     NeutronFlowJsonIO.h
+    ParseFile.cpp
+    ParseFile.h
     RegionInputData.cpp
     RegionInputData.h
     RegionInputData.ui

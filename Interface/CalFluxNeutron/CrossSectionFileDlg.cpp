@@ -1,10 +1,14 @@
 #include "CrossSectionFileDlg.h"
-#include "VariablesUsed.h"
 #include "ui_CrossSectionFileDlg.h"
 
-#include <QFileDialog>
-#include <QTableView>
+#include "ParseFile.h"
 
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QTableView>
+#include <QTableWidgetItem>
+
+#include <iostream>
 
 CrossSectionFileDlg::CrossSectionFileDlg(QWidget *parent,
                                          QStringList materials,
@@ -19,8 +23,6 @@ CrossSectionFileDlg::CrossSectionFileDlg(QWidget *parent,
     ui->setupUi(this);
 
     initDlg();
-
-    setConnection();
 }
 
 CrossSectionFileDlg::~CrossSectionFileDlg()
@@ -28,14 +30,19 @@ CrossSectionFileDlg::~CrossSectionFileDlg()
     delete ui;
 }
 
-void CrossSectionFileDlg::saveCrossSectionFileDlgCrossSection(long double ****s_s)
+void CrossSectionFileDlg::accept()
 {
+    parseFile();
 
+    if (eParseError == ParseFile::ParseErrors::eOk)
+        QDialog::accept();
+    else
+        QMessageBox::information(this, "Parser Error", "Project data and material data do not match.");
 }
 
 void CrossSectionFileDlg::clearText()
 {
-
+    ui->textEdit->clear();
 }
 void CrossSectionFileDlg::openFile()
 {
@@ -43,74 +50,97 @@ void CrossSectionFileDlg::openFile()
 
     if (!fileName.isEmpty())
     {
-        QFile file(fileName);
-
-        if (file.open(QIODevice::ReadOnly | QIODevice::Text))
-        {
-            QTextStream stream(&file);
-            QString content = stream.readAll();
-            file.close();
-
-            //@Todo fill table
-        } else
-        {
-            qWarning() << "Error opening the file for reading.";
-        }
+        readFile(fileName);
     }
+}
+
+void CrossSectionFileDlg::parseFile()
+{
+    auto fileContent = ui->textEdit->toPlainText().toStdString();
+
+    ParseFile::getInstance()->setProjectData(energyGroup, legendreOrder, materialList.size());
+
+    eParseError = ParseFile::getInstance()->parseString(fileContent);
+
+    qWarning()<<"CrossSectionFileDlg::parseFile()"<<eParseError;
 }
 
 void CrossSectionFileDlg::saveText()
 {
-    //QString content = ui->textEdit->toPlainText();
-
     QString fileName = QFileDialog::getSaveFileName(this, "Save File", "", "File Text(txt) (*.txt)");
+    const QString instruction = "<p><strong>To create a valid text format, follow the rules below:</strong></p> <ol>"
+                                "<li><strong>Before the numerical data for material zone,</strong> start the line with <code>///</code>.</li>"
+                                "<li><strong>Right after what was done in step 1,</strong> make a line identifying the total cross section starting "
+                                "with <code>//</code>.</li><li><strong>Write the total cross section data.</strong></li>"
+                                "<li><strong>Create the scattering matrix</strong> considering that for each degree of Legendre, you will have a "
+                                "g x g matrix where g is the number of energy groups.</li></p>";
 
     if (!fileName.isEmpty())
     {
-        QFile file(fileName);
+        parseFile();
 
-        if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+        if (eParseError != ParseFile::eOk)
         {
-            QTextStream stream(&file);
-            // stream << content;
-            file.close();
+            QMessageBox::information(this, "Parser Error", instruction);
+            return;
         }
-        else
-        {
-            qWarning() << "Error opening file for writing";
-        }
+
+        pathCrossSection = fileName;
+
+        writeFile(fileName);
     }
+}
+
+void CrossSectionFileDlg::readFile(QString &filePath)
+{
+    QFile file(filePath);
+
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qWarning() << "Open file failed";
+        return;
+    }
+
+    QTextStream in(&file);
+    QString fileContent;
+
+    fileContent = in.readAll();
+
+    int index = fileContent.indexOf("///");
+
+    if (index != -1)
+    {
+        QString contentAfter = fileContent.mid(index);
+
+        ui->textEdit->setPlainText(contentAfter);
+    }
+    else
+    {
+        ui->textEdit->setPlainText(fileContent);
+    }
+
+    file.close();
+}
+
+void CrossSectionFileDlg::writeFile(QString &filePath)
+{
+    QFile file(filePath);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qWarning() << "Error opening file for writing";
+        return;
+    }
+
+    QTextStream stream(&file);
+    stream << ui->textEdit->toPlainText();
+
+    file.close();
 }
 
 void CrossSectionFileDlg::initDlg()
 {
-    QStringList horizontalHeaders;
-    QString verticalHeader = "Group";
-    std::vector<double> values;
-
-    for(int iIndex = 0; iIndex < legendreOrder; ++iIndex)
-    {
-        horizontalHeaders.append(QString("Legendre") + QString::number(iIndex));
-        values.push_back(iIndex);
-    }
-
-    for (int index = 0; index < energyGroup; ++index)
-    {
-        tableView = std::make_unique<QTableView>();
-        tableView->setGeometry(0, 0, 400, 300);
-        model = std::make_unique<GradesTableModel>();
-        model->configTable(3, 5, horizontalHeaders, verticalHeader);
-        tableView->setModel(model.get());
-
-        tableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-        tableView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-
-        ui->stackedWidget->addWidget(tableView.get()) ;
-        tableView->show();
-        //Load
-    }
-
-     ui->stackedWidget->setCurrentIndex(0);
+    setConnection();
 }
 
 void CrossSectionFileDlg::setConnection()
@@ -118,24 +148,18 @@ void CrossSectionFileDlg::setConnection()
     connect(ui->commandLinkButtonOpen, &QCommandLinkButton::clicked, this, &CrossSectionFileDlg::openFile);
     connect(ui->commandLinkButtonClear, &QCommandLinkButton::clicked, this, &CrossSectionFileDlg::clearText);
     connect(ui->commandLinkButtonSave, &QCommandLinkButton::clicked, this, &CrossSectionFileDlg::saveText);
+    connect(ui->commandLinkButtonParse, &QCommandLinkButton::clicked, this, &CrossSectionFileDlg::parseFile);
 
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &CrossSectionFileDlg::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &CrossSectionFileDlg::reject);
+}
 
-    connect(ui->commandLinkButtonLast, &QCommandLinkButton::clicked,
-            ui->stackedWidget, [&](){
-        int index = ui->stackedWidget->currentIndex() - 1;
+QString CrossSectionFileDlg::getPathCrossSection() const
+{
+    return pathCrossSection;
+}
 
-        if (index >= 0)
-        {
-            ui->stackedWidget->setCurrentIndex(index);
-            this->setWindowTitle(QString("Cross Section ")+ materialList.at(index));
-        }
-    });
-    connect(ui->commandLinkButtonNext, &QCommandLinkButton::clicked,
-            ui->stackedWidget, [&](){
-        int index = ui->stackedWidget->currentIndex() + 1;
-        if (index < ui->stackedWidget->count())
-        {
-           this->setWindowTitle(QString("Cross Section ") +  materialList.at(index));
-        }
-        });
+ParseFile::ParseErrors CrossSectionFileDlg::getEParseError() const
+{
+    return eParseError;
 }

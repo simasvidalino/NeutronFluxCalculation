@@ -1,9 +1,9 @@
 #pragma once
 
-#include "GradesTableModel.h"
-#include "VariablesUsed.h"
-#include "qtableview.h"
 #include <QDialog>
+#include <map>
+
+#include "ParseFile.h"
 
 namespace Ui {
 class CrossSectionFileDlg;
@@ -19,14 +19,32 @@ public:
                                  int energyGroup   = 0,
                                  int legendreOrder = 0);
     ~CrossSectionFileDlg();
-    void saveCrossSectionFileDlgCrossSection(long double ****s_s);
+
+    ParseFile::ParseErrors getEParseError() const;
+
+    QString getPathCrossSection() const;
+
+protected:
+    virtual void accept();
+
+    void readFile(QString &filePath); //read the txt
+    void writeFile(QString &filePath);
+
 
 private slots:
     void clearText();
-    void openFile();
+    void openFile(); //use a screen to choose a file
+    void parseFile();
     void saveText();
 
 private:
+
+    struct legendreData
+    {
+        int legendreNumber = 0;
+        std::map<double, double> scattering;
+    };
+
     Ui::CrossSectionFileDlg *ui;
 
     void initDlg();
@@ -35,8 +53,12 @@ private:
      const int energyGroup;
      const int legendreOrder;
 
-     std::unique_ptr<GradesTableModel> model;
-     std::unique_ptr<QTableView> tableView;
      QStringList materialList;
+
+     std::vector<std::vector<legendreData>> dataPerMaterial;
+
+     ParseFile::ParseErrors eParseError;
+
+     QString pathCrossSection;
 };
 
