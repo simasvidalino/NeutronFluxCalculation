@@ -27,8 +27,8 @@ set(PROJECT_SOURCES
     CrossSectionFileDlg.cpp
     CrossSectionFileDlg.h
     CrossSectionFileDlg.ui
-    GradesTableModel.cpp
-    GradesTableModel.h
+    CustomTableModel.cpp
+    CustomTableModel.h
     InterFaceDefinitions.cpp
     InterFaceDefinitions.h
     MainWindow.cpp

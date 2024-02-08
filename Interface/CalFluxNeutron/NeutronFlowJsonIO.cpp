@@ -48,8 +48,8 @@ void NeutronFlowJsonIO::loadProject(Interface::eSaveFormat saveFormat,
                                     QString path)
 {
     QFile loadFile(path/*saveFormat == Interface::jsonFormat
-                                                                ? QStringLiteral("NeutronFlow.json")
-                                                                : QStringLiteral("NeutronFlow.dat")*/);
+                                                                                                                                           ? QStringLiteral("NeutronFlow.json")
+                                                                                                                                           : QStringLiteral("NeutronFlow.dat")*/);
 
     if (!loadFile.open(QIODevice::ReadOnly))
     {
@@ -254,10 +254,21 @@ QJsonArray NeutronFlowJsonIO::saveDataPerRegion() const
     {
         auto region = regionArray[iIndex];
         QJsonObject regionObj;
-        regionObj[NodeKey] = region.node;
+        QJsonArray physicalFontJsonArray;
+
+
+        regionObj[NodeKey]          = region.node;
         regionObj[MaterialColorKey] = region.materialColor.name();
-        regionObj[QuotaKey] = region.quote;
-        regionObj[ZoneStrKey] = region.zoneStr;
+        regionObj[QuotaKey]         = region.quote;
+        regionObj[ZoneStrKey]       = region.zoneStr;
+
+        if (region.physicalSource.has_value())
+        {
+            for (const auto valuePerGroup : region.physicalSource.value())
+                physicalFontJsonArray.push_back(valuePerGroup);
+
+            regionObj[PhysicalKey] = physicalFontJsonArray;
+        }
 
         regionJsonArray.append(regionObj);
     }
@@ -287,14 +298,18 @@ std::array<Interface::regionData, 10> NeutronFlowJsonIO::loadRegionArray(const Q
 
             if (obj.contains(NodeKey))
             {
-                regionData.node = obj[NodeKey].toString().toInt(&ok);
-                verifyConversion(ok, "Error: Json Node conversion");
+                if (obj[NodeKey].isDouble())
+                    regionData.node = obj[NodeKey].toInt(20);
+                else
+                    verifyConversion(ok, "Error: Json Node conversion");
             }
 
             if (obj.contains(QuotaKey))
             {
-                regionData.quote = obj[QuotaKey].toString().toInt(&ok);
-                verifyConversion(ok, "Error: Json Quota conversion");
+                if (obj[QuotaKey].isDouble())
+                    regionData.quote = obj[QuotaKey].toInt(50);
+                else
+                    verifyConversion(ok, "Error: Json Quota conversion");
             }
 
             if (obj.contains(ZoneStrKey))
@@ -307,7 +322,20 @@ std::array<Interface::regionData, 10> NeutronFlowJsonIO::loadRegionArray(const Q
                 regionData.materialColor = QColor(obj[MaterialColorKey].toString());
             }
 
+            if (obj.contains(PhysicalKey))
+            {
+                QJsonArray physicalFontArray = obj[PhysicalKey].toArray();
+                std::vector<double> physivalFontVector;
+
+                for (const auto & physivalKeyByGroup : physicalFontArray)
+                    physivalFontVector.push_back(physivalKeyByGroup.toDouble());
+
+                regionData.physicalSource = physivalFontVector;
+            }
+
             region[iIndex] = regionData;
+
+            ++iIndex;
         }
     }
 

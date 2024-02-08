@@ -35,7 +35,11 @@ void CrossSectionFileDlg::accept()
     parseFile();
 
     if (eParseError == ParseFile::ParseErrors::eOk)
+    {
+        QMessageBox::information(this, "Parser Information",
+                                 "Simple analysis passed");
         QDialog::accept();
+    }
     else
         QMessageBox::information(this, "Parser Error", "Project data and material data do not match.");
 }
@@ -152,6 +156,14 @@ void CrossSectionFileDlg::setConnection()
 
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &CrossSectionFileDlg::accept);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &CrossSectionFileDlg::reject);
+}
+
+void CrossSectionFileDlg::setPathCrossSection(const QString &newPathCrossSection)
+{
+    pathCrossSection = newPathCrossSection;
+
+    if (!pathCrossSection.isEmpty())
+        readFile(pathCrossSection);
 }
 
 QString CrossSectionFileDlg::getPathCrossSection() const

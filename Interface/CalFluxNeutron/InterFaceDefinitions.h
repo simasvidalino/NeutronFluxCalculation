@@ -37,8 +37,7 @@ struct regionData
     QString zoneStr;
     QColor materialColor = QColor(135, 206, 250);
 
-    std::optional<std::vector<double>> sourceRight;
-    std::optional<std::vector<double>> sourceLeft;
+    std::optional<std::vector<double>> physicalSource;
 };
 
 struct projetData

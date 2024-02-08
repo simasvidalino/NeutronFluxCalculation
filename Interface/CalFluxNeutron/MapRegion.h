@@ -12,6 +12,7 @@
 #include <QItemDelegate>
 
 #include "InterFaceDefinitions.h"
+#include "qspinbox.h"
 
 
 
@@ -27,6 +28,7 @@ public:
 
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const  override;
 };
+
 
 class MapRegion : public QDialog
 {
@@ -52,12 +54,14 @@ private slots:
     void onTimer();
 
 private:
-
     enum rows
     {
         eMaterialZone,
-        eNodes
+        eNodes,
+        ePhysicalSource
     };
+
+    QString vectorToString(std::vector<double> vect);
 
     Ui::MapRegion *ui;
 
@@ -67,15 +71,10 @@ private:
 
     void setConnections();
 
-public:
-    virtual bool eventFilter(QObject *watched, QEvent *event) override;
-
     QStringList allZonasStr;
     std::unique_ptr<Interface::regionData> regionData;
 
     QString currentMatZone;
-
-    void setRegionNumber(int newRegionNumber);
 
     int regionNumber;
     int groupNumber;
@@ -86,7 +85,11 @@ public:
 
     bool isWarning = false;
 
-    // QWidget interface
+public:
+    virtual bool eventFilter(QObject *watched, QEvent *event) override;
+
+    void setRegionNumber(int newRegionNumber);
+
 protected:
     virtual void paintEvent(QPaintEvent *event) override;
 };

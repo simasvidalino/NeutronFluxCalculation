@@ -91,11 +91,7 @@ private:
 
     void loadGUI();
 
-    void loadDataRegion();
-
     void saveGUI();
-
-    void saveDataRegion();
 
     std::unique_ptr<QGraphicsScene> scene;
 

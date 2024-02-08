@@ -24,6 +24,8 @@ public:
 
     QString getPathCrossSection() const;
 
+    void setPathCrossSection(const QString &newPathCrossSection);
+
 protected:
     virtual void accept();
 

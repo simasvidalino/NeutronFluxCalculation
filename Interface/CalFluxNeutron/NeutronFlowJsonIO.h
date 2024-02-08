@@ -48,6 +48,7 @@ private:
     const char *QuadratureOrderKey = "QuadratureOrder";
     const char *LegendreOrderKey = "LegendreOrder";
     const char *MaximumIterationsNumberKey = "MaximumIterationsNumber";
+    const char *PhysicalKey = "PhysicalFont";
     const char *ProjectFileKey = "ProjectFile"; //We can have all project in txt
     const char *DataPerRegionKey = "DataPerRegion";
     const char *RightBoundaryConditionsTypeKey = "RightBoundaryConditionsType";

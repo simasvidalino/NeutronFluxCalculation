@@ -11,7 +11,6 @@
 #include "DataMatrices.h" //construir dados de entrada
 #include "DDNumericalMethold.h" //método Diamond Difference
 #include "InterFaceDefinitions.h"
-#include "NeutronFlowJsonIO.h"
 #include "VariablesUsed.h"
 #include "MapRegion.h"
 #include "TableInputDlg.h"
@@ -74,7 +73,7 @@ std::vector<int> RegionInputData::calculateRegionHeights()
         return partialSum + extractValue(myStruct);
     });
 
-    int totalHeight = ui->graphicsView->height() -100;
+    int totalHeight = ui->graphicsView->height() - 100;
 
     for (int iIndex = 0; iIndex < regionQuant; ++iIndex)
     {
@@ -114,14 +113,13 @@ void RegionInputData::onCreateCrossSectionFile()
                             allZonasStr,
                             group,
                             ui->spinBoxLegendreOrder->value());
-    //dlg.saveCrossSectionFileDlgCrossSection(DDValues->s_s);
+
+    dlg.setPathCrossSection(scatteringPath);
 
     if (!dlg.exec())
         return;
 
-    auto path = dlg.getPathCrossSection();
-
-    proj->scateringFilePath = path.toStdString();
+    scatteringPath = dlg.getPathCrossSection();
 }
 
 void RegionInputData::onNJOYClicked()
@@ -133,7 +131,7 @@ void RegionInputData::onOpenBCRightInputTable()
 {
     TableInputDlg dlg(this);
     const int rowCount = ui->spinBoxGroup->value(); //energy group
-    auto& bcRight = proj->bcRight;
+    //tbd auto& bcRight = proj->bcRight;
 
     dlg.configTable(rowCount, QString("Right Boundary Conditions"), QString("Group"));
 
@@ -150,7 +148,7 @@ void RegionInputData::onOpenBCLeftInputTable()
 {
     TableInputDlg dlg(this);
     const int rowCount = ui->spinBoxGroup->value(); //energy group
-    auto& bcLeft = proj->bcLeft;
+    //tbd auto& bcLeft = proj->bcLeft;
 
     dlg.configTable(rowCount, QString("Left Boundary Conditions"), QString("Group"));
 
@@ -194,7 +192,7 @@ void RegionInputData::calculateEscalarNeutronFlux()
 void RegionInputData::onSelectionRegionChange()
 {
     auto selectedItems = ui->graphicsView->scene()->selectedItems();
-    int groupNumber = ui->spinBoxGroup->value();
+    auto groupNumber    = ui->spinBoxGroup->value();
 
     if (!selectedItems.empty())
     {
@@ -212,9 +210,8 @@ void RegionInputData::onSelectionRegionChange()
             MapRegion dlg(this, regionQuant, groupNumber);
 
             auto regionPtr = std::make_unique<Interface::regionData>(regionArray.at(number));
-            //regionPtr->groupNumber = ui->spinBoxGroup->value();
 
-            dlg.setRegionData(std::move(regionPtr)); //tbd
+            dlg.setRegionData(std::move(regionPtr));
             dlg.setAllZonasStr(allZonasStr);
 
             if (!dlg.exec())
@@ -237,9 +234,10 @@ void RegionInputData::onSelectionRegionChange()
                     //feed all zone data
                     allZonasStr = dlg.getAllZonasStr();
 
-                    rectItem->setBrush(region.materialColor);  // LightSkyBlue
+                    rectItem->setBrush(region.materialColor);
 
                     qInfo()<<"Zone selected"<<region.zone<<region.zoneStr;
+                    rectItem->setSelected(false); //TBD the way you do that is strange
                 }
             }
         }
@@ -404,7 +402,7 @@ void RegionInputData::setSpinBoxQuota(int regionNumber, int left, int top, int w
         }
     }
 
-    if (!quote)
+    if (nullptr == quote)
         quote = new QDoubleSpinBox;
 
     QFont quoteFont("Arial", 9);
@@ -432,7 +430,7 @@ void RegionInputData::setSpinBoxQuota(int regionNumber, int left, int top, int w
         int quoteIndex = quote->objectName().toInt(&ok);
         regionArray.at(quoteIndex).quote = value;
 
-        //emit quote->destroyed(); //TBD - failure when using the wheel event. Issuing this signal avoids the error
+        emit quote->destroyed(); //TBD - failure when using the wheel event. Issuing this signal avoids the error
 
         setGraphicScene(regionQuant);
 
@@ -466,7 +464,6 @@ void RegionInputData::setZonesLegend(int region)
         legendItem->setBrush(zoneColors.at(i));
         scene->addItem(legendItem);
     }
-
 
     std::vector<int> heights = calculateRegionHeights();
 
@@ -533,7 +530,6 @@ void RegionInputData::loadGUI()
     if (!proj)
         proj = std::make_unique<Interface::projetData>();
 
-    //loadDataRegion();
     regionArray = std::move(proj->regionArray);
 
     ui->spinBoxRegionQtt->setValue(proj->regionNumber);
@@ -541,108 +537,77 @@ void RegionInputData::loadGUI()
     ui->spinBoxGroup->setValue(proj->energyGroup);
     ui->spinBoxQuadratureOrder->setValue(proj->quadratureOrder);
 
-    QAbstractButton *bcLeftButton = ui->buttonGroupLeftBoundaryConditions->button(proj->leftBoundaryConditionsType);
+    scatteringPath = QString::fromStdString(proj->scateringFilePath);
+
+    QAbstractButton *bcLeftButton = ui->buttonGroupLeftBoundaryConditions->button(
+                proj->leftBoundaryConditionsType);
 
     if(bcLeftButton)
         bcLeftButton->click();
 
-    QAbstractButton *bcRightButton = ui->buttonGroupRightBoundaryConditions->button(proj->rightBoundaryConditionsType);
+    bcLeft.reset();
+    if (proj->leftBoundaryConditionsType == Interface::ePrescribed)
+        bcLeft = proj->bcLeft.value();
+
+    QAbstractButton *bcRightButton = ui->buttonGroupRightBoundaryConditions->button(
+                proj->rightBoundaryConditionsType);
 
     if(bcRightButton)
         bcRightButton->click();
 
+    bcRight.reset();
+    if (proj->rightBoundaryConditionsType == Interface::ePrescribed)
+        bcRight = proj->bcRight.value();
+
     ui->spinBoxStopOrder->setValue(proj->stopOrder);
 
-    allZonasStr.reserve(proj->zoneNumber);
+    allZonasStr.clear();
+    for (int iIndex = 0; iIndex < proj->regionNumber; ++iIndex)
+    {
+        if (!regionArray.empty()
+                || regionArray.size() > iIndex)
+        {
+            auto zoneStr = regionArray[iIndex].zoneStr;
+
+            if (allZonasStr.contains(zoneStr) )
+                    continue;
+
+            allZonasStr.append(zoneStr);
+        }
+    }
 
     ui->spinBoxLegendreOrder->setValue(proj->legendreOrder);
-}
-
-void RegionInputData::loadDataRegion()
-{
-    if (proj->regionData.empty())
-    {
-        auto data = std::make_shared<Interface::regionData>();
-        std::vector vector = {data};
-        proj->regionData = vector;
-    }
-
-    for (int iIndex = 0; iIndex <  proj->regionData.size(); ++iIndex)
-    {
-        regionArray[iIndex].region  = proj->regionData[iIndex]->region;
-        regionArray[iIndex].quote   = proj->regionData[iIndex]->quote;
-        regionArray[iIndex].zone    = proj->regionData[iIndex]->zone;
-        regionArray[iIndex].node    = proj->regionData[iIndex]->node;
-        regionArray[iIndex].zoneStr = proj->regionData[iIndex]->zoneStr;
-        regionArray[iIndex].materialColor = proj->regionData[iIndex]->materialColor;
-    }
 }
 
 void RegionInputData::saveGUI()
 {
     if (!proj)
-    {
         proj = std::make_unique<Interface::projetData>();
-    }
 
-    proj->regionArray = regionArray;
-
-    proj->regionNumber = ui->spinBoxRegionQtt->value();
+    proj->regionArray             = regionArray;
+    proj->regionNumber            = ui->spinBoxRegionQtt->value();
     proj->maximumIterationsNumber = ui->spinBoxMaxNumberIteration->value();
-
-    proj->energyGroup = ui->spinBoxGroup->value();
+    proj->energyGroup             = ui->spinBoxGroup->value();
 
     int leftBC  =  ui->buttonGroupLeftBoundaryConditions->checkedId();
     int rightBC =  ui->buttonGroupRightBoundaryConditions->checkedId();
 
+    if (leftBC == Interface::ePrescribed)
+        proj->bcLeft = bcLeft;
+
+    if (rightBC == Interface::ePrescribed)
+        proj->bcRight = bcRight;
+
     proj->leftBoundaryConditionsType  = Interface::eBoundaryConditionsType(leftBC);
     proj->rightBoundaryConditionsType = Interface::eBoundaryConditionsType(rightBC);
-
-    proj->scateringFilePath = scatteringPath.toStdString();
-
-    proj->stopOrder = ui->spinBoxStopOrder->value();
-
-    proj->zoneNumber = allZonasStr.size();
-
-    proj->legendreOrder = ui->spinBoxLegendreOrder->value();
-
-    proj->quadratureOrder = ui->spinBoxQuadratureOrder->value();
-}
-
-void RegionInputData::saveDataRegion()
-{
-    //TBD delete?
-    if (proj->regionData.empty())
-    {
-        auto data = std::make_shared<Interface::regionData>();
-        std::vector vector = {data};
-        proj->regionData = vector;
-    }
-
-    proj->regionData.clear();
-
-
-    for (int iIndex = 0; iIndex < regionQuant; ++iIndex)
-    {
-        proj->regionData[iIndex]->region  = regionArray[iIndex].region;
-        proj->regionData[iIndex]->quote   = regionArray[iIndex].quote;
-        proj->regionData[iIndex]->zone    = regionArray[iIndex].zone;
-        proj->regionData[iIndex]->node    = regionArray[iIndex].node;
-        proj->regionData[iIndex]->zoneStr = regionArray[iIndex].zoneStr;
-        proj->regionData[iIndex]->materialColor = regionArray[iIndex].materialColor;
-    }
+    proj->scateringFilePath           = scatteringPath.toStdString();
+    proj->stopOrder                   = ui->spinBoxStopOrder->value();
+    proj->zoneNumber                  = allZonasStr.size();
+    proj->legendreOrder               = ui->spinBoxLegendreOrder->value();
+    proj->quadratureOrder             = ui->spinBoxQuadratureOrder->value();
 }
 
 int RegionInputData::getRegionQuant() const
 {
     return regionQuant;
 }
-
-//void RegionInputData::onProjectSave(QString path)
-//{
-//    updateProjectData();
-
-//    NeutronFlowJsonIO::getInstance()->setGeneralProjectData(std::move(proj));
-//    NeutronFlowJsonIO::getInstance()->saveProject(Interface::jsonFormat, path);
-//}
-

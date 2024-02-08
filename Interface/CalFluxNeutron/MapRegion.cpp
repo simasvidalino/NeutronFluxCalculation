@@ -31,7 +31,6 @@ MapRegion::~MapRegion()
     delete ui;
 }
 
-
 void MapRegion::addZones()
 {
     if (ui->listWidget->count() < regionNumber)
@@ -78,6 +77,21 @@ void MapRegion::onTimer()
     }
 }
 
+QString MapRegion::vectorToString(std::vector<double> vect)
+{
+    QString result;
+
+    for (size_t i = 0; i < vect.size(); ++i)
+    {
+        result += QString::number(vect[i]);
+        if (i < vect.size() - 1) {
+            result += ";";
+        }
+    }
+
+    return result;
+}
+
 void MapRegion::onBlink()
 {
     isWarning = !isWarning;
@@ -108,12 +122,16 @@ void MapRegion::onPhysicalSource()
 
     dlg.configTable(groupNumber, QString("Physical Source"), QString("Group"));
 
-//        dlg.setColumnValues(0, bcRight.value());
+    if (regionData->physicalSource.has_value())
+        dlg.setColumnValues(0, regionData->physicalSource.value());
 
     if (!dlg.exec())
         return;
 
-//    bcRight = dlg.getColumnValues(0);
+    regionData->physicalSource = dlg.getColumnValues(0);
+
+    auto pysicalSourceStr = vectorToString(regionData->physicalSource.value());
+    ui->tableWidgetRegion->item(ePhysicalSource, 0)->setText(pysicalSourceStr);
 }
 
 void MapRegion::initDialog()
@@ -136,8 +154,9 @@ void MapRegion::initDialog()
 
     ui->tableWidgetRegion->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    ui->tableWidgetRegion->setItem(0, 0, new QTableWidgetItem(""));
-    ui->tableWidgetRegion->setItem(1, 0, new QTableWidgetItem(""));
+    ui->tableWidgetRegion->setItem(eMaterialZone,   0, new QTableWidgetItem(""));
+    ui->tableWidgetRegion->setItem(eNodes,          0, new QTableWidgetItem(""));
+    ui->tableWidgetRegion->setItem(ePhysicalSource, 0, new QTableWidgetItem(""));
 
     IntDelegate *intDelegate = new IntDelegate;
     ui->tableWidgetRegion->setItemDelegateForRow(1, intDelegate);
@@ -192,6 +211,7 @@ void MapRegion::setConnections()
     connect(&blinkTimer, &QTimer::timeout, this,  &MapRegion::onBlink);
 
 }
+
 bool MapRegion::eventFilter(QObject *watched, QEvent *event)
 {
     if (event->type() == QEvent::Drop)
@@ -252,6 +272,8 @@ std::unique_ptr<Interface::regionData> MapRegion::getRegionData() const
             auto item = items.at(0);
             data->zone = ui->listWidget->row(item);
             data->zoneStr = chosenMaterial;
+            data->physicalSource = regionData->physicalSource;
+
         }
         else
         {
@@ -276,6 +298,10 @@ void MapRegion::setRegionData(std::unique_ptr<Interface::regionData> newRegionDa
     ui->tableWidgetRegion->item(eMaterialZone, 0)->setText(regionData->zoneStr);
 
     ui->tableWidgetRegion->item(eNodes, 0)->setText(QString::number(regionData->node));
+
+    //Create a string with physical source
+    if (regionData->physicalSource.has_value())
+        ui->tableWidgetRegion->item(ePhysicalSource, 0)->setText(vectorToString(regionData->physicalSource.value()));
 }
 
 void MapRegion::setAllZonasStr(const QStringList &newAllZonasStr)
@@ -316,11 +342,13 @@ void IntDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
     {
         QString value = index.model()->data(index, Qt::EditRole).toString();
         QLineEdit *lineEdit = qobject_cast<QLineEdit *>(editor);
+
         if (lineEdit)
         {
             lineEdit->setText(value);
         }
-    } else
+    }
+    else
     {
         IntDelegate::setEditorData(editor, index);
     }
