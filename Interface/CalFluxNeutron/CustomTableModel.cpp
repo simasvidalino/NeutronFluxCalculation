@@ -1,12 +1,13 @@
-#include "GradesTableModel.h"
+#include "CustomTableModel.h"
 #include <QDebug>
 
-GradesTableModel::GradesTableModel(QObject *parent)
+CustomTableModel::CustomTableModel(QObject *parent)
     : QAbstractTableModel(parent)
 {
+    locale = QLocale(QLocale::English, QLocale::UnitedStates);
 }
 
-void GradesTableModel::configTable(int row, int column,
+void CustomTableModel::configTable(int row, int column,
                                    QStringList &horizontalHeader,
                                    QString &verticalHeaderStr)
 {
@@ -38,7 +39,7 @@ void GradesTableModel::configTable(int row, int column,
         emit headerDataChanged(Qt::Vertical, 0, this->row - 1);
 }
 
-QVariant GradesTableModel::headerData(int section,
+QVariant CustomTableModel::headerData(int section,
                                       Qt::Orientation orientation,
                                       int role) const
 {
@@ -54,7 +55,7 @@ QVariant GradesTableModel::headerData(int section,
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
-int GradesTableModel::rowCount(const QModelIndex &parent) const
+int CustomTableModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
         return 0;
@@ -62,7 +63,7 @@ int GradesTableModel::rowCount(const QModelIndex &parent) const
     return row;
 }
 
-int GradesTableModel::columnCount(const QModelIndex &parent) const
+int CustomTableModel::columnCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
         return 0;
@@ -70,16 +71,17 @@ int GradesTableModel::columnCount(const QModelIndex &parent) const
     return column;
 }
 
-QVariant GradesTableModel::data(const QModelIndex &index, int role) const
+QVariant CustomTableModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
         return QVariant();
 
     const auto row = index.row();
     const auto column = index.column();
+    bool ok = false;
 
     if (role == Qt::DisplayRole)
-         return locale.toString(cellValors[row][column], 'f', 2);
+         return locale.toString(cellValors[row][column], 'f', 5);
 
     if (role == Qt::EditRole)
         return cellValors[row][column];
@@ -90,7 +92,7 @@ QVariant GradesTableModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-bool GradesTableModel::setData(const QModelIndex &index,
+bool CustomTableModel::setData(const QModelIndex &index,
                                const QVariant &value, int role)
 {
     if (data(index, role) == value)
@@ -112,17 +114,17 @@ bool GradesTableModel::setData(const QModelIndex &index,
     return true;
 }
 
-Qt::ItemFlags GradesTableModel::flags(const QModelIndex &index) const
+Qt::ItemFlags CustomTableModel::flags(const QModelIndex &index) const
 {
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }
 
-QVariant GradesTableModel::dataDisplayRole(int row, int column) const
+QVariant CustomTableModel::dataDisplayRole(int row, int column) const
 {
     return QVariant();  // Implemente de acordo com a lógica específica do seu modelo
 }
 
-QVariant GradesTableModel::dataTextAlignmentRole(int column) const
+QVariant CustomTableModel::dataTextAlignmentRole(int column) const
 {
     return QVariant();  // Implemente de acordo com a lógica específica do seu modelo
 }

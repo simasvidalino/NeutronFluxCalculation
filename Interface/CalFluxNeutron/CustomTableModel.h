@@ -4,12 +4,16 @@
 
 #include <QLocale>
 
-class GradesTableModel : public QAbstractTableModel
+#include <QStyledItemDelegate>
+#include <QDoubleSpinBox>
+#include <QLocale>
+
+class CustomTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
-    explicit GradesTableModel(QObject *parent = nullptr);
+    explicit CustomTableModel(QObject *parent = nullptr);
 
     void configTable(int row, int column,
                      QStringList &horizontalHeader,

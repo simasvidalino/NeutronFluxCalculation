@@ -13,7 +13,6 @@ TableInputDlg::TableInputDlg(QWidget *parent) :
     initDlg();
 
     setConnections();
-
 }
 
 TableInputDlg::~TableInputDlg()
@@ -25,7 +24,7 @@ void TableInputDlg::configTable(int row, int column,
                                 QStringList &horizontalHeaders,
                                 QString &verticalHeader)
 {            
-    model = std::make_unique<GradesTableModel>(this);
+    model = std::make_unique<CustomTableModel>(this);
 
     model->configTable(row, column, horizontalHeaders, verticalHeader);
 
@@ -100,7 +99,7 @@ void TableInputDlg::initDlg()
 {
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tableView->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
+    ui->tableView->setItemDelegateForColumn(0, new DecimalDelegate(this));
 
     ui->toolButtonPasteData->setDefaultAction(ui->actionPaste);
     ui->toolButtonRedo->setDefaultAction(ui->actionRedo);
