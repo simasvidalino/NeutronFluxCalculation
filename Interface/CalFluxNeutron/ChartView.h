@@ -1,9 +1,11 @@
 #pragma once
 
-#include "qlineseries.h"
+#include "qlabel.h"
+#include <QComboBox>
+#include <QLineSeries>
 #include <QtCharts/QChartView>
-
 #include <QLocale>
+#include <QSpinBox>
 
 #include <memory>
 
@@ -20,7 +22,9 @@ public:
 
     void clearChart();
 
-    void setInputData(QList<QPointF> &points, QList<int> &regions, int group);
+    void setGroup(int newGroup);
+
+    void setInputData(QList<QPointF> &points, int group = 0);
 
     QChart *getChart();
 
@@ -30,12 +34,32 @@ public:
 
     void setProjectionTitle(const QString value);
 
+    int getPeriodicity();
+    void setPeriodicity(int value);
+
     void setTickNumber(int newTickNumber);
+
+    void setYRange(int min, int max);
+
+    void setXRange(int min, int max);
+
+    void setFilterByGroup();
+
+    void showPeriodicity();
 
 public slots:
     void setChart();
 
+private slots:
+    void filterChange(int option);
+
+signals:
+    void updatePeriodicity(int);
+
 private:
+
+    void init();
+    void setConnection();
 
     QString projectionTitle;
     QString xLabel;
@@ -47,8 +71,6 @@ private:
     double maxY = 1;
     int tickNumber;
 
-    QChart* chart;
-
     QValueAxis* axisX;
     QValueAxis* axisY;
 
@@ -57,6 +79,12 @@ private:
     QList<int> regionSize;
 
     QList<QColor> colors = {Qt::blue, Qt::red, Qt::cyan};
+
+    QComboBox* filter = nullptr;
+    QSpinBox* periodicity = nullptr;
+    QLabel* periodicityLabel = nullptr;
+
+    int option = 0;
 
 };
 

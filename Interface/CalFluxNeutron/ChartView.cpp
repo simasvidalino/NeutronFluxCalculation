@@ -1,4 +1,6 @@
 #include "ChartView.h"
+#include "qgraphicsproxywidget.h"
+#include "qlineedit.h"
 
 #include <QtCharts/QChart>
 #include <QtCharts/QValueAxis>
@@ -7,30 +9,36 @@
 
 ChartView::ChartView(QWidget *parent)
     : QChartView{parent},
-      chart(new QChart()),
       axisX(new QValueAxis()),
-      axisY(new QValueAxis())
+      axisY(new QValueAxis()),
+      filter(nullptr)
 {
-    axisX->setLabelFormat("%.2f");
-    axisY->setLabelFormat("%.2f");
-    chart->legend()->hide();
+    init();
 
-    this->setRenderHint(QPainter::Antialiasing);
+    setConnection();
 }
 
 ChartView::~ChartView()
 {
+
 }
 
-void ChartView::setInputData(QList<QPointF> &value, QList<int> &regions, int group)
+void ChartView::setInputData(QList<QPointF> &value, int group)
 {
     QLineSeries *serie = new QLineSeries();
-    regionSize = regions;
 
     for (const auto &point : value)
+    {
         serie->append(point);
+        qInfo()<<value;
+    }
+
+    serie->attachAxis(axisY);
+    serie->attachAxis(axisX);
 
     seriesByGroup[group] = serie;
+
+    serie->setName("Group " + QString::number(group));
 }
 
 void ChartView::setXLabel(const QString &name)
@@ -47,7 +55,17 @@ void ChartView::setYLabel(const QString &name)
 void ChartView::setProjectionTitle(const QString value)
 {
     projectionTitle = value;
-    chart->setTitle(projectionTitle);
+    this->chart()->setTitle(projectionTitle);
+}
+
+int ChartView::getPeriodicity()
+{
+    return periodicity->value();
+}
+
+void ChartView::setPeriodicity(int value)
+{
+    periodicity->setValue(value);
 }
 
 void ChartView::setTickNumber(int newTickNumber)
@@ -56,36 +74,184 @@ void ChartView::setTickNumber(int newTickNumber)
     axisX->setTickCount(tickNumber);
 }
 
-void ChartView::setChart()
+void ChartView::setYRange(int min, int max)
 {
+    axisY->setRange(min, max);
+}
+
+void ChartView::setXRange(int min, int max)
+{
+    maxY = max;
+    axisX->setRange(min, max);
+}
+
+void ChartView::setFilterByGroup()
+{
+    if (seriesByGroup.empty())
+        return;
+
+    int group = 0;
+    QStringList options;
+    options << "All";
+
     for (const auto &pair : seriesByGroup)
     {
-        QLineSeries *serie = pair.second;
+        options << "Group " + QString::number(group);
+        ++group;
+    }
 
-        if (serie && chart)
+    //if we have only one group we don't need a filter
+    if (group == 1)
+        filter->hide();
+    else
+        filter->show();
+
+    filter->clear();
+    filter->addItems(options);
+}
+
+void ChartView::showPeriodicity()
+{
+    periodicityLabel->show();
+    periodicity->show();
+}
+
+void ChartView::setChart()
+{
+    if (seriesByGroup.empty())
+        return;
+
+    //clear
+    QList<QAbstractSeries *> allSeries = chart()->series();
+    for (QAbstractSeries *series : allSeries)
+    {
+        chart()->removeSeries(series);
+    }
+
+    auto addSerie = [&](QLineSeries *serie)
+    {
+        if (serie && this->chart())
         {
-            chart->addSeries(serie);
+            this->chart()->addSeries(serie);
 
-            chart->addAxis(axisX, Qt::AlignBottom);
-            serie->attachAxis(axisX);
+            if (!serie->attachAxis(axisX))
+                serie->attachAxis(axisX);
 
-            chart->addAxis(axisY, Qt::AlignLeft);
-            serie->attachAxis(axisY);
+            if (!serie->attachAxis(axisY))
+                serie->attachAxis(axisY);
         }
         else
         {
             qWarning() << "Serie is Null";
         }
-    }
+    };
 
-    QChartView::setChart(chart);
+    if (option == 0) //all
+    {
+        for (const auto &pair : seriesByGroup)
+        {
+            QLineSeries *serie = pair.second;
+
+            addSerie(serie);
+        }
+    }
+    else
+    {
+        int iIndex = option - 1;
+
+        if (iIndex < seriesByGroup.size()
+                && iIndex >= 0)
+        {
+            auto serie = seriesByGroup[iIndex];
+
+            addSerie(serie);
+        }
+    }
+}
+
+void ChartView::filterChange(int option)
+{
+    this->option = option;
+    setChart();
+}
+
+void ChartView::init()
+{
+    axisX->setLabelFormat("%.2f");
+    axisY->setLabelFormat("%.2f");
+
+    auto mChart = new QChart();
+    mChart->legend()->setAlignment(Qt::AlignTop);
+    mChart->addAxis(axisX, Qt::AlignBottom);
+    mChart->addAxis(axisY, Qt::AlignLeft);
+
+    QChartView::setChart(mChart);
+
+    this->setRenderHint(QPainter::Antialiasing);
+
+    int widgetLeft = 10;
+    filter = new QComboBox(this);
+    filter->move(widgetLeft, 10);
+    filter->setFrame(false);
+    filter->setStyleSheet(R"(
+        QComboBox {
+            border: none;
+            padding: 1px 18px 1px 3px;
+        }
+        QComboBox::drop-down {
+            width: 0px;
+        }
+        QComboBox::down-arrow {
+            image: none;
+        }
+    )");
+
+
+    periodicityLabel = new QLabel("Periodicity:", this);
+    periodicityLabel->move(widgetLeft, filter->geometry().height() + 1);
+
+    periodicity = new QSpinBox(this);
+    periodicity->move(periodicityLabel->geometry().right(), filter->geometry().height() + 1);
+    periodicity->setSingleStep(5);
+    periodicity->setSuffix("cm");
+    periodicity->setRange(5, 200);
+    periodicity->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    periodicity->setValue(15);
+
+    QLineEdit *lineEdit = periodicity->findChild<QLineEdit*>(); //@TBDprotected member, the right way is create a child class
+    lineEdit->setFrame(false);
+    periodicity->setFrame(false);
+
+    QGraphicsProxyWidget *proxyWidgetFilter = new QGraphicsProxyWidget;
+    proxyWidgetFilter->setWidget(filter);
+    QGraphicsProxyWidget *proxyWidgetPeriodicity = new QGraphicsProxyWidget;
+    proxyWidgetPeriodicity->setWidget(filter);
+    QGraphicsProxyWidget *proxyWidgetPeriodicityLabel = new QGraphicsProxyWidget;
+    proxyWidgetPeriodicityLabel->setWidget(filter);
+
+    this->scene()->addItem(proxyWidgetFilter);
+    this->scene()->addItem(proxyWidgetPeriodicity);
+    this->scene()->addItem(proxyWidgetPeriodicityLabel);
+
+    //We will start with hidden widgets
+    periodicityLabel->hide();
+    periodicity->hide();
+    filter->hide();
+}
+
+void ChartView::setConnection()
+{
+    connect(filter, &QComboBox::activated, this, &ChartView::filterChange);
+    connect(periodicity, &QSpinBox::valueChanged, this, [this](int value){
+        emit updatePeriodicity(value);}
+    );
 }
 
 void ChartView::clearChart()
 {
-    if (!chart->axes().isEmpty())
+    if (!this->chart()->axes().isEmpty())
     {
-        chart->removeAllSeries();
+        this->chart()->removeAllSeries();
 
         seriesByGroup.clear();
     }

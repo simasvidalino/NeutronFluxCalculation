@@ -20,10 +20,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     init();
-
-
-    //TBD test delete
-    int amarelo = 16776960;
 }
 
 MainWindow::~MainWindow()
@@ -91,15 +87,17 @@ void MainWindow::openProject()
     auto proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
 
     if (!proj)
-        proj = std::make_unique<Interface::projetData>();
+        proj = std::make_unique<ProjectData>();
 
     proj->regionArray =  std::move(NeutronFlowJsonIO::getInstance()->getRegionArray());
+
+    ui->widgetChart->setPeriodicity(proj->periodicity);
     ui->widgetRegion->setGeneralProjectData(std::move(proj));
 }
 
 void MainWindow::saveProject()
 {
-    QString filter = "Text Files (*.txt);;JSON Files (*.json)";
+    QString filter = "JSON Files (*.json);;Text Files (*.txt)";
     QString fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::homePath(), filter);
 
     if (fileName.isEmpty())
@@ -108,11 +106,54 @@ void MainWindow::saveProject()
     auto proj = ui->widgetRegion->getGeneralProjectData();
 
     if (!proj)
-        proj = std::make_unique<Interface::projetData>();
+        proj = std::make_unique<ProjectData>();
+
+    //Get periodicity
+    proj->periodicity = ui->widgetChart->getPeriodicity();
 
     NeutronFlowJsonIO::getInstance()->setRegionArray(std::move(proj->regionArray));
     NeutronFlowJsonIO::getInstance()->setGeneralProjectData(std::move(proj));
     NeutronFlowJsonIO::getInstance()->saveProject(Interface::jsonFormat, fileName);
+}
+
+void MainWindow::updateAbsRateChart()
+{
+//    auto values = ui->widgetRegion->getDdValues();
+
+//    if (values == nullptr)
+//        return;
+
+//    long double maxFlux = 0.0;
+
+//    ui->widgetChartAbsorptionRate->clearChart();
+//    QList<QPointF> points;
+//    double totalRegionSize = 0.0;
+
+//    totalRegionSize = std::accumulate(values->regionSize.begin(), values->regionSize.end(), 0.0);
+
+//    for (int rIndex = 0; rIndex < values->absorptionRate.size(); ++rIndex)
+//    {
+//        auto absRateValues = values->absorptionRate[rIndex];
+
+//        maxFlux = std::max(maxFlux, absRateValues);
+
+//        QPointF point(values->regionSize[rIndex], absRateValues);
+//        points.append(point);
+//    }
+
+//    qInfo()<<"foi abs";
+
+//    ui->widgetChart->setInputData(points);
+//   //ui->widgetChart->setTickNumber(i);
+
+//    ui->widgetChart->setXRange(0, totalRegionSize);
+//    ui->widgetChart->setYRange(0, maxFlux + 1);
+//    ui->widgetChart->setFilterByGroup();
+//    ui->widgetChart->showPeriodicity();
+
+//    ui->widgetChart->setChart();
+
+//    values.reset();
 }
 
 void MainWindow::init()
@@ -122,6 +163,10 @@ void MainWindow::init()
     ui->widgetChart->setProjectionTitle("Scalar Flux of Neutral particles (DD method)");
     ui->widgetChart->setXLabel("Position x (cm)");
     ui->widgetChart->setYLabel("Scalar Flux");
+
+    ui->widgetChartAbsorptionRate->setProjectionTitle("Neutron Absorption Rate");
+    ui->widgetChartAbsorptionRate->setXLabel("Position x (cm)");
+    ui->widgetChartAbsorptionRate->setYLabel("Rate");
 
     QString tooltipStyle = "QToolTip {"
                            "  background-color: #F0F0F0;"
@@ -140,9 +185,12 @@ void MainWindow::setConnections()
     connect(ui->actionSave_Project, &QAction::triggered, this, &MainWindow::saveProject);  // Coloca a janela em fullscreen
     connect(ui->actionScreenMode, &QAction::triggered, this, &MainWindow::changeViewMode);  // Coloca a janela em fullscreen
     connect(ui->widgetRegion, &RegionInputData::updateChartSignal, this, &MainWindow::updateChart);
-
-    //connect(this, &MainWindow::onProject, ui->widgetRegion, &RegionInputData::onProjectSave);
-
+  //  connect(ui->widgetRegion, &RegionInputData::updateAbsChartSignal, this, &MainWindow::updateAbsRateChart);
+    connect(ui->widgetChart, &ChartView::updatePeriodicity, this, [this](int value)
+    {
+        periodicityValue = value;
+        updateChart();
+    });
 
     connect(ui->actionThe_app, &QAction::triggered, this, [this](){
         QMessageBox::information(this, "About", Interface::getAboutApp());
@@ -153,59 +201,65 @@ void MainWindow::setConnections()
 
 void MainWindow::updateChart()
 {
-    int i = 0;
-    float t = 0;
-
     auto values = ui->widgetRegion->getDdValues();
 
+    if (values == nullptr)
+        return;
+
+    int i   = 0;
+    float t = 0;
     double maxY = 1; //@TBD
-
     QList<int> valueX;
-    QList<int> regionSize;
+    const int group = ui->widgetRegion->getNumberOfGroup();
+    double totalRegionSize = 0.0;
 
-    for (int iIndex = 0; iIndex < values->n_R; ++iIndex)
-        regionSize.append(values->TAM[iIndex]);
+    for (int rIndex = 0; rIndex < values->n_R; ++rIndex)
+    {
+        totalRegionSize += values->TAM[rIndex];
+    }
 
-    while(t <= values->TAM_TOTAL)
+    while(t <= totalRegionSize)
     {
         valueX.append(t);
-        qInfo()<<t;
-        t = t + values->periodicidade;
+        t = t + periodicityValue;
         i++;
     }
 
     ui->widgetChart->clearChart();
 
-    static int in = 0;
+    long double maxFlux = 0;
 
-    for(int g = 0; g < values->G; ++g)
+    for(int g = 0; g < group; ++g)
     {
         QList<QPointF> points;
-
         int nod = 0;
-        for(int n = 0; n < i; n++)
+
+        for(int n = 0; n < i; ++n)
         {
-            float fluxvalues = values->FLUXO_ESCALAR[g][nod];
+            long double fluxValues = values->FLUXO_ESCALAR[g][nod];
 
-            if (in == 1)
-                fluxvalues = 0.5;
+            maxFlux = std::max(maxFlux, fluxValues);
 
-
-            QPointF point(valueX.at(n), fluxvalues);
+            QPointF point(valueX.at(n), fluxValues);
             points.append(point);
 
-            std::cout<<"( "<<nod<<" - "<<values->FLUXO_ESCALAR[g][nod]<<" )  "<<point.x()<<std::endl;
-            nod = nod + (values->NODOSX*values->periodicidade)/values->TAM_TOTAL;
+            qInfo()<<point<<nod;
+            nod = nod + (values->NODOSX * periodicityValue)
+                    /values->NODOSX;
         }
 
-        ui->widgetChart->setInputData(points, regionSize, g);
+        ui->widgetChart->setInputData(points, group);
         ui->widgetChart->setTickNumber(i);
     }
 
-    ++in;
+    qInfo()<<"foi";
 
+    ui->widgetChart->setXRange(0, totalRegionSize);
+    ui->widgetChart->setYRange(0, maxFlux + 1);
+    ui->widgetChart->setFilterByGroup();
+    ui->widgetChart->showPeriodicity();
 
-    std::cout<<"tick number "<<values->TAM_TOTAL<<" "<<values->G<<std::endl;
+    std::cout<<"tick number "<<totalRegionSize<<" "<<group<<std::endl;
     ui->widgetChart->setChart();
 
     values.reset();

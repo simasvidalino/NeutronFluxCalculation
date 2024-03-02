@@ -38,5 +38,6 @@ private:
 
     void setConnections();
 
-    Interface::projetData projectData;
+
+    int periodicityValue = 10;
  };
