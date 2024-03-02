@@ -52,6 +52,8 @@ set(PROJECT_SOURCES
     TableInputDlg.cpp
     TableInputDlg.h
     TableInputDlg.ui
+    Worker.cpp
+    Worker.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
