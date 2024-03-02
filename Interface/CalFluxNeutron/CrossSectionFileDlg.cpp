@@ -52,10 +52,7 @@ void CrossSectionFileDlg::openFile()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Open File", "", "Text Files (*.txt)");
 
-    if (!fileName.isEmpty())
-    {
-        readFile(fileName);
-    }
+    readFile(fileName);
 }
 
 void CrossSectionFileDlg::parseFile()
@@ -94,6 +91,8 @@ void CrossSectionFileDlg::saveText()
         writeFile(fileName);
     }
 }
+
+
 
 void CrossSectionFileDlg::readFile(QString &filePath)
 {
@@ -158,12 +157,10 @@ void CrossSectionFileDlg::setConnection()
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &CrossSectionFileDlg::reject);
 }
 
-void CrossSectionFileDlg::setPathCrossSection(const QString &newPathCrossSection)
+void CrossSectionFileDlg::loadCrossSectionFile(std::string &newPathCrossSection)
 {
-    pathCrossSection = newPathCrossSection;
-
-    if (!pathCrossSection.isEmpty())
-        readFile(pathCrossSection);
+    pathCrossSection = QString::fromStdString(newPathCrossSection);
+    readFile(pathCrossSection);
 }
 
 QString CrossSectionFileDlg::getPathCrossSection() const

@@ -114,7 +114,7 @@ void RegionInputData::onCreateCrossSectionFile()
                             group,
                             ui->spinBoxLegendreOrder->value());
 
-    dlg.setPathCrossSection(scatteringPath);
+    dlg.loadCrossSectionFile(proj->scateringFilePath);
 
     if (!dlg.exec())
         return;

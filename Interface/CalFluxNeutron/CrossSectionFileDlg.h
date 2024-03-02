@@ -24,7 +24,7 @@ public:
 
     QString getPathCrossSection() const;
 
-    void setPathCrossSection(const QString &newPathCrossSection);
+    void loadCrossSectionFile(std::string &newPathCrossSection);
 
 protected:
     virtual void accept();
@@ -40,7 +40,6 @@ private slots:
     void saveText();
 
 private:
-
     struct legendreData
     {
         int legendreNumber = 0;
@@ -52,15 +51,15 @@ private:
     void initDlg();
     void setConnection();
 
-     const int energyGroup;
-     const int legendreOrder;
+    const int energyGroup;
+    const int legendreOrder;
 
-     QStringList materialList;
+    QStringList materialList;
 
-     std::vector<std::vector<legendreData>> dataPerMaterial;
+    std::vector<std::vector<legendreData>> dataPerMaterial;
 
-     ParseFile::ParseErrors eParseError;
+    ParseFile::ParseErrors eParseError;
 
-     QString pathCrossSection;
+    QString pathCrossSection;
 };
 
