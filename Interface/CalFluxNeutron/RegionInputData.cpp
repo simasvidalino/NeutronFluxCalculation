@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QGraphicsProxyWidget>
 #include <QLineEdit>
+#include <QThread>
 
 #include "DataMatrices.h" //construir dados de entrada
 #include "DDNumericalMethold.h" //método Diamond Difference
@@ -164,29 +165,37 @@ void RegionInputData::onOpenBCLeftInputTable()
 void RegionInputData::calculateEscalarNeutronFlux()
 {
     //@todo change input and output of data
-    //Calcular taxa de abs nas regiões
-    //Escolher o grau de legendre.
+    // Calcular taxa de abs nas regiões
+    // Escolher o grau de legendre.
 
-    try
-    {
-        //Update struct data
-        updateDDValues();
+    saveGUI();
 
-        //Calculate scalar neutron Flux
-        DD(*DDValues);
+    QThread *thread = new QThread();
+    Worker *worker = new Worker();
+    worker->moveToThread(thread);
+    worker->setProjData(*proj);
 
-        //Change the chart
-        emit updateChartSignal();
-    }
-    catch(const std::exception& e)
-    {
-        qCritical() << "Invalid argument: " << e.what();
+    connect(worker, &Worker::finished, thread, &QThread::quit);
+    connect(worker, &Worker::finished, worker, &Worker::deleteLater);
+    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+    connect(thread, &QThread::started, worker, &Worker::process);
+    connect(worker, &Worker::outputData, this, [this](std::shared_ptr<CalculatedData> data)
+            {
+        DDOutputValues = data;
+        emit updateChartSignal(); });
 
-    }
-    catch (...)
-    {
+    //TBD delete
+    connect(worker, &Worker::entrytData, this, [this](std::shared_ptr<dados_entrada> data)
+            {
+        DDValues = data;
+        emit updateChartSignal(); });
 
-    }
+    connect(worker, &Worker::absorptionRate, this, [this](std::vector<long double> absRate)
+            {
+        DDOutputValues->absorptionRate.swap(absRate);
+        emit updateAbsChartSignal(); });
+
+    thread->start();
 }
 
 void RegionInputData::onSelectionRegionChange()
