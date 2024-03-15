@@ -34,20 +34,6 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="labelAnisotropy">
-        <property name="text">
-         <string>Anisotropy Order:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QSpinBox" name="spinBoxAnisotropyOrder">
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="labelQuadrature">
         <property name="text">
@@ -60,16 +46,19 @@
         <property name="buttonSymbols">
          <enum>QAbstractSpinBox::NoButtons</enum>
         </property>
+        <property name="singleStep">
+         <number>2</number>
+        </property>
        </widget>
       </item>
-      <item row="1" column="2">
+      <item row="0" column="2">
        <widget class="QLabel" name="labelLegendre">
         <property name="text">
          <string>Legendre Order:</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="3">
+      <item row="0" column="3">
        <widget class="QSpinBox" name="spinBoxLegendreOrder">
         <property name="buttonSymbols">
          <enum>QAbstractSpinBox::NoButtons</enum>
@@ -380,7 +369,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroupLeftBoundaryConditions"/>
   <buttongroup name="buttonGroupRightBoundaryConditions"/>
+  <buttongroup name="buttonGroupLeftBoundaryConditions"/>
  </buttongroups>
 </ui>

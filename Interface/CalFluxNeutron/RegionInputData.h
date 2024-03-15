@@ -7,12 +7,13 @@
 #include <memory.h>
 #include <optional>
 
-#include "InterFaceDefinitions.h"
+#include <ProjectStructs.h>
 #include "VariablesUsed.h"
+#include "Worker.h"
 
 namespace Ui
 {
-    class RegionInputData;
+class RegionInputData;
 }
 
 class RegionInputData : public QWidget
@@ -23,12 +24,17 @@ public:
     explicit RegionInputData(QWidget *parent = nullptr);
     ~RegionInputData();
 
-    void setGeneralProjectData(std::unique_ptr<Interface::projetData> &&proj);
-    std::unique_ptr<Interface::projetData> &&getGeneralProjectData();
+    void setGeneralProjectData(std::unique_ptr<ProjectData> &&proj);
+    std::unique_ptr<ProjectData> &&getGeneralProjectData();
 
     std::shared_ptr<dados_entrada> getDdValues() const;
 
+    const std::vector<std::vector<long double> > &getScalarFlux() const;
+
     int getRegionQuant() const;
+    int getNumberOfGroup();
+
+    std::shared_ptr<CalculatedData> getDDOutputValues() const;
 
 public slots:
     // void onProjectSave(QString path);
@@ -101,6 +107,8 @@ private:
 
     int regionQuant;
     std::shared_ptr<dados_entrada> DDValues;
+    std::shared_ptr<CalculatedData> DDOutputValues;
+    std::vector<std::vector<long double>> scalarFlux;
 
     QVector<QColor> zoneColors = {
         QColor(143, 187, 217), // Pastel Blue

@@ -156,6 +156,7 @@ void MapRegion::initDialog()
 
     ui->tableWidgetRegion->setItem(eMaterialZone,   0, new QTableWidgetItem(""));
     ui->tableWidgetRegion->setItem(eNodes,          0, new QTableWidgetItem(""));
+    ui->tableWidgetRegion->setItem(eRegionSize,     0, new QTableWidgetItem(""));
     ui->tableWidgetRegion->setItem(ePhysicalSource, 0, new QTableWidgetItem(""));
 
     IntDelegate *intDelegate = new IntDelegate;
@@ -203,7 +204,7 @@ void MapRegion::setConnections()
 
     connect(ui->tableWidgetRegion, &QTableWidget::cellClicked, this, [this](int row, int column)
     {
-        if (row == 2)
+        if (row == ePhysicalSource)
             onPhysicalSource();
     });
 
@@ -253,9 +254,9 @@ void MapRegion::paintEvent(QPaintEvent *event)
     //        painter.fillRect(listRect, Qt::red);
     //    }
 }
-std::unique_ptr<Interface::regionData> MapRegion::getRegionData() const
+std::unique_ptr<RegionData> MapRegion::getRegionData() const
 {
-    auto data = std::make_unique<Interface::regionData>();
+    auto data = std::make_unique<RegionData>();
 
     auto chosenMaterial = ui->tableWidgetRegion->item(eMaterialZone, 0)->text();
 
@@ -264,16 +265,15 @@ std::unique_ptr<Interface::regionData> MapRegion::getRegionData() const
     {
         bool ok = false;
 
-        data->node = ui->tableWidgetRegion->item(eNodes, 0)->text().toInt(&ok);
-
         auto items = ui->listWidget->findItems(chosenMaterial, Qt::MatchExactly);
 
         if (!items.isEmpty()) {
             auto item = items.at(0);
-            data->zone = ui->listWidget->row(item);
-            data->zoneStr = chosenMaterial;
+            data->zone = ui->listWidget->row(item) + 1;
+            data->zoneStr = chosenMaterial.toStdString();
             data->physicalSource = regionData->physicalSource;
-
+            data->quote = ui->tableWidgetRegion->item(eRegionSize, 0)->text().toDouble(&ok);
+            data->node = ui->tableWidgetRegion->item(eNodes, 0)->text().toInt(&ok);
         }
         else
         {
@@ -288,27 +288,36 @@ std::unique_ptr<Interface::regionData> MapRegion::getRegionData() const
     return data;
 }
 
-void MapRegion::setRegionData(std::unique_ptr<Interface::regionData> newRegionData)
+void MapRegion::loadRegionData(std::unique_ptr<RegionData> newRegionData)
 {
     regionData = std::move(newRegionData);
 
     if (!regionData)
-        regionData = std::make_unique<Interface::regionData>();
+        regionData = std::make_unique<RegionData>();
 
-    ui->tableWidgetRegion->item(eMaterialZone, 0)->setText(regionData->zoneStr);
+    ui->tableWidgetRegion->item(eMaterialZone, 0)->setText(QString::fromStdString(regionData->zoneStr));
 
     ui->tableWidgetRegion->item(eNodes, 0)->setText(QString::number(regionData->node));
+
+    ui->tableWidgetRegion->item(eRegionSize, 0)->setText(QString::number(regionData->quote));
 
     //Create a string with physical source
     if (regionData->physicalSource.has_value())
         ui->tableWidgetRegion->item(ePhysicalSource, 0)->setText(vectorToString(regionData->physicalSource.value()));
 }
 
-void MapRegion::setAllZonasStr(const QStringList &newAllZonasStr)
+void MapRegion::loadAllZonasStr(const QStringList &newAllZonasStr)
 {
     allZonasStr = newAllZonasStr;
 
-    ui->listWidget->addItems(allZonasStr);
+    for (const auto& zone : allZonasStr)
+    {
+        auto item = new QListWidgetItem;
+
+        item->setText(zone);
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+        ui->listWidget->addItem(item);
+    }
 }
 
 QList<QString> MapRegion::getAllZonasStr()

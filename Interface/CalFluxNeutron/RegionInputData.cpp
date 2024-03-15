@@ -216,32 +216,30 @@ void RegionInputData::calculateEscalarNeutronFlux()
 void RegionInputData::onSelectionRegionChange()
 {
     auto selectedItems = ui->graphicsView->scene()->selectedItems();
-    auto groupNumber    = ui->spinBoxGroup->value();
+    auto groupNumber = ui->spinBoxGroup->value();
 
     if (!selectedItems.empty())
     {
-        auto rectItem = static_cast<QGraphicsRectItem*>(selectedItems.at(0));
+        auto rectItem = static_cast<QGraphicsRectItem *>(selectedItems.at(0));
         auto itemNameVariant = rectItem->data(0);
         bool ok = false;
 
         int number = itemNameVariant.toString().toInt(&ok);
 
-        qInfo()<<"saiu"<<itemNameVariant<<ok;
-
         if (itemNameVariant.isValid() && ok)
         {
-            //Create the dialog
+            // Create the dialog
             MapRegion dlg(this, regionQuant, groupNumber);
 
-            auto regionPtr = std::make_unique<Interface::regionData>(regionArray.at(number));
+            auto regionPtr = std::make_unique<RegionData>(regionArray.at(number));
 
-            dlg.setRegionData(std::move(regionPtr));
-            dlg.setAllZonasStr(allZonasStr);
+            dlg.loadRegionData(std::move(regionPtr));
+            dlg.loadAllZonasStr(allZonasStr);
 
             if (!dlg.exec())
                 return;
 
-            qInfo()<<"indice"<<number<<"array size"<<regionArray.size();
+            qInfo() << "indice" << number << "array size" << regionArray.size();
 
             if (number < regionArray.size())
             {
@@ -250,18 +248,25 @@ void RegionInputData::onSelectionRegionChange()
 
                 if (regionDataPtr)
                 {
-                    //Feed region data
+                    // Feed region data
                     region = *std::move(regionDataPtr);
-                    region.region = number; //TBD do we need a number ?
-                    region.materialColor = zoneColors.at(region.zone);
+                    region.region = number;                                                   // TBD is the way to get the Color ok?
+                    region.materialColor = zoneColors.at(region.zone - 1).rgb() & 0x00FFFFFF; // Remove alpha chanel
 
-                    //feed all zone data
+                    // feed all zone data
                     allZonasStr = dlg.getAllZonasStr();
 
-                    rectItem->setBrush(region.materialColor);
+                    if (rectItem != nullptr)
+                    {
+                        rectItem->setBrush(QColor(region.materialColor));
+                        rectItem->setSelected(false); // TBD the way you do that is strange
+                    }
 
-                    qInfo()<<"Zone selected"<<region.zone<<region.zoneStr;
-                    rectItem->setSelected(false); //TBD the way you do that is strange
+                    QCoreApplication::processEvents();
+
+                    //TBD we should update the scene, but using only setGraphicScene function causes crahses
+                    //Verify why
+                    QTimer::singleShot(50, this, [&](){ setGraphicScene(regionQuant); });
                 }
             }
         }
@@ -300,7 +305,7 @@ void RegionInputData::setConnections()
 
     connect(ui->pushButtonMapRegions, &QPushButton::clicked, this, &RegionInputData::mapRegions);
     connect(ui->spinBoxRegionQtt, &QSpinBox::valueChanged, this, &RegionInputData::setGraphicScene);
-    connect(ui->pushButtonClear, &QPushButton::clicked, this,  &RegionInputData::clear);
+    connect(ui->pushButtonClear, &QPushButton::clicked, this, &RegionInputData::clear);
 
     connect(ui->pushButtonCalculateFlux, &QPushButton::clicked, this,
             &RegionInputData::calculateEscalarNeutronFlux);
@@ -467,7 +472,7 @@ void RegionInputData::loadGUI()
     QAbstractButton *bcLeftButton = ui->buttonGroupLeftBoundaryConditions->button(
                 proj->leftBoundaryConditionsType);
 
-    if(bcLeftButton)
+    if (bcLeftButton)
         bcLeftButton->click();
 
     bcLeft.reset();
@@ -489,13 +494,12 @@ void RegionInputData::loadGUI()
     allZonasStr.clear();
     for (int iIndex = 0; iIndex < proj->regionNumber; ++iIndex)
     {
-        if (!regionArray.empty()
-                || regionArray.size() > iIndex)
+        if (!regionArray.empty() || regionArray.size() > iIndex)
         {
-            auto zoneStr = regionArray[iIndex].zoneStr;
+            auto zoneStr = QString::fromStdString(regionArray[iIndex].zoneStr);
 
-            if (allZonasStr.contains(zoneStr) )
-                    continue;
+            if (allZonasStr.contains(zoneStr))
+                continue;
 
             allZonasStr.append(zoneStr);
         }
@@ -532,9 +536,17 @@ void RegionInputData::saveGUI()
     proj->quadratureOrder = ui->spinBoxQuadratureOrder->value();
 }
 
+std::shared_ptr<CalculatedData> RegionInputData::getDDOutputValues() const
+{
+    return DDOutputValues;
 }
 
 int RegionInputData::getRegionQuant() const
 {
     return regionQuant;
+}
+
+int RegionInputData::getNumberOfGroup()
+{
+    return ui->spinBoxGroup->value();
 }

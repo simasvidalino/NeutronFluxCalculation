@@ -54,6 +54,16 @@
        <attribute name="title">
         <string>Neutron Absorpt Rate</string>
        </attribute>
+       <widget class="ChartView" name="widgetChartAbsorptionRate" native="true">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>0</y>
+          <width>916</width>
+          <height>531</height>
+         </rect>
+        </property>
+       </widget>
       </widget>
      </widget>
     </item>

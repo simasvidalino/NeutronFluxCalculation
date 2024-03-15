@@ -11,10 +11,7 @@
 #include <QListWidget>
 #include <QItemDelegate>
 
-#include "InterFaceDefinitions.h"
-#include "qspinbox.h"
-
-
+#include "ProjectStructs.h"
 
 namespace Ui {
 class MapRegion;
@@ -41,10 +38,10 @@ public:
     ~MapRegion();
 
     QList<QString> getAllZonasStr();
-    void setAllZonasStr(const QStringList &newAllZonasStr);
+    void loadAllZonasStr(const QStringList &newAllZonasStr);
 
-    std::unique_ptr<Interface::regionData> getRegionData() const;
-    void setRegionData(std::unique_ptr<Interface::regionData> newRegionData);
+    std::unique_ptr<RegionData> getRegionData() const;
+    void loadRegionData(std::unique_ptr<RegionData> newRegionData);
 
 private slots:
     void addZones();
@@ -58,6 +55,7 @@ private:
     {
         eMaterialZone,
         eNodes,
+        eRegionSize,
         ePhysicalSource
     };
 
@@ -72,7 +70,7 @@ private:
     void setConnections();
 
     QStringList allZonasStr;
-    std::unique_ptr<Interface::regionData> regionData;
+    std::unique_ptr<RegionData> regionData;
 
     QString currentMatZone;
 

@@ -185,6 +185,11 @@
      </row>
      <row>
       <property name="text">
+       <string>Region Size</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
        <string>Physical Source</string>
       </property>
      </row>
