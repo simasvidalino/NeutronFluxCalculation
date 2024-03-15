@@ -29,7 +29,7 @@ RegionInputData::RegionInputData(QWidget *parent) :
 
     init();
 
-    proj = std::make_unique<Interface::projetData>();
+    proj = std::make_unique<ProjectData>();
 }
 
 RegionInputData::~RegionInputData()

@@ -131,6 +131,7 @@ QJsonObject NeutronFlowJsonIO::saveGeneralProjectData() const
         obj[ScatteringCrossSectionFileKey]  = generalProjectData->scateringFilePath.c_str();
         obj[StopOrderKey]                   = QString::number(generalProjectData->stopOrder);
         obj[RegionDataKey]                  = QString::number(generalProjectData->regionNumber);
+        obj[PeriodicityKey]                 = generalProjectData->periodicity;
 
         if (generalProjectData->bcLeft.has_value())
             obj[LeftBoundaryValuesKey] = saveObjArray(generalProjectData->bcLeft.value());
@@ -160,13 +161,13 @@ ProjectData NeutronFlowJsonIO::loadGeneralProjectData(const QJsonObject &obj)
 
     if (obj.contains(EnergyGroupKey))
     {
-        projectData.energyGroup = obj[EnergyGroupKey].toString().toInt(&ok);
+        ProjectData.energyGroup = obj[EnergyGroupKey].toString().toInt(&ok);
         verifyConversion(ok, "Error: Json Energy group conversion");
     }
 
     if (obj.contains(LeftBoundaryConditionsTypeKey))
     {
-        projectData.leftBoundaryConditionsType = static_cast<Interface::eBoundaryConditionsType>(
+        ProjectData.leftBoundaryConditionsType = static_cast<eBoundaryConditionsType>(
                     obj[LeftBoundaryConditionsTypeKey].toString().toInt(&ok));
 
         verifyConversion(ok, "Error: Json Left boundary condition type conversion");
@@ -174,55 +175,64 @@ ProjectData NeutronFlowJsonIO::loadGeneralProjectData(const QJsonObject &obj)
 
     if (obj.contains(MaximumIterationsNumberKey))
     {
-        projectData.maximumIterationsNumber = obj[MaximumIterationsNumberKey].toString().toInt(&ok);
+        ProjectData.maximumIterationsNumber = obj[MaximumIterationsNumberKey].toString().toInt(&ok);
         verifyConversion(ok, "Error: Json Maximum Iteration conversion");
     }
 
     if (obj.contains(RightBoundaryConditionsTypeKey))
     {
-        projectData.rightBoundaryConditionsType = static_cast<Interface::eBoundaryConditionsType>(
+        ProjectData.rightBoundaryConditionsType = static_cast<eBoundaryConditionsType>(
                     obj[RightBoundaryConditionsTypeKey].toString().toInt(&ok));
 
         verifyConversion(ok, "Error: Json  Right boundary condition type conversion");
     }
 
     if (obj.contains(ScatteringCrossSectionFileKey))
-        projectData.scateringFilePath = obj[ScatteringCrossSectionFileKey].toString().toStdString();
+        ProjectData.scateringFilePath = obj[ScatteringCrossSectionFileKey].toString().toStdString();
 
     if (obj.contains(QuadratureOrderKey))
     {
-        projectData.quadratureOrder = obj[QuadratureOrderKey].toString().toInt(&ok);
+        ProjectData.quadratureOrder = obj[QuadratureOrderKey].toString().toInt(&ok);
         verifyConversion(ok, "Error: Json Quadrature Order conversion");
     }
 
     if (obj.contains(LegendreOrderKey))
     {
-        projectData.legendreOrder = obj[LegendreOrderKey].toString().toInt(&ok);
+        ProjectData.legendreOrder = obj[LegendreOrderKey].toString().toInt(&ok);
         verifyConversion(ok, "Error: Json Legendre Order conversion");
     }
 
     if (obj.contains(StopOrderKey))
     {
-        projectData.stopOrder = obj[StopOrderKey].toString().toInt(&ok);
+        ProjectData.stopOrder = obj[StopOrderKey].toString().toInt(&ok);
         verifyConversion(ok, "Error: Json Stop Order conversion");
     }
 
     if (obj.contains(RegionDataKey))
     {
-        projectData.regionNumber = obj[RegionDataKey].toString().toInt(&ok);
+        ProjectData.regionNumber = obj[RegionDataKey].toString().toInt(&ok);
         verifyConversion(ok, "Error: Json Region Number conversion");
+    }
+
+    if (obj.contains(PeriodicityKey))
+    {
+        if (!obj[PeriodicityKey].isDouble())
+            verifyConversion(false, "Error: Json Periodicity conversion");
+
+        ProjectData.periodicity = obj[PeriodicityKey].toDouble(10);
+
     }
 
     if (obj.contains(LeftBoundaryValuesKey))
     {
         auto arrayObj = obj[LeftBoundaryValuesKey].toArray();
-        if (!projectData.bcLeft) {
-            projectData.bcLeft = std::vector<double>(); // Inicializa o vector se ainda não foi inicializado
+        if (!ProjectData.bcLeft) {
+            ProjectData.bcLeft = std::vector<double>(); // Inicializa o vector se ainda não foi inicializado
         }
 
         for (const auto& value:arrayObj)
         {
-            projectData.bcLeft->push_back(value.toVariant().toDouble(&ok));
+            ProjectData.bcLeft->push_back(value.toVariant().toDouble(&ok));
             verifyConversion(ok, "Error: Json left boundary condition conversion");
         }
     }
@@ -231,19 +241,19 @@ ProjectData NeutronFlowJsonIO::loadGeneralProjectData(const QJsonObject &obj)
     {
         auto arrayObj = obj[RightBoundaryValuesKey].toArray();
 
-        if (!projectData.bcRight)
+        if (!ProjectData.bcRight)
         {
-            projectData.bcRight = std::vector<double>(); // Inicializa o vector se ainda não foi inicializado
+            ProjectData.bcRight = std::vector<double>(); // Inicializa o vector se ainda não foi inicializado
         }
 
         for (const auto& value:arrayObj)
         {
-            projectData.bcRight->push_back(value.toVariant().toDouble(&ok));
+            ProjectData.bcRight->push_back(value.toVariant().toDouble(&ok));
             verifyConversion(ok, "Error: Json left boundary condition conversion");
         }
     }
 
-    return projectData;
+    return ProjectData;
 }
 
 QJsonArray NeutronFlowJsonIO::saveDataPerRegion() const
@@ -258,9 +268,10 @@ QJsonArray NeutronFlowJsonIO::saveDataPerRegion() const
 
 
         regionObj[NodeKey]          = region.node;
-        regionObj[MaterialColorKey] = region.materialColor.name();
+        regionObj[MaterialColorKey] = region.materialColor;
         regionObj[QuotaKey]         = region.quote;
-        regionObj[ZoneStrKey]       = region.zoneStr;
+        regionObj[ZoneNumberKey]    = region.zone;
+        regionObj[ZoneStrKey]       = region.zoneStr.c_str();
 
         if (region.physicalSource.has_value())
         {
@@ -276,9 +287,9 @@ QJsonArray NeutronFlowJsonIO::saveDataPerRegion() const
     return regionJsonArray;
 }
 
-std::array<Interface::regionData, 10> NeutronFlowJsonIO::loadRegionArray(const QJsonArray &objArray)
+std::array<RegionData, 10> NeutronFlowJsonIO::loadRegionArray(const QJsonArray &objArray)
 {
-    std::array<Interface::regionData, 10> region;
+    std::array<RegionData, 10> region;
 
     auto verifyConversion = [&](bool ok, const char* message){
         if (!ok)
@@ -291,7 +302,7 @@ std::array<Interface::regionData, 10> NeutronFlowJsonIO::loadRegionArray(const Q
         if (value.isObject())
         {
             auto obj = value.toObject();
-            Interface::regionData regionData;
+            RegionData regionData;
             bool ok = false;
 
             qInfo()<<"load "<<obj;
@@ -307,19 +318,24 @@ std::array<Interface::regionData, 10> NeutronFlowJsonIO::loadRegionArray(const Q
             if (obj.contains(QuotaKey))
             {
                 if (obj[QuotaKey].isDouble())
-                    regionData.quote = obj[QuotaKey].toInt(50);
+                    regionData.quote = obj[QuotaKey].toDouble(50);
                 else
                     verifyConversion(ok, "Error: Json Quota conversion");
             }
 
+            if (obj.contains(ZoneNumberKey))
+            {
+                regionData.zone = obj[ZoneNumberKey].toInt();
+            }
+
             if (obj.contains(ZoneStrKey))
             {
-                regionData.zoneStr = obj[ZoneStrKey].toString();
+                regionData.zoneStr = obj[ZoneStrKey].toString().toStdString();
             }
 
             if (obj.contains(MaterialColorKey))
             {
-                regionData.materialColor = QColor(obj[MaterialColorKey].toString());
+                regionData.materialColor = obj[MaterialColorKey].toInt();
             }
 
             if (obj.contains(PhysicalKey))

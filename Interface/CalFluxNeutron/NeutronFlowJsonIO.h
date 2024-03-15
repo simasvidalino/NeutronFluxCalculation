@@ -49,6 +49,7 @@ private:
     const char *QuadratureOrderKey = "QuadratureOrder";
     const char *LegendreOrderKey = "LegendreOrder";
     const char *MaximumIterationsNumberKey = "MaximumIterationsNumber";
+    const char *PeriodicityKey = "Periodicity";
     const char *PhysicalKey = "PhysicalFont";
     const char *ProjectFileKey = "ProjectFile"; //We can have all project in txt
     const char *DataPerRegionKey = "DataPerRegion";
@@ -61,7 +62,8 @@ private:
     const char *MaterialColorKey = "MaterialColor";
     const char *QuotaKey = "Quota";
     const char *RegionDataKey = "RegionDataKey";
-    const char *ZoneStrKey = "Zone";
+    const char *ZoneNumberKey = "ZoneNumber";
+    const char *ZoneStrKey = "ZoneStr";
 
 };
 
