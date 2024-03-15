@@ -85,6 +85,8 @@ void ChartView::setXRange(int min, int max)
 {
     maxY = max;
     axisX->setRange(min, max);
+
+    periodicity->setRange(0.1, max);
 }
 
 void ChartView::setFilterByGroup()
@@ -98,7 +100,7 @@ void ChartView::setFilterByGroup()
 
     for (const auto &pair : seriesByGroup)
     {
-        options << "Group " + QString::number(group);
+        options << "Group " + QString::number(group + 1);
         ++group;
     }
 
@@ -179,6 +181,8 @@ void ChartView::filterChange(int option)
 
 void ChartView::init()
 {
+    setRenderHint(QPainter::Antialiasing);
+
     axisX->setLabelFormat("%.2f");
     axisY->setLabelFormat("%.2f");
 
@@ -216,7 +220,6 @@ void ChartView::init()
     periodicity->move(periodicityLabel->geometry().right(), filter->geometry().height() + 1);
     periodicity->setSingleStep(5);
     periodicity->setSuffix("cm");
-    periodicity->setRange(5, 200);
     periodicity->setButtonSymbols(QAbstractSpinBox::NoButtons);
     periodicity->setValue(15);
 
@@ -244,7 +247,8 @@ void ChartView::init()
 void ChartView::setConnection()
 {
     connect(filter, &QComboBox::activated, this, &ChartView::filterChange);
-    connect(periodicity, &QSpinBox::valueChanged, this, [this](int value){
+    connect(periodicity, &QSpinBox::valueChanged, this, [this](auto value)
+    {
         emit updatePeriodicity(value);}
     );
 }
