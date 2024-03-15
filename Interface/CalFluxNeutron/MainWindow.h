@@ -1,7 +1,8 @@
 #pragma once
 #include <QMainWindow>
 
-#include "InterFaceDefinitions.h"
+#include "ProjectStructs.h"
+#include "VariablesUsed.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,8 +21,12 @@ private slots:
     void changeViewMode();
     void changePaletteToDarkStyle();
     void openProject();
+    void saveProjectDlg();
     void saveProject();
-    void updateChart();
+    void updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult);
+    void updateFluxChart(std::shared_ptr<CalculatedData> DDResult);
+    void updateChartStep();
+
 
 signals:
 
@@ -38,6 +43,10 @@ private:
 
     void setConnections();
 
+    ProjectData projectData;
 
-    int periodicityValue = 10;
+    double periodicityValue = 10.0;
+
+    QString fileName;
+
  };

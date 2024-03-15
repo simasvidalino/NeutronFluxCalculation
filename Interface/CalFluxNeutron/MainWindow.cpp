@@ -12,6 +12,10 @@
 #include <QLineSeries>
 #include <QMessageBox>
 
+#include <mutex>
+
+std::mutex mtx1;
+std::mutex mtx2;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -184,91 +188,106 @@ void MainWindow::init()
 void MainWindow::setConnections()
 {
     connect(ui->actionFont, &QAction::triggered, this, &MainWindow::changeFont);
-    connect(ui->actionOpen_Project, &QAction::triggered, this, &MainWindow::openProject);  // Coloca a janela em fullscreen
+    connect(ui->actionOpen_Project, &QAction::triggered, this, &MainWindow::openProject);
     connect(ui->actionPalette, &QAction::triggered, this, &MainWindow::changePaletteToDarkStyle);
-    connect(ui->actionSave_Project, &QAction::triggered, this, &MainWindow::saveProject);  // Coloca a janela em fullscreen
-    connect(ui->actionScreenMode, &QAction::triggered, this, &MainWindow::changeViewMode);  // Coloca a janela em fullscreen
-    connect(ui->widgetRegion, &RegionInputData::updateChartSignal, this, &MainWindow::updateChart);
-  //  connect(ui->widgetRegion, &RegionInputData::updateAbsChartSignal, this, &MainWindow::updateAbsRateChart);
-    connect(ui->widgetChart, &ChartView::updatePeriodicity, this, [this](int value)
+    connect(ui->actionSave_Project, &QAction::triggered, this, &MainWindow::saveProjectDlg);
+    connect(ui->actionScreenMode, &QAction::triggered, this, &MainWindow::changeViewMode);
+    connect(ui->widgetRegion, &RegionInputData::sendOutputData, this, &MainWindow::updateFluxChart);
+    connect(ui->widgetRegion, &RegionInputData::sendOutputData, this, &MainWindow::updateAbsRateChart);
+
+    connect(ui->widgetChart, &ChartView::updatePeriodicity, this, [this](auto value)
     {
         periodicityValue = value;
-        updateChart();
+        updateChartStep();
     });
 
     connect(ui->actionThe_app, &QAction::triggered, this, [this](){
         QMessageBox::information(this, "About", Interface::getAboutApp());
     });
 
-
 }
 
-void MainWindow::updateChart()
+void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
 {
-    auto values = ui->widgetRegion->getDdValues();
+    std::unique_lock<std::mutex> lock(mtx1);
 
-    if (values == nullptr)
+    saveProject();
+
+    if (!DDResult)
         return;
 
-    int i   = 0;
-    float t = 0;
+    NeutronFlowJsonIO::getInstance()->loadProject(Interface::jsonFormat, fileName);
+    auto proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
+    if (!proj)
+        proj = std::make_unique<ProjectData>();
+
+    const auto regionArray  = proj->regionArray;
+    const auto regionNumber = proj->regionNumber;
+    const auto group        = proj->energyGroup;
+
     double maxY = 1; //@TBD
-    QList<int> valueX;
-    const int group = ui->widgetRegion->getNumberOfGroup();
     double totalRegionSize = 0.0;
+    int nodex = 0;
+    const auto scalarFlux = std::move(DDResult->scalarFlux);
 
-    for (int rIndex = 0; rIndex < values->n_R; ++rIndex)
+    for (int rIndex = 0; rIndex < regionNumber; ++rIndex)
     {
-        totalRegionSize += values->TAM[rIndex];
-    }
-
-    while(t <= totalRegionSize)
-    {
-        valueX.append(t);
-        t = t + periodicityValue;
-        i++;
+        totalRegionSize += regionArray[rIndex].quote;
+        nodex += proj->regionArray[rIndex].node;
     }
 
     ui->widgetChart->clearChart();
 
     long double maxFlux = 0;
-
-    for(int g = 0; g < group; ++g)
+    for (int g = 0; g < group; ++g)
     {
         QList<QPointF> points;
-        int nod = 0;
 
-        for(int n = 0; n < i; ++n)
+        double positionX = 0.0;
+        double stepSize = totalRegionSize / static_cast<double>(nodex); // Calcula o tamanho de cada passo baseado no total de nodos
+
+        for (int nod = 0; nod < nodex; ++nod)
         {
-            long double fluxValues = values->FLUXO_ESCALAR[g][nod];
+            long double fluxValue = scalarFlux[g][nod];
+            maxFlux = std::max(maxFlux, fluxValue);
 
-            maxFlux = std::max(maxFlux, fluxValues);
-
-            QPointF point(valueX.at(n), fluxValues);
+            QPointF point(positionX, fluxValue);
             points.append(point);
 
-            qInfo()<<point<<nod;
-            nod = nod + (values->NODOSX * periodicityValue)
-                    /values->NODOSX;
+            positionX += stepSize; // Incrementa a posição x pelo tamanho do passo
         }
 
-        ui->widgetChart->setInputData(points, group);
-        ui->widgetChart->setTickNumber(i);
+        ui->widgetChart->setInputData(points, g);
     }
-
-    qInfo()<<"foi";
 
     ui->widgetChart->setXRange(0, totalRegionSize);
     ui->widgetChart->setYRange(0, maxFlux + 1);
     ui->widgetChart->setFilterByGroup();
     ui->widgetChart->showPeriodicity();
-
-    std::cout<<"tick number "<<totalRegionSize<<" "<<group<<std::endl;
     ui->widgetChart->setChart();
 
-    values.reset();
-
     ui->tabWidget->setCurrentIndex(TabResult);
+}
+
+void MainWindow::updateChartStep()
+{
+    NeutronFlowJsonIO::getInstance()->loadProject(Interface::jsonFormat, fileName);
+    auto proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
+
+    if (!proj)
+        proj = std::make_unique<ProjectData>();
+
+    double totalRegionSize = 0.0;
+
+    for (int rIndex = 0; rIndex < proj->regionNumber; ++rIndex)
+    {
+        totalRegionSize += proj->regionArray[rIndex].quote;
+    }
+
+    int tickCount = totalRegionSize/periodicityValue;
+
+    ui->widgetChart->setTickNumber(tickCount + 1);
+    ui->widgetChart->setChart();
 }
 
 
