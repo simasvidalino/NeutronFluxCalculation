@@ -53,12 +53,15 @@ private slots:
     void onSelectionRegionChange();
 
 signals:
-    void updateChartSignal();
+    void sendOutputData(std::shared_ptr<CalculatedData>);
+    void updatefluxChartSignal(std::vector<std::vector<long double>>&);
+    void updateAbsChartSignal(std::vector<long double>&);
     void updateProjectFiles();
-    void updateGUI();
 
 private:
     Ui::RegionInputData *ui;
+
+    void calculateAbsorptionCrossSection();
 
     std::vector<int> calculateRegionHeights();
 
@@ -68,36 +71,33 @@ private:
 
     void setConnections();
 
-    void setRegion(int regionNumber,
-                   int left = 0,
-                   int top = 0,
-                   int width = 50,
-                   int height = 50);
+    void setRegionGraphicsRectItem(int regionNumber,
+                                   int left   = 0,
+                                   int top    = 0,
+                                   int width  = 50,
+                                   int height = 50);
 
-    void setQuota(int regionNumber,
-                  int left = 0,
-                  int top = 0,
-                  int width = 50,
-                  int height = 50);
+    void setQuotaLinesGraphicsItem(int regionNumber,
+                                   int left   = 0,
+                                   int top    = 0,
+                                   int width  = 50,
+                                   int height = 50);
 
     void setSpinBoxQuota(int regionNumber,
                          int left, int top,
                          int width,
                          int height);
 
-    void setZonesLegend(int region);
-
-    void updateDDValues();
+    void styleSpinBoxQuota(QDoubleSpinBox *quota);
 
     void loadGUI();
 
     void saveGUI();
 
     std::unique_ptr<QGraphicsScene> scene;
-
-    std::array<Interface::regionData, 10> regionArray;
-
+    std::array<RegionData, 10> regionArray;
     std::array<QDoubleSpinBox *, 10> quoteSpinBoxes;
+
 
     int regionQuant;
     std::shared_ptr<dados_entrada> DDValues;
@@ -115,7 +115,7 @@ private:
         QColor(253, 223, 182)  // Light Pastel Orange
     };
 
-    std::unique_ptr<Interface::projetData> proj;
+    std::unique_ptr<ProjectData> proj;
 
     QStringList allZonasStr;
     QString scatteringPath = "";

@@ -46,13 +46,11 @@ void MainWindow::changeViewMode()
     if (this->isFullScreen())
     {
         ui->actionScreenMode->setText("Full Screen");
-
         this->showNormal();
     }
     else
     {
         ui->actionScreenMode->setText("Nomal Screen");
-
         this->showFullScreen();
     }
 }
@@ -64,13 +62,11 @@ void MainWindow::changePaletteToDarkStyle()
     if (ui->actionPalette->text() == darkText)
     {
         ui->actionPalette->setText("Color scheme to Default");
-
         QApplication::setPalette(Interface::getDarkPalette());
     }
     else
     {
         ui->actionPalette->setText(darkText);
-
         QApplication::setPalette(Interface::getLightPalette());
     }
 }
@@ -116,45 +112,53 @@ void MainWindow::saveProject()
     NeutronFlowJsonIO::getInstance()->saveProject(Interface::jsonFormat, fileName);
 }
 
-void MainWindow::updateAbsRateChart()
+void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
 {
-//    auto values = ui->widgetRegion->getDdValues();
+    std::unique_lock<std::mutex> lock(mtx2);
 
-//    if (values == nullptr)
-//        return;
+    if (DDResult == nullptr)
+        return;
 
-//    long double maxFlux = 0.0;
+    NeutronFlowJsonIO::getInstance()->loadProject(Interface::jsonFormat, fileName);
+    auto proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
+    const auto& regionArray = proj->regionArray;
+    auto absorptionRate = DDResult->absorptionRate;
+    int group = proj->energyGroup;
 
-//    ui->widgetChartAbsorptionRate->clearChart();
-//    QList<QPointF> points;
-//    double totalRegionSize = 0.0;
+    long double maxFlux = 0.0;
 
-//    totalRegionSize = std::accumulate(values->regionSize.begin(), values->regionSize.end(), 0.0);
+    ui->widgetChartAbsorptionRate->clearChart();
+    const int regionQtt = proj->regionNumber;
+    double startPosition = 0.0;
 
-//    for (int rIndex = 0; rIndex < values->absorptionRate.size(); ++rIndex)
-//    {
-//        auto absRateValues = values->absorptionRate[rIndex];
 
-//        maxFlux = std::max(maxFlux, absRateValues);
+    for (int g = 0; g < group; ++g)
+    {
+        QList<QPointF> points;
+        startPosition = 0.0;
 
-//        QPointF point(values->regionSize[rIndex], absRateValues);
-//        points.append(point);
-//    }
+        for (int rIndex = 0; rIndex < regionQtt; ++rIndex)
+        {
+            auto absRateValue = absorptionRate[rIndex][g];
+            maxFlux = std::max(maxFlux, absRateValue);
 
-//    qInfo()<<"foi abs";
+            points.append(QPointF(startPosition, absRateValue));
 
-//    ui->widgetChart->setInputData(points);
-//   //ui->widgetChart->setTickNumber(i);
+            startPosition += regionArray[rIndex].quote;
 
-//    ui->widgetChart->setXRange(0, totalRegionSize);
-//    ui->widgetChart->setYRange(0, maxFlux + 1);
-//    ui->widgetChart->setFilterByGroup();
-//    ui->widgetChart->showPeriodicity();
+            points.append(QPointF(startPosition, absRateValue));
+        }
 
-//    ui->widgetChart->setChart();
+        ui->widgetChartAbsorptionRate->setInputData(points, g);
+    }
 
-//    values.reset();
+    ui->widgetChartAbsorptionRate->setXRange(0, startPosition);
+    ui->widgetChartAbsorptionRate->setYRange(0, maxFlux);
+    ui->widgetChart->setFilterByGroup();
+    ui->widgetChartAbsorptionRate->showPeriodicity();
+    ui->widgetChartAbsorptionRate->setChart();
 }
+
 
 void MainWindow::init()
 {

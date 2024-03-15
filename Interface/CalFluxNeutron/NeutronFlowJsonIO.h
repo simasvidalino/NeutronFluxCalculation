@@ -1,6 +1,7 @@
 #pragma once
 
 #include "InterFaceDefinitions.h"
+#include "ProjectStructs.h"
 
 class NeutronFlowJsonIO
 {
@@ -14,14 +15,14 @@ public:
     void loadProject(Interface::eSaveFormat saveFormat = Interface::jsonFormat,
                       QString path = "");
 
-    std::unique_ptr<Interface::projetData> &&getGeneralProjectData();
-    void setGeneralProjectData(std::unique_ptr<Interface::projetData> newGeneralProjectData);
+    std::unique_ptr<ProjectData> &&getGeneralProjectData();
+    void setGeneralProjectData(std::unique_ptr<ProjectData> newGeneralProjectData);
 
-    std::vector<std::shared_ptr<Interface::regionData> > getDataPerRegion();
-    void setDataPerRegion(const std::vector<std::shared_ptr<Interface::regionData> > &newDataPerRegion);
+    std::vector<std::shared_ptr<RegionData> > getDataPerRegion();
+    void setDataPerRegion(const std::vector<std::shared_ptr<RegionData> > &newDataPerRegion);
 
-    std::array<Interface::regionData, 10> getRegionArray() const;
-    void setRegionArray(const std::array<Interface::regionData, 10> &newRegionArray);
+    std::array<RegionData, 10> getRegionArray() const;
+    void setRegionArray(const std::array<RegionData, 10> &newRegionArray);
 
 protected:
     void read(const QJsonObject &json);
@@ -29,17 +30,17 @@ protected:
 
 private:
     QJsonObject saveGeneralProjectData() const;
-    Interface::projetData loadGeneralProjectData(const QJsonObject &obj);
+    ProjectData loadGeneralProjectData(const QJsonObject &obj);
 
     QJsonArray saveDataPerRegion() const;
 
     QJsonArray saveRegionArray() const;
-    std::array<Interface::regionData, 10> loadRegionArray(const  QJsonArray &objArray);
+    std::array<RegionData, 10> loadRegionArray(const  QJsonArray &objArray);
 
     static NeutronFlowJsonIO* mClass;
 
-    std::unique_ptr<Interface::projetData> generalProjectData;
-    std::array<Interface::regionData, 10> regionArray;
+    std::unique_ptr<ProjectData> generalProjectData;
+    std::array<RegionData, 10> regionArray;
 
     const char *EnergyGroupKey = "EnergyGroup";
     const char *GeneralProjectDataKey = "GeneralProjectData";

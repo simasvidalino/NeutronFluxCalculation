@@ -48,8 +48,8 @@ void NeutronFlowJsonIO::loadProject(Interface::eSaveFormat saveFormat,
                                     QString path)
 {
     QFile loadFile(path/*saveFormat == Interface::jsonFormat
-                                                                                                                                           ? QStringLiteral("NeutronFlow.json")
-                                                                                                                                           : QStringLiteral("NeutronFlow.dat")*/);
+                                                                                                                                                                                        ? QStringLiteral("NeutronFlow.json")
+                                                                                                                                                                                        : QStringLiteral("NeutronFlow.dat")*/);
 
     if (!loadFile.open(QIODevice::ReadOnly))
     {
@@ -69,11 +69,11 @@ void NeutronFlowJsonIO::loadProject(Interface::eSaveFormat saveFormat,
                         << (saveFormat != Interface::jsonFormat ? "CBOR" : "JSON") << "...\n";
 }
 
-std::unique_ptr<Interface::projetData> &&NeutronFlowJsonIO::getGeneralProjectData()
+std::unique_ptr<ProjectData> &&NeutronFlowJsonIO::getGeneralProjectData()
 {
     return std::move(generalProjectData);
 }
-void NeutronFlowJsonIO::setGeneralProjectData(std::unique_ptr<Interface::projetData> newGeneralProjectData)
+void NeutronFlowJsonIO::setGeneralProjectData(std::unique_ptr<ProjectData> newGeneralProjectData)
 {
     generalProjectData = std::move(newGeneralProjectData);
 }
@@ -82,7 +82,7 @@ void NeutronFlowJsonIO::read(const QJsonObject &json)
 {
     if (json.contains(GeneralProjectDataKey))
     {
-        generalProjectData = std::make_unique<Interface::projetData>(
+        generalProjectData = std::make_unique<ProjectData>(
                     loadGeneralProjectData(json[GeneralProjectDataKey].toObject()));
     }
 
@@ -141,9 +141,9 @@ QJsonObject NeutronFlowJsonIO::saveGeneralProjectData() const
     return obj;
 }
 
-Interface::projetData NeutronFlowJsonIO::loadGeneralProjectData(const QJsonObject &obj)
+ProjectData NeutronFlowJsonIO::loadGeneralProjectData(const QJsonObject &obj)
 {
-    Interface::projetData projectData;
+    ProjectData ProjectData;
     bool ok = false;
 
     auto loadArray = [&](QJsonArray& arrayObj, std::vector<double> &vector)
@@ -342,12 +342,12 @@ std::array<Interface::regionData, 10> NeutronFlowJsonIO::loadRegionArray(const Q
     return region;
 }
 
-std::array<Interface::regionData, 10> NeutronFlowJsonIO::getRegionArray() const
+std::array<RegionData, 10> NeutronFlowJsonIO::getRegionArray() const
 {
     return regionArray;
 }
 
-void NeutronFlowJsonIO::setRegionArray(const std::array<Interface::regionData, 10> &newRegionArray)
+void NeutronFlowJsonIO::setRegionArray(const std::array<RegionData, 10> &newRegionArray)
 {
     regionArray = newRegionArray;
 }
