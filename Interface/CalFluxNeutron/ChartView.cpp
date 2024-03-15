@@ -6,6 +6,7 @@
 #include <QtCharts/QValueAxis>
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QValueAxis>
+#include <QToolTip>
 
 ChartView::ChartView(QWidget *parent)
     : QChartView{parent},
@@ -245,6 +246,48 @@ void ChartView::setConnection()
     connect(periodicity, &QSpinBox::valueChanged, this, [this](int value){
         emit updatePeriodicity(value);}
     );
+}
+
+void ChartView::mousePressEvent(QMouseEvent *event)
+{
+    QPointF cursorPoint = chart()->mapToValue(event->pos());
+
+    bool pointFound = false;
+    QString tooltipText;
+    const double proximityThreshold = 1.0;
+
+    for (auto series : chart()->series())
+    {
+        auto lineSeries = dynamic_cast<QLineSeries*>(series);
+        if (lineSeries)
+        {
+            for (const QPointF &point : lineSeries->points())
+            {
+                double distance = QLineF(point, cursorPoint).length();
+                if (distance < proximityThreshold)
+                {
+                    tooltipText = QString("X: %1, Y: %2").arg(point.x()).arg(point.y());
+                    pointFound = true;
+                    break;
+                }
+            }
+        }
+        if (pointFound)
+        {
+            break;
+        }
+    }
+
+    if (pointFound)
+    {
+        QToolTip::showText(event->globalPosition().toPoint(), tooltipText, this, QRect(), 10000);
+    }
+    else
+    {
+        QToolTip::hideText();
+    }
+
+    QChartView::mouseMoveEvent(event);
 }
 
 void ChartView::clearChart()

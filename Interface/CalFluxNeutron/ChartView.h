@@ -86,5 +86,8 @@ private:
 
     int option = 0;
 
+    // QWidget interface
+protected:
+    virtual void mousePressEvent(QMouseEvent *event) override;
 };
 
