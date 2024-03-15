@@ -507,29 +507,31 @@ void RegionInputData::loadGUI()
 void RegionInputData::saveGUI()
 {
     if (!proj)
-        proj = std::make_unique<Interface::projetData>();
+        proj = std::make_unique<ProjectData>();
 
-    proj->regionArray             = regionArray;
-    proj->regionNumber            = ui->spinBoxRegionQtt->value();
+    proj->regionArray = regionArray;
+    proj->regionNumber = ui->spinBoxRegionQtt->value();
     proj->maximumIterationsNumber = ui->spinBoxMaxNumberIteration->value();
-    proj->energyGroup             = ui->spinBoxGroup->value();
+    proj->energyGroup = ui->spinBoxGroup->value();
 
-    int leftBC  =  ui->buttonGroupLeftBoundaryConditions->checkedId();
-    int rightBC =  ui->buttonGroupRightBoundaryConditions->checkedId();
+    int leftBC = ui->buttonGroupLeftBoundaryConditions->checkedId();
+    int rightBC = ui->buttonGroupRightBoundaryConditions->checkedId();
 
-    if (leftBC == Interface::ePrescribed)
+    if (leftBC == ePrescribed)
         proj->bcLeft = bcLeft;
 
-    if (rightBC == Interface::ePrescribed)
+    if (rightBC == ePrescribed)
         proj->bcRight = bcRight;
 
-    proj->leftBoundaryConditionsType  = Interface::eBoundaryConditionsType(leftBC);
-    proj->rightBoundaryConditionsType = Interface::eBoundaryConditionsType(rightBC);
-    proj->scateringFilePath           = scatteringPath.toStdString();
-    proj->stopOrder                   = ui->spinBoxStopOrder->value();
-    proj->zoneNumber                  = allZonasStr.size();
-    proj->legendreOrder               = ui->spinBoxLegendreOrder->value();
-    proj->quadratureOrder             = ui->spinBoxQuadratureOrder->value();
+    proj->leftBoundaryConditionsType = eBoundaryConditionsType(leftBC);
+    proj->rightBoundaryConditionsType = eBoundaryConditionsType(rightBC);
+    proj->scateringFilePath = scatteringPath.toStdString();
+    proj->stopOrder = ui->spinBoxStopOrder->value();
+    proj->zoneNumber = allZonasStr.size();
+    proj->legendreOrder = ui->spinBoxLegendreOrder->value();
+    proj->quadratureOrder = ui->spinBoxQuadratureOrder->value();
+}
+
 }
 
 int RegionInputData::getRegionQuant() const

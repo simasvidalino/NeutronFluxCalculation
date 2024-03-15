@@ -78,7 +78,7 @@ void MainWindow::changePaletteToDarkStyle()
 void MainWindow::openProject()
 {
     QString filter = "JSON Files (*.json);;Text Files (*.txt)";
-    QString fileName = QFileDialog::getOpenFileName(this, "Open File", QDir::homePath(), filter);
+    fileName = QFileDialog::getOpenFileName(this, "Open File", QDir::homePath(), filter);
 
     if (fileName.isEmpty())
         return;
@@ -95,18 +95,20 @@ void MainWindow::openProject()
     ui->widgetRegion->setGeneralProjectData(std::move(proj));
 }
 
-void MainWindow::saveProject()
+void MainWindow::saveProjectDlg()
 {
     QString filter = "JSON Files (*.json);;Text Files (*.txt)";
-    QString fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::homePath(), filter);
+    fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::homePath(), filter);
 
+    saveProject();
+}
+
+void MainWindow::saveProject()
+{
     if (fileName.isEmpty())
         return;
 
     auto proj = ui->widgetRegion->getGeneralProjectData();
-
-    if (!proj)
-        proj = std::make_unique<ProjectData>();
 
     //Get periodicity
     proj->periodicity = ui->widgetChart->getPeriodicity();
