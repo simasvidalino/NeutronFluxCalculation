@@ -26,20 +26,21 @@ ChartView::~ChartView()
 
 void ChartView::setInputData(QList<QPointF> &value, int group)
 {
-    QLineSeries *serie = new QLineSeries();
+    auto it = seriesByGroup.find(group);
+    if (it != seriesByGroup.end())
+        delete it->second;
 
+    QLineSeries *serie = new QLineSeries();
     for (const auto &point : value)
-    {
         serie->append(point);
-        qInfo()<<value;
-    }
 
     serie->attachAxis(axisY);
     serie->attachAxis(axisX);
 
     seriesByGroup[group] = serie;
 
-    serie->setName("Group " + QString::number(group));
+    serie->setName("Group " + QString::number(group + 1));
+}
 }
 
 void ChartView::setXLabel(const QString &name)
