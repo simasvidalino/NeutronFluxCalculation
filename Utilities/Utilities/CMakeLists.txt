@@ -5,8 +5,7 @@ project(Utilities LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(DD_METHOD_BUILD /home/andreiasimas/Documentos/NeutronFluxCalculation/DDMethod/build)
-set(DD_METHOD /home/andreiasimas/Documentos/NeutronFluxCalculation/DDMethod/DDMethod)
+set(DD_METHOD "${CMAKE_SOURCE_DIR}/DDMethod/DDMethod")
 
 # Listt of headers
 set(HEADERS

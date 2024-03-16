@@ -5,24 +5,22 @@ project(CalFluxNeutron VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(DD_METHOD_BUILD /home/andreiasimas/Documentos/NeutronFluxCalculation/DDMethod/build)
-set(DD_METHOD /home/andreiasimas/Documentos/NeutronFluxCalculation/DDMethod/DDMethod)
 
-set(UTILITIES_BUILD /home/andreiasimas/Documentos/NeutronFluxCalculation/Utilities/build)
-set(UTILITIES /home/andreiasimas/Documentos/NeutronFluxCalculation/Utilities/Utilities)
+set(DD_METHOD "${CMAKE_SOURCE_DIR}/DDMethod/DDMethod")
+set(UTILITIES "${CMAKE_SOURCE_DIR}/Utilities/Utilities")
+set(LIBS "${CMAKE_SOURCE_DIR}/build/lib/")
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Charts)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Charts)
 
 include_directories(./)
 include_directories(${DD_METHOD}) #tbd
-include_directories(${DD_METHOD_BUILD}) #tbd
-
+include_directories(${LIBS}) #tbd
 include_directories(${UTILITIES}) #tbd
-include_directories(${UTILITIES_BUILD}) #tbd
 
 set(PROJECT_SOURCES
     main.cpp
@@ -79,8 +77,9 @@ else()
 endif()
 
 link_directories(${DD_METHOD})
+
 target_link_libraries(CalFluxNeutron PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Charts
-    ${DD_METHOD_BUILD}/libDDMethod.so  ${UTILITIES_BUILD}/libUtilities.so)
+    ${LIBS}/libDDMethod.so  ${LIBS}/libUtilities.so)
 
 set_target_properties(CalFluxNeutron PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
