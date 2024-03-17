@@ -74,6 +74,13 @@ const char *getAboutApp()
 
 }
 
+const char *getIAEAAdress()
+{
+    const char* iaeaPath = "<a href=\"https://www-nds.iaea.org/exfor/endf.htm\">IAEA</a>";
+
+    return iaeaPath;
+}
+
 const char *getZoneTableToolTip()
 {
     const char* str = "Drag and drop the material from the list below";

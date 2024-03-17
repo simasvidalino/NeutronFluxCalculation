@@ -132,6 +132,7 @@ QJsonObject NeutronFlowJsonIO::saveGeneralProjectData() const
         obj[StopOrderKey]                   = QString::number(generalProjectData->stopOrder);
         obj[RegionDataKey]                  = QString::number(generalProjectData->regionNumber);
         obj[PeriodicityKey]                 = generalProjectData->periodicity;
+        obj[ZoneNumberKey]                  = generalProjectData->zoneNumber;
 
         if (generalProjectData->bcLeft.has_value())
             obj[LeftBoundaryValuesKey] = saveObjArray(generalProjectData->bcLeft.value());
@@ -221,6 +222,15 @@ ProjectData NeutronFlowJsonIO::loadGeneralProjectData(const QJsonObject &obj)
 
         ProjectData.periodicity = obj[PeriodicityKey].toDouble(10);
 
+    }
+
+
+    if (obj.contains(ZoneNumberKey))
+    {
+        if (!obj[ZoneNumberKey].isDouble())
+            verifyConversion(false, "Error: Json Zone Number conversion");
+
+        ProjectData.zoneNumber = obj[ZoneNumberKey].toInt();
     }
 
     if (obj.contains(LeftBoundaryValuesKey))

@@ -298,22 +298,6 @@
      </layout>
     </widget>
    </item>
-   <item row="5" column="0" rowspan="2">
-    <widget class="QGroupBox" name="groupBox_3">
-     <property name="title">
-      <string>Region Edit</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
-       <widget class="QPushButton" name="pushButtonMapRegions">
-        <property name="text">
-         <string>Open Editor</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
    <item row="6" column="2">
     <spacer name="horizontalSpacer">
      <property name="orientation">

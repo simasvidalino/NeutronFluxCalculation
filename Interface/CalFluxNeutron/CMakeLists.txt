@@ -41,6 +41,9 @@ set(PROJECT_SOURCES
     MapRegion.ui
     NeutronFlowJsonIO.cpp
     NeutronFlowJsonIO.h
+    NJOYInputDlg.cpp
+    NJOYInputDlg.h
+    NJOYInputDlg.ui
     ParseFile.cpp
     ParseFile.h
     RegionInputData.cpp
@@ -52,6 +55,8 @@ set(PROJECT_SOURCES
     Worker.cpp
     Worker.h
 )
+
+qt_add_resources(PROJECT_SOURCES Resources.qrc)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(CalFluxNeutron

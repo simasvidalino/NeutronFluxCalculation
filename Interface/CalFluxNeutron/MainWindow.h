@@ -17,6 +17,7 @@ public:
     ~MainWindow();
 
 private slots:
+    void calculateNeutronFluxUsingDD();
     void changeFont();
     void changeViewMode();
     void changePaletteToDarkStyle();
@@ -26,7 +27,6 @@ private slots:
     void updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult);
     void updateFluxChart(std::shared_ptr<CalculatedData> DDResult);
     void updateChartStep();
-
 
 signals:
 
@@ -49,4 +49,5 @@ private:
 
     QString fileName;
 
+    std::unique_ptr<ProjectData> proj;
  };

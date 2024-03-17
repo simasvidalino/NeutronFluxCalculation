@@ -2,6 +2,7 @@
 #include "./ui_MainWindow.h"
 
 #include <iostream>
+#include <mutex>
 
 #include "NeutronFlowJsonIO.h"
 #include "VariablesUsed.h"
@@ -11,8 +12,7 @@
 #include <QFontDialog>
 #include <QLineSeries>
 #include <QMessageBox>
-
-#include <mutex>
+#include <QThread>
 
 std::mutex mtx1;
 std::mutex mtx2;
@@ -31,6 +31,43 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::calculateNeutronFluxUsingDD()
+{
+    saveProject();
+
+    NeutronFlowJsonIO::getInstance()->loadProject(Interface::jsonFormat, fileName);
+    proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
+
+    if (!proj)
+        proj = std::make_unique<ProjectData>();
+
+    ui->widgetRegion->setPushButtonCalculateFluxEnable(false);
+
+    QThread *thread = new QThread();
+    Worker *worker = new Worker();
+    worker->moveToThread(thread);
+    worker->setProjData(*proj);
+
+    connect(worker, &Worker::finished, thread, &QThread::quit);
+    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+    connect(worker, &Worker::finished, this, [this]()
+    {
+        ui->widgetRegion->setPushButtonCalculateFluxEnable(true);
+    });
+
+    connect(worker, &Worker::finished, worker, &Worker::deleteLater);
+
+    connect(thread, &QThread::started, worker, &Worker::process);
+
+    connect(worker, &Worker::outputData, this, [this](const auto data)
+    {
+        updateFluxChart(data);
+        updateAbsRateChart(data);
+    });
+
+    thread->start();
+}
+
 void MainWindow::changeFont()
 {
     bool ok;
@@ -39,7 +76,8 @@ void MainWindow::changeFont()
     if (ok)
     {
         this->setFont(font);
-    } else
+    }
+    else
     {
         qWarning()<<"Font issue";
     }
@@ -125,8 +163,6 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
     if (DDResult == nullptr)
         return;
 
-    NeutronFlowJsonIO::getInstance()->loadProject(Interface::jsonFormat, fileName);
-    auto proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
     const auto& regionArray = proj->regionArray;
     auto absorptionRate = DDResult->absorptionRate;
     int group = proj->energyGroup;
@@ -136,7 +172,6 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
     ui->widgetChartAbsorptionRate->clearChart();
     const int regionQtt = proj->regionNumber;
     double startPosition = 0.0;
-
 
     for (int g = 0; g < group; ++g)
     {
@@ -164,7 +199,6 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
     ui->widgetChartAbsorptionRate->showPeriodicity();
     ui->widgetChartAbsorptionRate->setChart();
 }
-
 
 void MainWindow::init()
 {
@@ -194,8 +228,8 @@ void MainWindow::setConnections()
     connect(ui->actionPalette, &QAction::triggered, this, &MainWindow::changePaletteToDarkStyle);
     connect(ui->actionSave_Project, &QAction::triggered, this, &MainWindow::saveProjectDlg);
     connect(ui->actionScreenMode, &QAction::triggered, this, &MainWindow::changeViewMode);
-    connect(ui->widgetRegion, &RegionInputData::sendOutputData, this, &MainWindow::updateFluxChart);
-    connect(ui->widgetRegion, &RegionInputData::sendOutputData, this, &MainWindow::updateAbsRateChart);
+    connect(ui->widgetRegion, &RegionInputData::onCalculateScalarNeutronFlux,
+            this, &MainWindow::calculateNeutronFluxUsingDD);
 
     connect(ui->widgetChart, &ChartView::updatePeriodicity, this, [this](auto value)
     {
@@ -213,13 +247,9 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
 {
     std::unique_lock<std::mutex> lock(mtx1);
 
-    saveProject();
-
     if (!DDResult)
         return;
 
-    NeutronFlowJsonIO::getInstance()->loadProject(Interface::jsonFormat, fileName);
-    auto proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
     if (!proj)
         proj = std::make_unique<ProjectData>();
 
@@ -256,7 +286,7 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
             QPointF point(positionX, fluxValue);
             points.append(point);
 
-            positionX += stepSize; // Incrementa a posição x pelo tamanho do passo
+            positionX += stepSize;
         }
 
         ui->widgetChart->setInputData(points, g);

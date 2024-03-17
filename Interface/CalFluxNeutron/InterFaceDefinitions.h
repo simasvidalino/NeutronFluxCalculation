@@ -17,6 +17,7 @@ QPalette getDarkPalette();
 QPalette getLightPalette();
 const char * getDefaultZoneString();
 const char * getAboutApp();
+const char * getIAEAAdress();
 const char * getZoneTableToolTip();
 
 const int getMaxRegionQtt();

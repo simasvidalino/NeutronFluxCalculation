@@ -36,38 +36,25 @@ public:
 
     std::shared_ptr<CalculatedData> getDDOutputValues() const;
 
-public slots:
-    // void onProjectSave(QString path);
+    void setPeriodicity(double newPeriodicity);
+
+    void setPushButtonCalculateFluxEnable(bool enable);
 
 private slots:
     void clear();
-
-    void mapRegions();
-
     void onCreateCrossSectionFile();
-
     void onNJOYClicked();
-
     void onOpenBCLeftInputTable();
-
     void onOpenBCRightInputTable();
-
     void setGraphicScene(int region);
-
-    void calculateEscalarNeutronFlux();
-
     void onSelectionRegionChange();
 
 signals:
-    void sendOutputData(std::shared_ptr<CalculatedData>);
-    void updatefluxChartSignal(std::vector<std::vector<long double>>&);
-    void updateAbsChartSignal(std::vector<long double>&);
     void updateProjectFiles();
+    void onCalculateScalarNeutronFlux();
 
 private:
     Ui::RegionInputData *ui;
-
-    void calculateAbsorptionCrossSection();
 
     std::vector<int> calculateRegionHeights();
 
@@ -129,4 +116,5 @@ private:
     QString scatteringPath = "";
     std::optional<std::vector<double>> bcLeft;
     std::optional<std::vector<double>> bcRight;
+    double periodicity;
 };

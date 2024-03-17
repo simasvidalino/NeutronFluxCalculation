@@ -9,40 +9,38 @@
 #include <QLineEdit>
 #include <QThread>
 
-#include "DataMatrices.h" //construir dados de entrada
-#include "DDNumericalMethold.h" //método Diamond Difference
 #include "InterFaceDefinitions.h"
 #include "VariablesUsed.h"
 #include "MapRegion.h"
+#include "NJOYInputDlg.h"
+#include "ProjectStructs.h"
 #include "TableInputDlg.h"
 
 #define sizeBar 100;
 
-RegionInputData::RegionInputData(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::RegionInputData),
-    scene(std::make_unique<QGraphicsScene>(this))
+RegionInputData::RegionInputData(QWidget *parent)
+    : QWidget(parent),
+
+      ui(new Ui::RegionInputData),
+      scene(std::make_unique<QGraphicsScene>(this))
 {
     ui->setupUi(this);
 
     setConnections();
 
     init();
-
-    proj = std::make_unique<ProjectData>();
 }
 
 RegionInputData::~RegionInputData()
 {
     delete ui;
 }
+
 void RegionInputData::setGeneralProjectData(std::unique_ptr<ProjectData> &&proj)
 {
     this->proj = std::move(proj);
 
     loadGUI();
-
-    // TBD calculateEscalarNeutronFlux();
 }
 
 std::unique_ptr<ProjectData> &&RegionInputData::getGeneralProjectData()
@@ -97,10 +95,6 @@ std::vector<int> RegionInputData::calculateRegionHeights()
     return heights;
 }
 
-void RegionInputData::calculateAbsorptionCrossSection()
-{
-}
-
 void RegionInputData::clear()
 {
     if (!scene)
@@ -109,10 +103,6 @@ void RegionInputData::clear()
         scene->clear();
 
     init();
-}
-
-void RegionInputData::mapRegions()
-{
 }
 
 void RegionInputData::onCreateCrossSectionFile()
@@ -142,6 +132,10 @@ void RegionInputData::onCreateCrossSectionFile()
 
 void RegionInputData::onNJOYClicked()
 {
+    NJOYInputDlg dlg(this);
+
+    if (!dlg.exec())
+        return;
 }
 
 void RegionInputData::onOpenBCRightInputTable()
@@ -164,7 +158,6 @@ void RegionInputData::onOpenBCLeftInputTable()
 {
     TableInputDlg dlg(this);
     const int rowCount = ui->spinBoxGroup->value(); // energy group
-    // tbd auto& bcLeft = proj->bcLeft;
 
     dlg.configTable(rowCount, QString("Left Boundary Conditions"), QString("Group"));
 
@@ -175,42 +168,6 @@ void RegionInputData::onOpenBCLeftInputTable()
         return;
 
     bcLeft = dlg.getColumnValues(0);
-}
-
-void RegionInputData::calculateEscalarNeutronFlux()
-{
-    //@todo change input and output of data
-    // Calcular taxa de abs nas regiões
-    // Escolher o grau de legendre.
-
-    saveGUI();
-
-    QThread *thread = new QThread();
-    Worker *worker = new Worker();
-    worker->moveToThread(thread);
-    worker->setProjData(*proj);
-
-    connect(worker, &Worker::finished, thread, &QThread::quit);
-    connect(worker, &Worker::finished, worker, &Worker::deleteLater);
-    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-    connect(thread, &QThread::started, worker, &Worker::process);
-    connect(worker, &Worker::outputData, this, [this](std::shared_ptr<CalculatedData> data)
-            {
-        DDOutputValues = data;
-        emit updateChartSignal(); });
-
-    //TBD delete
-    connect(worker, &Worker::entrytData, this, [this](std::shared_ptr<dados_entrada> data)
-            {
-        DDValues = data;
-        emit updateChartSignal(); });
-
-    connect(worker, &Worker::absorptionRate, this, [this](std::vector<long double> absRate)
-            {
-        DDOutputValues->absorptionRate.swap(absRate);
-        emit updateAbsChartSignal(); });
-
-    thread->start();
 }
 
 void RegionInputData::onSelectionRegionChange()
@@ -279,6 +236,8 @@ void RegionInputData::onSelectionRegionChange()
 
 void RegionInputData::init()
 {
+    ui->graphicsView->rotate(-90);
+
     ui->buttonGroupLeftBoundaryConditions->setId(ui->radioButtonBCLeftVacuum, 0);
     ui->buttonGroupLeftBoundaryConditions->setId(ui->radioButtonBCLeftPrescribed, 1);
     ui->buttonGroupLeftBoundaryConditions->setId(ui->radioButtonBCLeftReflexive, 2);
@@ -303,12 +262,14 @@ void RegionInputData::setConnections()
 
     connect(ui->pushButtonCreateCrossSection, &QPushButton::clicked, this, &RegionInputData::onCreateCrossSectionFile);
 
-    connect(ui->pushButtonMapRegions, &QPushButton::clicked, this, &RegionInputData::mapRegions);
     connect(ui->spinBoxRegionQtt, &QSpinBox::valueChanged, this, &RegionInputData::setGraphicScene);
     connect(ui->pushButtonClear, &QPushButton::clicked, this, &RegionInputData::clear);
 
-    connect(ui->pushButtonCalculateFlux, &QPushButton::clicked, this,
-            &RegionInputData::calculateEscalarNeutronFlux);
+    connect(ui->pushButtonNJOY, &QPushButton::clicked, this, &RegionInputData::onNJOYClicked);
+
+    //all operations are done in the MainWindow so as not to overload this window.
+    connect(ui->pushButtonCalculateFlux, &QPushButton::clicked, this, [this](){
+        emit onCalculateScalarNeutronFlux();});
 
     connect(scene.get(), &QGraphicsScene::selectionChanged, this,
             &RegionInputData::onSelectionRegionChange);
@@ -325,8 +286,7 @@ void RegionInputData::setConnections()
         else
             bcLeft->clear();
 
-        ui->pushButtonAddLeftPrecribedBCValues->setEnabled(enable);
-    });
+        ui->pushButtonAddLeftPrecribedBCValues->setEnabled(enable); });
 
     connect(ui->buttonGroupRightBoundaryConditions, &QButtonGroup::buttonClicked,
             this, [this](auto button)
@@ -419,8 +379,7 @@ void RegionInputData::setSpinBoxQuota(int regionNumber, int left, int top, int w
 
     scene->addItem(proxyWidget);
 
-    connect(
-                quote, &QDoubleSpinBox::valueChanged, this,
+    connect( quote, &QDoubleSpinBox::valueChanged, this,
                 [quote, this](double value)
     {
         bool ok = false;
@@ -461,6 +420,8 @@ void RegionInputData::loadGUI()
         proj = std::make_unique<ProjectData>();
 
     regionArray = std::move(proj->regionArray);
+
+    this->updateGeometry();
 
     ui->spinBoxRegionQtt->setValue(proj->regionNumber);
     ui->spinBoxMaxNumberIteration->setValue(proj->maximumIterationsNumber);
@@ -534,6 +495,16 @@ void RegionInputData::saveGUI()
     proj->zoneNumber = allZonasStr.size();
     proj->legendreOrder = ui->spinBoxLegendreOrder->value();
     proj->quadratureOrder = ui->spinBoxQuadratureOrder->value();
+}
+
+void RegionInputData::setPeriodicity(double newPeriodicity)
+{
+    periodicity = newPeriodicity;
+}
+
+void RegionInputData::setPushButtonCalculateFluxEnable(bool enable)
+{
+    ui->pushButtonCalculateFlux->setEnabled(enable);
 }
 
 std::shared_ptr<CalculatedData> RegionInputData::getDDOutputValues() const

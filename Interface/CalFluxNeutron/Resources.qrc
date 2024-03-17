@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/PDFs">
+        <file>Resources/njoy16.pdf</file>
+    </qresource>
+</RCC>
