@@ -1,0 +1,31 @@
+{
+    "DataPerRegion": [
+        {
+            "MaterialColor": 8900346,
+            "NodePerRegion": 20,
+            "Quota": 50,
+            "ZoneNumber": 1,
+            "ZoneStr": ""
+        },
+        {
+            "MaterialColor": 8900346,
+            "NodePerRegion": 20,
+            "Quota": 50,
+            "ZoneNumber": 1,
+            "ZoneStr": ""
+        }
+    ],
+    "GeneralProjectData": {
+        "EnergyGroup": "3",
+        "LeftBoundaryConditionsType": "1",
+        "LegendreOrder": "0",
+        "MaximumIterationsNumber": "0",
+        "Periodicity": 15,
+        "QuadratureOrder": "0",
+        "RegionDataKey": "2",
+        "RightBoundaryConditionsType": "1",
+        "ScatteringCrossSectionFileType": "",
+        "StopOrder": "0",
+        "ZoneNumber": 1
+    }
+}

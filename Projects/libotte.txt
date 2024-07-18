@@ -1,0 +1,6 @@
+///Zona 1
+//Sigma Total g 
+1.0 1.0
+//Sigma Espalhamento 0 gg' (g linha; g' coluna)
+0.99    0.005
+0.008 0.98

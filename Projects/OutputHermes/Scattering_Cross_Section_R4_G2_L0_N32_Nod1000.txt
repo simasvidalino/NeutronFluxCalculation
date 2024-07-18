@@ -1,0 +1,14 @@
+Zone 0
+Energy Group   Scattering Cross-Section
+1              0.95
+2              1
+
+Zone 1
+Energy Group   Scattering Cross-Section
+1              0.85
+2              1.29
+
+Zone 2
+Energy Group   Scattering Cross-Section
+1              0.95
+2              0.8

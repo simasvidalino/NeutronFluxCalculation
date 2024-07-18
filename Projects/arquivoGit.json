@@ -1,0 +1,39 @@
+{
+    "DataPerRegion": [
+        {
+            "MaterialColor": 9419737,
+            "NodePerRegion": 20,
+            "Quota": 40,
+            "ZoneNumber": 1,
+            "ZoneStr": "água"
+        },
+        {
+            "MaterialColor": 10080149,
+            "NodePerRegion": 20,
+            "Quota": 100,
+            "ZoneNumber": 2,
+            "ZoneStr": "Combustível"
+        },
+        {
+            "MaterialColor": 9419737,
+            "NodePerRegion": 20,
+            "Quota": 60,
+            "ZoneNumber": 1,
+            "ZoneStr": "água"
+        }
+    ],
+    "GeneralProjectData": {
+        "EnergyGroup": "1",
+        "LeftBoundaryConditionsType": "1",
+        "LeftBoundaryValues": [
+            1
+        ],
+        "LegendreOrder": "1",
+        "MaximumIterationsNumber": "4050",
+        "QuadratureOrder": "4",
+        "RegionDataKey": "3",
+        "RightBoundaryConditionsType": "0",
+        "ScatteringCrossSectionFileType": "/home/andreiasimas/Música/crossSectionGit",
+        "StopOrder": "7"
+    }
+}

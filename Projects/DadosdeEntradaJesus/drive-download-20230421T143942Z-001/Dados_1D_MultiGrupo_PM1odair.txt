@@ -1,0 +1,59 @@
+//Imprimir Matrizes Autovalores. Autovalores/Autovetores. Mat Theta. Mat GG. Fluxo Escalar. Figura Gnuplot (1-Sim. 0-Nao)  0 0 0 0 0 0     1 1 1 1 1 1
+1 1 0 0 0 0
+//Tipo de problema (1-Físico e 2-Adjunto)
+1
+//Método(1-DD; 2-MR;  3-SGF; 4-SDM; 5-SDM_mod) / Programacao (1-Serial e 2-Paralelo) 
+2 1
+//Ordem da Quadratura GL
+4
+//CP e-?. Maximo Numero de Iteracoes
+4 2000
+//Grupos de Energia
+2
+//Grau da Anisotropia do Espalhamento (L)
+0
+//NR e NZ
+4 3
+//Dados por Regiao
+//Comprimento
+15 15 15 15
+//Nodos por Regiao  1 1 1     40 20 40     200 100 200
+ 30 30 30 30
+//Periodicidade  //SGF-Nodos por cm para a reconstrução; DD-Periodicidade para mostrar resultados
+7.5
+//Mapeamento
+1 2 3 1
+//Dados por Zona
+///Zona 1
+//Sigma Total g (g=1..19)
+1.0 1.2
+//Sigma Espalhamento 0 gg' (g linha; g' coluna)
+0.9 0.05
+0.2 0.8
+///Zona 2
+//Sigma Total g (g=1..19)
+0.9 1.5
+//Sigma Espalhamento 0 gg' (g linha; g' coluna)
+0.75 0.1
+0.3 0.99
+///Zona 3
+//Sigma Total g (g=1..19)
+1.1 0.85
+//Sigma Espalhamento 0 gg' (g linha; g' coluna)
+0.95 0.0
+0.6 0.2
+//Tipo de Condicoes de Contorno (Esq. Dir) (1-Prescrita. 2-Reflexiva)
+2 1
+//Valor da condicao de contorno prescrita (Esq. Dir) 
+//g= 1
+0 0
+//g= 2
+0 0
+//Fonte Fisica
+//g= 1
+0.5 0 0 0
+//g= 2
+0.5 0 0 0
+
+
+

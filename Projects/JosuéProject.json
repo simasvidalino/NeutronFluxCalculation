@@ -1,0 +1,56 @@
+{
+    "DataPerRegion": [
+        {
+            "MaterialColor": 9419737,
+            "NodePerRegion": 22,
+            "PhysicalFont": [
+                1,
+                1
+            ],
+            "Quota": 13,
+            "ZoneNumber": 1,
+            "ZoneStr": "Zone1"
+        },
+        {
+            "MaterialColor": 10080149,
+            "NodePerRegion": 20,
+            "Quota": 10,
+            "ZoneNumber": 2,
+            "ZoneStr": "Zone2"
+        },
+        {
+            "MaterialColor": 15830157,
+            "NodePerRegion": 20,
+            "Quota": 10,
+            "ZoneNumber": 3,
+            "ZoneStr": "Zone3"
+        },
+        {
+            "MaterialColor": 16760703,
+            "NodePerRegion": 10,
+            "Quota": 5,
+            "ZoneNumber": 4,
+            "ZoneStr": "Zone4"
+        },
+        {
+            "MaterialColor": 11837132,
+            "NodePerRegion": 10,
+            "Quota": 5,
+            "ZoneNumber": 5,
+            "ZoneStr": "Zone5"
+        }
+    ],
+    "GeneralProjectData": {
+        "EnergyGroup": "2",
+        "LeftBoundaryConditionsType": "0",
+        "LegendreOrder": "0",
+        "MaximumIterationsNumber": "500",
+        "Periodicity": 1,
+        "QuadratureOrder": "4",
+        "RegionDataKey": "5",
+        "RightBoundaryConditionsType": "0",
+        "ScatteringCrossSectionFileType": "/home/andreiasimas/Música/josue.txt",
+        "StopOrder": "7",
+        "ZoneNumber": 5
+    }
+}

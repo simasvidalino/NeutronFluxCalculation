@@ -1,0 +1,53 @@
+{
+    "DataPerRegion": [
+        {
+            "MaterialColor": 9419737,
+            "NodePerRegion": 2000,
+            "PhysicalFont": [
+                0.5,
+                0.5
+            ],
+            "Quota": 20,
+            "ZoneNumber": 1,
+            "ZoneStr": "water"
+        },
+        {
+            "MaterialColor": 10080149,
+            "NodePerRegion": 3600,
+            "Quota": 36,
+            "ZoneNumber": 2,
+            "ZoneStr": "Ciment"
+        },
+        {
+            "MaterialColor": 15830157,
+            "NodePerRegion": 2400,
+            "Quota": 24,
+            "ZoneNumber": 3,
+            "ZoneStr": "Fuel"
+        },
+        {
+            "MaterialColor": 9419737,
+            "NodePerRegion": 2000,
+            "PhysicalFont": [
+                0,
+                0
+            ],
+            "Quota": 20,
+            "ZoneNumber": 1,
+            "ZoneStr": "water"
+        }
+    ],
+    "GeneralProjectData": {
+        "EnergyGroup": "2",
+        "LeftBoundaryConditionsType": "2",
+        "LegendreOrder": "0",
+        "MaximumIterationsNumber": "10000",
+        "Periodicity": 2,
+        "QuadratureOrder": "32",
+        "RegionDataKey": "4",
+        "RightBoundaryConditionsType": "0",
+        "ScatteringCrossSectionFileType": "/home/andreiasimas/Música/Dados_1D_MultiGrupo_PM1odair(1).txt",
+        "StopOrder": "7",
+        "ZoneNumber": 3
+    }
+}

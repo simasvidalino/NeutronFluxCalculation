@@ -1,0 +1,32 @@
+{
+    "DataPerRegion": [
+        {
+            "MaterialColor": 9419737,
+            "NodePerRegion": 1000,
+            "PhysicalFont": [
+                0,
+                0
+            ],
+            "Quota": 100,
+            "ZoneNumber": 1,
+            "ZoneStr": "Zone1"
+        }
+    ],
+    "GeneralProjectData": {
+        "EnergyGroup": "2",
+        "LeftBoundaryConditionsType": "1",
+        "LeftBoundaryValues": [
+            1,
+            0
+        ],
+        "LegendreOrder": "0",
+        "MaximumIterationsNumber": "999999",
+        "Periodicity": 1,
+        "QuadratureOrder": "4",
+        "RegionDataKey": "1",
+        "RightBoundaryConditionsType": "0",
+        "ScatteringCrossSectionFileType": "/home/andreiasimas/Música/libotte.txt",
+        "StopOrder": "6",
+        "ZoneNumber": 1
+    }
+}

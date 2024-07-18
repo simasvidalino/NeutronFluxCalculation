@@ -1,0 +1,75 @@
+{
+    "DataPerRegion": [
+        {
+            "MaterialColor": "#87cefa",
+            "NodePerRegion": 0,
+            "Quota": 0,
+            "Zone": ""
+        },
+        {
+            "MaterialColor": "#8fbbd9",
+            "NodePerRegion": 20,
+            "Quota": 50,
+            "Zone": "água"
+        },
+        {
+            "MaterialColor": "#99cf95",
+            "NodePerRegion": 20,
+            "Quota": 50,
+            "Zone": "Terra"
+        },
+        {
+            "MaterialColor": "#8fbbd9",
+            "NodePerRegion": 20,
+            "Quota": 50,
+            "Zone": "água"
+        },
+        {
+            "MaterialColor": "#87cefa",
+            "NodePerRegion": 20,
+            "Quota": 50,
+            "Zone": ""
+        },
+        {
+            "MaterialColor": "#87cefa",
+            "NodePerRegion": 20,
+            "Quota": 50,
+            "Zone": ""
+        },
+        {
+            "MaterialColor": "#87cefa",
+            "NodePerRegion": 20,
+            "Quota": 50,
+            "Zone": ""
+        },
+        {
+            "MaterialColor": "#87cefa",
+            "NodePerRegion": 20,
+            "Quota": 50,
+            "Zone": ""
+        },
+        {
+            "MaterialColor": "#87cefa",
+            "NodePerRegion": 20,
+            "Quota": 50,
+            "Zone": ""
+        },
+        {
+            "MaterialColor": "#87cefa",
+            "NodePerRegion": 20,
+            "Quota": 50,
+            "Zone": ""
+        }
+    ],
+    "GeneralProjectData": {
+        "EnergyGroup": "1",
+        "LeftBoundaryConditionsType": "0",
+        "LegendreOrder": "2",
+        "MaximumIterationsNumber": "100",
+        "QuadratureOrder": "2",
+        "RegionDataKey": "4",
+        "RightBoundaryConditionsType": "0",
+        "ScatteringCrossSectionFileType": "",
+        "StopOrder": "4"
+    }
+}
