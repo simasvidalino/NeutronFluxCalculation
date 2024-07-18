@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Nome do executável do seu aplicativo
+EXECUTABLE_PATH="/home/andreiasimas/Documentos/NeutronFluxCalculation/build/bin/CalFluxNeutron"
+# Diretório de destino para as bibliotecas
+DEST_DIR="/home/andreiasimas/Documents/LIBS"
+# Nome do arquivo de log
+LOG_FILE="/home/andreiasimas/Documents/copy_libs.log"
+
+# Função para mostrar mensagens de erro
+erro() {
+    echo "Erro: $1" >&2
+    echo "Erro: $1" >> $LOG_FILE
+    exit 1
+}
+
+# Verifica se o executável existe
+if [ ! -f "$EXECUTABLE_PATH" ]; then
+    erro "O executável $EXECUTABLE_PATH não foi encontrado."
+fi
+
+# Cria o diretório de destino se não existir
+mkdir -p $DEST_DIR || erro "Falha ao criar o diretório de destino $DEST_DIR."
+
+# Utiliza ldd para listar as bibliotecas e copia cada uma delas para o diretório de destino
+echo "Executando ldd no executável $EXECUTABLE_PATH" | tee -a $LOG_FILE
+ldd $EXECUTABLE_PATH | grep "=>" | awk '{print $3}' | while read LIB; do
+    echo "Processando biblioteca: $LIB" | tee -a $LOG_FILE
+    if [ -f "$LIB" ]; then
+        echo "Copiando $LIB para $DEST_DIR" | tee -a $LOG_FILE
+        cp --parents "$LIB" $DEST_DIR || erro "Falha ao copiar a biblioteca $LIB."
+    else
+        echo "Aviso: A biblioteca $LIB não foi encontrada e não foi copiada." | tee -a $LOG_FILE
+    fi
+done
+
+echo "Todas as bibliotecas foram copiadas para $DEST_DIR com sucesso." | tee -a $LOG_FILE
+

@@ -13,7 +13,7 @@
 
 namespace Ui
 {
-class RegionInputData;
+    class RegionInputData;
 }
 
 class RegionInputData : public QWidget
@@ -29,7 +29,7 @@ public:
 
     std::shared_ptr<dados_entrada> getDdValues() const;
 
-    const std::vector<std::vector<long double> > &getScalarFlux() const;
+    const std::vector<std::vector<long double>> &getScalarFlux() const;
 
     int getRegionQuant() const;
     int getNumberOfGroup();
@@ -65,15 +65,15 @@ private:
     void setConnections();
 
     void setRegionGraphicsRectItem(int regionNumber,
-                                   int left   = 0,
-                                   int top    = 0,
-                                   int width  = 50,
+                                   int left = 0,
+                                   int top = 0,
+                                   int width = 50,
                                    int height = 50);
 
     void setQuotaLinesGraphicsItem(int regionNumber,
-                                   int left   = 0,
-                                   int top    = 0,
-                                   int width  = 50,
+                                   int left = 0,
+                                   int top = 0,
+                                   int width = 50,
                                    int height = 50);
 
     void setSpinBoxQuota(int regionNumber,
@@ -90,7 +90,6 @@ private:
     std::unique_ptr<QGraphicsScene> scene;
     std::array<RegionData, 10> regionArray;
     std::array<QDoubleSpinBox *, 10> quoteSpinBoxes;
-
 
     int regionQuant;
     std::shared_ptr<dados_entrada> DDValues;

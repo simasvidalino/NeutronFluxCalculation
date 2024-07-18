@@ -24,7 +24,7 @@ std::unique_ptr<dados_entrada> BuildMatrices::copyProjectDataToRawPointers(Proje
     fileName  = proj.scateringFilePath;
 
     if (fileName.empty())
-        throw std::invalid_argument("Error: Material Data File issue");
+        throw std::invalid_argument("Error: Material Data File issue. \nYou need to set a Cross Section File.");
 
     data->G   = proj.energyGroup;
     data->L   = proj.legendreOrder;
@@ -63,107 +63,49 @@ std::unique_ptr<dados_entrada> BuildMatrices::copyProjectDataToRawPointers(Proje
     return data;
 }
 
-void BuildMatrices::resizeDDOutputValues(CalculatedData &output, dados_entrada & data)
+CalculatedCrossSectionMatrices BuildMatrices::calculateCrossSectionMatrices(dados_entrada *data)
 {
-//    int group = data.G;
-//    int regionQtt = data.n_R;
-//    int quadratureOrder = data.n;
+    CalculatedCrossSectionMatrices out;
 
-//    //Scalar Flux
-//    output.scalarFlux.resize(group);
+    auto sigmaScattering = calculateScatteringCrossSectionMatrix(data);
+    out.scatteringCrossSection.swap(sigmaScattering);
 
-//    std::for_each(output.scalarFlux.begin(), output.scalarFlux.end(),
-//                  [&](std::vector<long double> &value){
-//        value.resize(output.nodesX + 1);
-//    });
-
-//    output.stepSize.resize(regionQtt);
-
-//    for(int rIndex = 0; rIndex < regionQtt; rIndex++)
-//    {
-//        output.nodesX = output.nodesX + data.n_nodos[rIndex];
-//        data.PASSO[rIndex] = output.regionSize[regionQtt]/data.n_nodos[regionQtt];
-//    }
-}
-
-std::unique_ptr<CalculatedCrossSectionMatrices> BuildMatrices::
-calculateCrossSectionMatrices(std::unique_ptr<dados_entrada> data, std::unique_ptr<CalculatedData> output)
-{
-    auto out  = std::make_unique<CalculatedCrossSectionMatrices>();
-
-    auto sigmaScattering = calculateScatteringCrossSectionMatrix(data.get());
-    out->scatteringCrossSection.swap(sigmaScattering);
-
-    auto sigmaAbsorption = calculateAbsorptionCrossSectionMatrix(data.get(), output->matrices.scatteringCrossSection);
-    out->absorptionCrossSection.swap(sigmaAbsorption);
+    auto sigmaAbsorption = calculateAbsorptionCrossSectionMatrix(data, out.scatteringCrossSection);
+    out.absorptionCrossSection.swap(sigmaAbsorption);
 
     return out;
 }
 
-/*std::unique_ptr<CalculatedData> BuildMatrices::resizeVectors(ProjectData &proj)
+void BuildMatrices::calculateAbsorptionRate(dados_entrada *data,
+                                            CalculatedData *output)
 {
-    auto outputData  = std::make_unique<CalculatedData>();
-    auto regionArray  = proj.regionArray;
-    int regionNumber = proj.regionNumber;
-
-    outputData->stepSize.resize(regionNumber);
-    outputData->cumulativeNodesX.resize(regionNumber);
-    outputData->scalarFlux.resize(proj.energyGroup);
-
-    for (auto& group : outputData->scalarFlux)
-    {
-        group.resize(regionNumber);
-    }
-
-    for (int i = 0; i < regionNumber; ++i)
-    {
-        const auto& region = regionArray[i];
-
-        outputData->stepSize[i] = region.quote;
-        outputData->cumulativeNodesX[i] = region.node;
-
-        if (region.physicalSource.has_value())
-        {
-            for (int j = 0; j < proj.energyGroup; ++j)
-            {
-                outputData->scalarFlux[j][i] = region.physicalSource.value()[j];
-            }
-        }
-    }
-
-    return outputData;
-}*/
-
-void BuildMatrices::calculateAbsorptionRate(dados_entrada *data, CalculatedData *output)
-{
-    std::vector<long double> absorptionRate;
-
-    calculateCrossSectionMatrices(data, output);                                                                                            std::unique_ptr<CalculatedData> output)
+    std::vector<std::vector<long double>> absorptionRate;
 
     if (output->matrices.absorptionCrossSection.empty())
-        throw std::invalid_argument("Error: Absorption Cross Section Matrix is empt");
+        throw std::invalid_argument("Error: Absorption Cross Section Matrix is empty");
 
-    auto sigmaScattering    = output->matrices.scatteringCrossSection; //By zone and by group
-    auto averageNeutronFlux = calculateAverageNeutronFluxPerRegion(data); // By Region and by group
+    if (output->averageNeutronFluxPerRegion.empty())
+        throw std::invalid_argument("Error: Average Neutron Flux Per Region Matrix is empty");
 
     for (int rIndex = 0; rIndex < data->n_R; ++rIndex)
     {
         std::vector<long double> absorptionRateByGroup;
         for (int gIndex = 0; gIndex < data->G; ++gIndex)
         {
-            auto zIndex                 = data->Map_R[rIndex] - 1;
-            auto sigmaScatteringByGroup = sigmaScattering[zIndex][gIndex];
-            auto sigmaTotal             = data->s_t[gIndex][zIndex] ;
+            auto zIndex = data->Map_R[rIndex] - 1;
 
-            auto sigmaAbsor = sigmaTotal - sigmaScatteringByGroup;
-            absorptionRateByGroup.push_back(sigmaAbsor * averageNeutronFlux[zIndex][gIndex]);
+            if (zIndex < output->matrices.absorptionCrossSection.size())
+            {
+                auto sigmaAbsor = output->matrices.absorptionCrossSection[zIndex][gIndex] *
+                        output->averageNeutronFluxPerRegion[zIndex][gIndex];
+
+                absorptionRateByGroup.push_back(sigmaAbsor);
+            }
         }
 
-        auto absorptionRateValue = std::accumulate(absorptionRateByGroup.begin(), absorptionRateByGroup.end(), 0.0);
-        absorptionRate.push_back(absorptionRateValue);
+        absorptionRate.push_back(absorptionRateByGroup);
     }
 
-    output->averageNeutronFluxPerRegion.swap(averageNeutronFlux);
     output->absorptionRate.swap(absorptionRate);
 }
 
@@ -172,27 +114,31 @@ std::vector<std::vector<long double>> BuildMatrices::calculateAverageNeutronFlux
 {
     std::vector<std::vector<long double>> averageNeutronFlux;
     long double sum = 0.0;
+    int nodeLeft = 0;
+    int numberOfGroups = data->G;
 
     for (int regionIndex = 0; regionIndex < data->n_R; ++regionIndex)
     {
         std::vector<long double> averageNeutronFluxByGroup;
+        int nodeQttPerRegion  = data->n_nodos[regionIndex];
+        double regionSize = data->TAM[regionIndex];
+        int nodeRight = nodeQttPerRegion + nodeLeft;
 
-        for (int gIndex = 0; gIndex < data->G; ++gIndex)
+        for (int gIndex = 0; gIndex < numberOfGroups; ++gIndex)
         {
             sum = 0;
-            long double nodeInTheRegion = data->n_nodos[regionIndex];
 
-            for (int nodeIndex = 0; nodeIndex < nodeInTheRegion; ++nodeIndex)
+            for (int nodeIndex = nodeLeft; nodeIndex < nodeRight; ++nodeIndex)
             {
                 auto value = data->FLUXO_ESCALAR[gIndex][nodeIndex];
                 sum += value;
             }
 
-            auto average = sum/nodeInTheRegion;
-
+            auto average = (sum * regionSize );
             averageNeutronFluxByGroup.push_back(average);
         }
 
+        nodeLeft = nodeRight;
         averageNeutronFlux.push_back(averageNeutronFluxByGroup);
     }
 
@@ -221,7 +167,7 @@ std::vector<std::vector<long double> > BuildMatrices::calculateScatteringCrossSe
                 scatggline.push_back(value);
             }
 
-            auto sum = std::accumulate(scatggline.begin(), scatggline.end(), 0.0);
+            auto sum = std::accumulate(scatggline.begin(), scatggline.end(), 0.0L);
             std::cout<<"sum so"<<gIndex<<" "<<sum<<std::endl;
             scattering_g.push_back(sum);
 
@@ -892,22 +838,21 @@ void BuildMatrices::allocateMatricesWithUserInterfaceData(dados_entrada &valor)
     }
 }
 
-std::vector<std::vector<long double> > BuildMatrices::calculateAbsorptionCrossSectionMatrix(dados_entrada *data,
-                                                                                            std::vector<std::vector<long double> > scatCrossSection)
+std::vector<std::vector<long double> > BuildMatrices::
+calculateAbsorptionCrossSectionMatrix(dados_entrada *data,
+                                      std::vector<std::vector<long double> >& sigmaScattering)
 {
     std::vector<std::vector<long double>> absorptionMatrix;
-    const auto &sigmaScattering = scatCrossSection;
 
     if (data->s_t == nullptr || sigmaScattering.empty())
         throw std::invalid_argument("Error: calculating the neutron absorption matrix");
 
-    for (int rIndex = 0; rIndex < data->n_R; ++rIndex)
+    for (int zIndex = 0; zIndex < data->n_Z; ++zIndex)
     {
         std::vector<long double> absorptionByGroup;
 
         for (int gIndex = 0; gIndex < data->G; ++gIndex)
         {
-            auto zIndex = data->Map_R[rIndex] - 1;
             auto sigmaScatteringByGroup = sigmaScattering[zIndex][gIndex];
             auto sigmaTotal             = data->s_t[gIndex][zIndex] ;
 
@@ -933,7 +878,7 @@ void BuildMatrices::copyRegionVectorToRowPointers(std::array<RegionData, 10> &re
                                                   dados_entrada* data)
 {
     data->n_nodos = new short int[regionNumber];
-     data->TAM     = new double[regionNumber];
+    data->TAM     = new double[regionNumber];
     data->Map_R   = new short int[regionNumber];
     data->PASSO   = new long double [regionNumber];
     data->CONTX   = new int[regionNumber];
@@ -959,8 +904,8 @@ void BuildMatrices::copyRegionVectorToRowPointers(std::array<RegionData, 10> &re
 
 void BuildMatrices::buildCrossSectionMatrices(dados_entrada *data)
 {
-    data->s_t = new long double*[data->G];      //Sigma total
-    data->s_s = new long double***[data->G];    //Sigma Espalhamento
+    data->s_t = new long double*[data->G];      //total Sigma
+    data->s_s = new long double***[data->G];    //Scattering Sigma
 
     auto vector = saveFileDataInVector();
 
@@ -978,14 +923,13 @@ void BuildMatrices::buildCrossSectionMatrices(dados_entrada *data)
         {
             data->s_s[j][k] = new long double *[data->n_Z];
 
-            for(int l = 0; l<data->n_Z;l++){
-                data->s_s[j][k][l] = new long double [data->L+1];}
+            for(int l = 0; l < data->n_Z; l++){
+                data->s_s[j][k][l] = new long double [data->L + 1];}
         }
     }
 
     /**********************************************************************************************************/
     //Total and Scattering cross section
-
     for(int h = 0; h < data->n_Z; h++)
     {
         for(int j = 0; j < data->G; j++)
@@ -994,7 +938,7 @@ void BuildMatrices::buildCrossSectionMatrices(dados_entrada *data)
             i++;
         }
 
-        for(int k = 0; k < data->L+1; k++)
+        for(int k = 0; k < data->L + 1; k++)
         {
             for(int m = 0; m < data->G; m++)
             {
@@ -1050,18 +994,27 @@ void BuildMatrices::calculateDataMatrices(dados_entrada *data)
     //fluxo angular e fluxo escalar
 
     data->FLUXO_ANGULAR = new long double**[data->G];
-    data->smgi = new long double**[data->G];
+    data->smgi          = new long double**[data->G];
     data->FLUXO_ESCALAR = new long double*[data->G];
+
+    data->FLUXO_ANGULAR_DIREITA  = new long double**[data->G];
+    data->FLUXO_ANGULAR_ESQUERDA = new long double**[data->G];
 
     for(int g = 0; g < data->G; g++)
     {
-        data->FLUXO_ANGULAR[g] = new long double*[(data->NODOSX) + 2];
-        data->smgi[g]          = new long double*[data->NODOSX];
-        data->FLUXO_ESCALAR[g] = new long double[(data->NODOSX) + 2];
+        data->FLUXO_ANGULAR[g] = new long double*[(data->NODOSX) + 1];
+        data->smgi[g]          = new long double*[data->NODOSX      ];
+        data->FLUXO_ESCALAR[g] = new long double[(data->NODOSX)  + 1];
 
-        for(int o = 0; o <= data->NODOSX + 1; o++)
+        data->FLUXO_ANGULAR_DIREITA[g]  = new long double*[(data->NODOSX) + 1];
+        data->FLUXO_ANGULAR_ESQUERDA[g] = new long double*[(data->NODOSX) + 1];
+
+        for(int o = 0; o <= data->NODOSX; o++)
         {
             data->FLUXO_ANGULAR[g][o] = new long double[data->n];
+
+            data->FLUXO_ANGULAR_DIREITA[g][o]   = new long double[data->n];
+            data->FLUXO_ANGULAR_ESQUERDA[g][o]  = new long double[data->n];
         }
 
         for(int o = 0; o < data->NODOSX; o++)

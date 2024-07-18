@@ -16,7 +16,7 @@ struct RegionData
 {
     //int groupNumber = 1;
     int region      = 1;
-    int quote       = 50;
+    double quote    = 50;
     int zone        = 1;
     int node        = 20;
     std::string zoneStr;
@@ -30,14 +30,13 @@ struct ProjectData
     eBoundaryConditionsType rightBoundaryConditionsType = eVaccuo;
     eBoundaryConditionsType leftBoundaryConditionsType  = eVaccuo; //@TBD types
 
-    int maximumIterationsNumber = 6;
+    int maximumIterationsNumber = 500;
     int energyGroup = 1;
     int legendreOrder = 0;
     int quadratureOrder = 2;
     int regionNumber = 1;
     int zoneNumber = 1;
-
-    int stopOrder = 50;
+    int stopOrder = 7;
 
     double periodicity = 10.0;
 

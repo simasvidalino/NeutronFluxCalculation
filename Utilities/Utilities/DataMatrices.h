@@ -30,12 +30,11 @@ public:
 
     void calculateAbsorptionRate(dados_entrada *data, CalculatedData *output);
 
+    std::vector<std::vector<long double> > calculateAverageNeutronFluxPerRegion(dados_entrada *data);
+
     std::unique_ptr<dados_entrada> copyProjectDataToRawPointers(ProjectData &proj);
 
-    void resizeDDOutputValues(CalculatedData &output, dados_entrada &data);
-
-    std::unique_ptr<CalculatedCrossSectionMatrices> calculateCrossSectionMatrices(std::unique_ptr<dados_entrada> data,
-                                                                                  std::unique_ptr<CalculatedData> output);
+    CalculatedCrossSectionMatrices calculateCrossSectionMatrices(dados_entrada *data);
 
     void run(int buildType, std::string file, dados_entrada &valor);
 
@@ -72,8 +71,7 @@ private:
     void allocateMatricesWithUserInterfaceData(dados_entrada &valor);
 
     std::vector<std::vector<long double> > calculateAbsorptionCrossSectionMatrix(dados_entrada *data,
-                                                                                 std::vector<std::vector<long double>> scatCrossSection);
-    std::vector<std::vector<long double> > calculateAverageNeutronFluxPerRegion(dados_entrada *data);
+                                                                                 std::vector<std::vector<long double>>& sigmaScattering);
 
     std::vector<std::vector<long double> > calculateScatteringCrossSectionMatrix(dados_entrada *data);
 

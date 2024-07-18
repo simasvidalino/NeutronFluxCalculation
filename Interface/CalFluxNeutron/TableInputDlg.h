@@ -67,7 +67,6 @@ public:
 
 private slots:
     void onPasteFromClipboard();
-    void onUndo();
 
 private:
     Ui::TableInputDlg *ui;
@@ -75,8 +74,6 @@ private:
     void initDlg();
 
     void setConnections();
-
-    QUndoStack *undoStack;
 
     std::unique_ptr<CustomTableModel> model;
 

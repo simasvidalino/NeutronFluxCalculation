@@ -2,11 +2,14 @@
 #include "ui_TableInputDlg.h"
 
 #include <QClipboard>
+#include <regex>
+
+#define prepareChakebox(number) \
+
 
 TableInputDlg::TableInputDlg(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::TableInputDlg),
-    undoStack(new QUndoStack(this))
+    ui(new Ui::TableInputDlg)
 {
     ui->setupUi(this);
 
@@ -24,8 +27,6 @@ void TableInputDlg::configTable(int row, int column,
                                 QStringList &horizontalHeaders,
                                 QString &verticalHeader)
 {            
-    model = std::make_unique<CustomTableModel>(this);
-
     model->configTable(row, column, horizontalHeaders, verticalHeader);
 
     ui->tableView->setModel(model.get());
@@ -81,8 +82,11 @@ void TableInputDlg::setColumnValues(int column, std::vector<double> values)
     {
         QModelIndex index = model->index(row, column);
         if (index.isValid())
+        {
             model->setData(index, values[row], Qt::EditRole);
+        }
     }
+
 }
 
 void TableInputDlg::hideSaveCancelButtons()
@@ -90,34 +94,56 @@ void TableInputDlg::hideSaveCancelButtons()
     ui->buttonBox->hide();
 }
 
-void TableInputDlg::onUndo()
-{
-
-}
-
 void TableInputDlg::initDlg()
 {
+    model = std::make_unique<CustomTableModel>(this);
+
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tableView->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tableView->setItemDelegateForColumn(0, new DecimalDelegate(this));
 
     ui->toolButtonPasteData->setDefaultAction(ui->actionPaste);
-    ui->toolButtonRedo->setDefaultAction(ui->actionRedo);
-    ui->toolButtonUndo->setDefaultAction(ui->actionUndo);
 }
 
 void TableInputDlg::onPasteFromClipboard()
 {
     const QClipboard *clipboard = QApplication::clipboard();
+    const char* lineFeedCharacter  = "\n";
+    const char* spaceCharacter  = " ";
+    bool ok = false;
+
     QString text = clipboard->text();
+    text = text.trimmed();
+
+    auto feedTable = [&](auto list)
+    {
+        int rowCount = model->rowCount();
+
+        int row = 0;
+        for (const auto & value:list){
+            if (value.toDouble(&ok)
+                    && ok && rowCount > row){
+                QModelIndex index = model->index(row, 0);
+                model->setData(index, value, Qt::EditRole);
+            }
+            else{
+                qWarning()<<"PasteFromClipboard error: invalid data";
+                continue;
+            }
+            ++row;
+        }
+    };
+
+    static QRegularExpression delimiterRegExp(R"([\s\n\t\r]+)");
+    auto values = text.split(delimiterRegExp, Qt::SkipEmptyParts);
+
+    feedTable(values);
 
     qInfo()<<"testo colado"<<text;
 }
 
-
 void TableInputDlg::setConnections()
 {
-    connect(ui->toolButtonPasteData->defaultAction(), &QAction::triggered, this, &TableInputDlg::onPasteFromClipboard);
-    connect(ui->toolButtonUndo->defaultAction(), &QAction::triggered, this, &TableInputDlg::onUndo);
-    //connect(ui->toolButtonPasteData->defaultAction(), &QAction::triggered, this, &TableInputDlg::pasteFromClipboard);
+    connect(ui->toolButtonPasteData->defaultAction(), &QAction::triggered, this,
+            &TableInputDlg::onPasteFromClipboard);
 }

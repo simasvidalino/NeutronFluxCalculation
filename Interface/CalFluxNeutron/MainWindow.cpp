@@ -6,6 +6,7 @@
 
 #include "NeutronFlowJsonIO.h"
 #include "VariablesUsed.h"
+#include "qtimer.h"
 
 #include <QColorDialog>
 #include <QFileDialog>
@@ -28,12 +29,16 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    calculationThread->quit();
+    calculationThread->wait();
+
     delete ui;
 }
 
 void MainWindow::calculateNeutronFluxUsingDD()
 {
-    saveProject();
+    if (!saveProject())
+        return;
 
     NeutronFlowJsonIO::getInstance()->loadProject(Interface::jsonFormat, fileName);
     proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
@@ -41,31 +46,36 @@ void MainWindow::calculateNeutronFluxUsingDD()
     if (!proj)
         proj = std::make_unique<ProjectData>();
 
+    this->statusBar()->showMessage("Calculating...");
+
     ui->widgetRegion->setPushButtonCalculateFluxEnable(false);
 
-    QThread *thread = new QThread();
-    Worker *worker = new Worker();
-    worker->moveToThread(thread);
+    //    QThread *thread = new QThread(this);
+    //    Worker *worker = new Worker();
+    //    worker->moveToThread(thread);
+    //    worker->setProjData(*proj);
+
+    //    connect(worker, &Worker::finished, thread, &QThread::quit);
+    //    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+    //    connect(worker, &Worker::finished, this, [this]()
+    //    {
+    //        ui->widgetRegion->setPushButtonCalculateFluxEnable(true);
+    //    });
+
+    //    connect(worker, &Worker::finished, worker, &Worker::deleteLater);
+
+    //    connect(thread, &QThread::started, worker, &Worker::process);
+
+    //    connect(worker, &Worker::outputData, this, [this](const auto data)
+    //    {
+    //        updateFluxChart(data);
+    //        updateAbsRateChart(data);
+    //    });
+
+    //    thread->start();
+
     worker->setProjData(*proj);
-
-    connect(worker, &Worker::finished, thread, &QThread::quit);
-    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-    connect(worker, &Worker::finished, this, [this]()
-    {
-        ui->widgetRegion->setPushButtonCalculateFluxEnable(true);
-    });
-
-    connect(worker, &Worker::finished, worker, &Worker::deleteLater);
-
-    connect(thread, &QThread::started, worker, &Worker::process);
-
-    connect(worker, &Worker::outputData, this, [this](const auto data)
-    {
-        updateFluxChart(data);
-        updateAbsRateChart(data);
-    });
-
-    thread->start();
+    emit startProcess();
 }
 
 void MainWindow::changeFont()
@@ -121,6 +131,9 @@ void MainWindow::openProject()
     if (fileName.isEmpty())
         return;
 
+    this->statusBar()->showMessage("Waite...");
+    ui->widgetRegion->setPushButtonCalculateFluxEnable(false);
+
     NeutronFlowJsonIO::getInstance()->loadProject(Interface::jsonFormat, fileName);
     auto proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
 
@@ -131,6 +144,11 @@ void MainWindow::openProject()
 
     ui->widgetChart->setPeriodicity(proj->periodicity);
     ui->widgetRegion->setGeneralProjectData(std::move(proj));
+
+    QTimer::singleShot(2000, this, [&](){
+        this->statusBar()->showMessage("Ready");
+        ui->widgetRegion->setPushButtonCalculateFluxEnable(true);
+    });
 }
 
 void MainWindow::saveProjectDlg()
@@ -141,19 +159,28 @@ void MainWindow::saveProjectDlg()
     saveProject();
 }
 
-void MainWindow::saveProject()
+bool MainWindow::saveProject()
 {
+    bool projectSaved = false;
+
     if (fileName.isEmpty())
-        return;
+    {
+        QMessageBox::information(this, "Project File Not Found", "Please save your project before proceeding.");
+    }
+    else
+    {
+        projectSaved = true;
+        auto proj = ui->widgetRegion->getGeneralProjectData();
 
-    auto proj = ui->widgetRegion->getGeneralProjectData();
+        //Get periodicity
+        proj->periodicity = ui->widgetChart->getPeriodicity();
 
-    //Get periodicity
-    proj->periodicity = ui->widgetChart->getPeriodicity();
+        NeutronFlowJsonIO::getInstance()->setRegionArray(std::move(proj->regionArray));
+        NeutronFlowJsonIO::getInstance()->setGeneralProjectData(std::move(proj));
+        NeutronFlowJsonIO::getInstance()->saveProject(Interface::jsonFormat, fileName);
+    }
 
-    NeutronFlowJsonIO::getInstance()->setRegionArray(std::move(proj->regionArray));
-    NeutronFlowJsonIO::getInstance()->setGeneralProjectData(std::move(proj));
-    NeutronFlowJsonIO::getInstance()->saveProject(Interface::jsonFormat, fileName);
+    return projectSaved;
 }
 
 void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
@@ -195,14 +222,33 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
 
     ui->widgetChartAbsorptionRate->setXRange(0, startPosition);
     ui->widgetChartAbsorptionRate->setYRange(0, maxFlux);
-    ui->widgetChart->setFilterByGroup();
     ui->widgetChartAbsorptionRate->showPeriodicity();
     ui->widgetChartAbsorptionRate->setChart();
+
+    //setFilterByGroup(group);
+
+    this->statusBar()->showMessage("Finished");
+
+    QTimer::singleShot(2000, this, [&](){ this->statusBar()->showMessage(""); });
 }
 
 void MainWindow::init()
 {
+    qApp->setApplicationName("NeutronFluxCalculator");
+
+    ui->tabInputData->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+    ui->tabWidget->setCurrentIndex(tabInputData);
+
+    qInfo() << "foco"<<ui->comboBoxFilter->focusPolicy();
+
+    calculationThread = new QThread(this);
+    worker = new Worker();
+    worker->moveToThread(calculationThread);
+
     setConnections();
+
+    calculationThread->start();
 
     ui->widgetChart->setProjectionTitle("Scalar Flux of Neutral particles (DD method)");
     ui->widgetChart->setXLabel("Position x (cm)");
@@ -218,7 +264,8 @@ void MainWindow::init()
                            "  padding: 2px;"
                            "};";
 
-    //TBD qApp->setStyleSheet(tooltipStyle);
+
+    //qApp->setStyleSheet(tooltipStyle);
 }
 
 void MainWindow::setConnections()
@@ -241,6 +288,61 @@ void MainWindow::setConnections()
         QMessageBox::information(this, "About", Interface::getAboutApp());
     });
 
+
+    //Thread
+    connect(worker, &Worker::outputData, this, [this](const auto& data)
+    {
+        updateFluxChart(data);
+        updateAbsRateChart(data);
+    });
+
+    connect(worker, &Worker::finished, this, [this]()
+    {
+        this->statusBar()->showMessage("Finished");
+        ui->widgetRegion->setPushButtonCalculateFluxEnable(true);
+        QTimer::singleShot(2000, this, [&](){ this->statusBar()->showMessage(""); });
+    });
+
+    connect(worker, &Worker::errorOccurred, this, [this](auto errors)
+    {
+        QMessageBox::information(this, "Error", errors);
+    });
+
+    connect(this, &MainWindow::startProcess, worker, &Worker::process);
+
+    connect(ui->comboBoxFilter, &QComboBox::activated, this, [this](int index)
+    {
+        ui->widgetChart->filterChange(index);
+    });
+}
+
+void MainWindow::setFilterByGroup(int group)
+{
+    QStringList options;
+    options << "All";
+
+    qInfo()<<"setFilterByGroup"<<group;
+
+    for (int ig = 0; ig < group; ++ig)
+    {
+        options << "Group " + QString::number(ig + 1);
+    }
+
+    //if we have only one group we don't need a filter
+    if (group == 1)
+        ui->comboBoxFilter->hide();
+    else
+        ui->comboBoxFilter->show();
+
+    ui->comboBoxFilter->setFixedWidth(300);
+
+    ui->comboBoxFilter->clear();
+    ui->comboBoxFilter->addItems(options);
+}
+
+bool MainWindow::focusNextPrevChild(bool next)
+{
+qInfo()<<"focusNextPrevChild";
 }
 
 void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
@@ -294,9 +396,10 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
 
     ui->widgetChart->setXRange(0, totalRegionSize);
     ui->widgetChart->setYRange(0, maxFlux + 1);
-    ui->widgetChart->setFilterByGroup();
     ui->widgetChart->showPeriodicity();
     ui->widgetChart->setChart();
+
+    setFilterByGroup(group);
 
     ui->tabWidget->setCurrentIndex(TabResult);
 }

@@ -18,12 +18,15 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Charts)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Charts)
 
 include_directories(./)
-include_directories(${DD_METHOD}) #tbd
-include_directories(${LIBS}) #tbd
-include_directories(${UTILITIES}) #tbd
+include_directories(${DD_METHOD})
+include_directories(${LIBS})
+include_directories(${UTILITIES})
 
 set(PROJECT_SOURCES
     main.cpp
+    AbsorptionRateWidget.cpp
+    AbsorptionRateWidget.h
+    AbsorptionRateWidget.ui
     ChartView.cpp
     ChartView.h
     CrossSectionFileDlg.cpp

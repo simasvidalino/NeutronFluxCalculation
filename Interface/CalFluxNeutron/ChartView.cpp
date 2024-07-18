@@ -1,6 +1,6 @@
 #include "ChartView.h"
-#include "qgraphicsproxywidget.h"
 #include "qlineedit.h"
+#include "qtimer.h"
 
 #include <QtCharts/QChart>
 #include <QtCharts/QValueAxis>
@@ -14,9 +14,9 @@ ChartView::ChartView(QWidget *parent)
       axisY(new QValueAxis()),
       filter(nullptr)
 {
-    init();
-
-    setConnection();
+    QTimer::singleShot(1000, this, [&](){
+        init();
+    });
 }
 
 ChartView::~ChartView()
@@ -27,12 +27,17 @@ ChartView::~ChartView()
 void ChartView::setInputData(QList<QPointF> &value, int group)
 {
     auto it = seriesByGroup.find(group);
+
     if (it != seriesByGroup.end())
+    {
         delete it->second;
+    }
 
     QLineSeries *serie = new QLineSeries();
     for (const auto &point : value)
+    {
         serie->append(point);
+    }
 
     serie->attachAxis(axisY);
     serie->attachAxis(axisX);
@@ -41,6 +46,24 @@ void ChartView::setInputData(QList<QPointF> &value, int group)
 
     serie->setName("Group " + QString::number(group + 1));
 }
+
+void ChartView::setInputData(QList<QPointF> &value)
+{
+    auto it = seriesByGroup.find(0);
+    if (it != seriesByGroup.end())
+    {
+        delete it->second;
+    }
+
+    QLineSeries *serie = new QLineSeries();
+
+    for (const auto &point : value)
+        serie->append(point);
+
+    serie->attachAxis(axisY);
+    serie->attachAxis(axisX);
+
+    seriesByGroup[0] = serie;
 }
 
 void ChartView::setXLabel(const QString &name)
@@ -86,7 +109,7 @@ void ChartView::setXRange(int min, int max)
     maxY = max;
     axisX->setRange(min, max);
 
-    periodicity->setRange(0.1, max);
+    periodicity->setRange(1, max);
 }
 
 void ChartView::setFilterByGroup()
@@ -109,6 +132,8 @@ void ChartView::setFilterByGroup()
         filter->hide();
     else
         filter->show();
+
+    filter->setFixedWidth(300);
 
     filter->clear();
     filter->addItems(options);
@@ -181,6 +206,7 @@ void ChartView::filterChange(int option)
 
 void ChartView::init()
 {
+    this->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
     setRenderHint(QPainter::Antialiasing);
 
     axisX->setLabelFormat("%.2f");
@@ -196,21 +222,8 @@ void ChartView::init()
     this->setRenderHint(QPainter::Antialiasing);
 
     int widgetLeft = 10;
-    filter = new QComboBox(this);
+    filter = new CustomComboBox();
     filter->move(widgetLeft, 10);
-    filter->setFrame(false);
-    filter->setStyleSheet(R"(
-        QComboBox {
-            border: none;
-            padding: 1px 18px 1px 3px;
-        }
-        QComboBox::drop-down {
-            width: 0px;
-        }
-        QComboBox::down-arrow {
-            image: none;
-        }
-    )");
 
 
     periodicityLabel = new QLabel("Periodicity:", this);
@@ -221,32 +234,24 @@ void ChartView::init()
     periodicity->setSingleStep(5);
     periodicity->setSuffix("cm");
     periodicity->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    //periodicity->setDecimals(1);
     periodicity->setValue(15);
 
     QLineEdit *lineEdit = periodicity->findChild<QLineEdit*>(); //@TBDprotected member, the right way is create a child class
     lineEdit->setFrame(false);
     periodicity->setFrame(false);
 
-    QGraphicsProxyWidget *proxyWidgetFilter = new QGraphicsProxyWidget;
-    proxyWidgetFilter->setWidget(filter);
-    QGraphicsProxyWidget *proxyWidgetPeriodicity = new QGraphicsProxyWidget;
-    proxyWidgetPeriodicity->setWidget(filter);
-    QGraphicsProxyWidget *proxyWidgetPeriodicityLabel = new QGraphicsProxyWidget;
-    proxyWidgetPeriodicityLabel->setWidget(filter);
-
-    this->scene()->addItem(proxyWidgetFilter);
-    this->scene()->addItem(proxyWidgetPeriodicity);
-    this->scene()->addItem(proxyWidgetPeriodicityLabel);
-
     //We will start with hidden widgets
     periodicityLabel->hide();
     periodicity->hide();
     filter->hide();
+
+    setConnection();
 }
 
 void ChartView::setConnection()
 {
-    connect(filter, &QComboBox::activated, this, &ChartView::filterChange);
+    //connect(filter, &QComboBox::activated, this, &ChartView::filterChange);
     connect(periodicity, &QSpinBox::valueChanged, this, [this](auto value)
     {
         emit updatePeriodicity(value);}
@@ -255,6 +260,9 @@ void ChartView::setConnection()
 
 void ChartView::mousePressEvent(QMouseEvent *event)
 {
+    if (false == this->hasFocus())
+        return;
+
     QPointF cursorPoint = chart()->mapToValue(event->pos());
 
     bool pointFound = false;
@@ -303,4 +311,58 @@ void ChartView::clearChart()
 
         seriesByGroup.clear();
     }
+}
+
+void ChartView::hideLegend()
+{
+    this->chart()->legend()->hide();
+}
+
+CustomComboBox::CustomComboBox(QWidget *parent) : QComboBox(parent)
+{    
+    qInfo() << "CustomComboBox constructor";
+
+    this->setFixedWidth(300);
+    this->setFrame(false);
+    this->setStyleSheet(R"(
+        QComboBox {
+            border: none;
+            padding: 1px 18px 1px 3px;
+        }
+        QComboBox::drop-down {
+            width: 0px;
+        }
+        QComboBox::down-arrow {
+            image: none;
+        }
+    )");
+
+}
+
+void CustomComboBox::focusOutEvent(QFocusEvent *event)
+{
+    qInfo()<<"focusOutEvent";
+    this->clearFocus();
+
+    QWidget * parent = nullptr;
+    parent = this->parentWidget();
+
+    if (nullptr != parent)
+        parent->setFocus();
+
+    QComboBox::focusOutEvent(event);
+}
+
+void CustomComboBox::leaveEvent(QEvent *event)
+{
+    qInfo()<<"leaveEvent";
+    this->clearFocus();
+
+    QWidget * parent = nullptr;
+    parent = this->parentWidget();
+
+    if (nullptr != parent)
+        parent->setFocus();
+
+    QComboBox::leaveEvent(event);
 }

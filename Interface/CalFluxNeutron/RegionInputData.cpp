@@ -20,15 +20,12 @@
 
 RegionInputData::RegionInputData(QWidget *parent)
     : QWidget(parent),
-
       ui(new Ui::RegionInputData),
       scene(std::make_unique<QGraphicsScene>(this))
 {
     ui->setupUi(this);
 
-    setConnections();
-
-    init();
+    QTimer::singleShot(1000, this, [&](){ init(); });
 }
 
 RegionInputData::~RegionInputData()
@@ -252,6 +249,8 @@ void RegionInputData::init()
 
     std::fill(regionArray.begin(), regionArray.end(), dataInitial);
 
+    setConnections();
+
     ui->spinBoxRegionQtt->setValue(0);
 }
 
@@ -281,9 +280,10 @@ void RegionInputData::setConnections()
 
         if (button == ui->radioButtonBCLeftPrescribed)
             enable = true;
-        else if (button == ui->radioButtonBCLeftReflexive)
+        else if (button == ui->radioButtonBCLeftReflexive
+                 && bcLeft.has_value())
             bcLeft.reset();
-        else
+        else if (bcLeft.has_value())
             bcLeft->clear();
 
         ui->pushButtonAddLeftPrecribedBCValues->setEnabled(enable); });
@@ -295,9 +295,10 @@ void RegionInputData::setConnections()
 
         if (button == ui->radioButtonBCRightPrescribed)
             enable = true;
-        else if (button == ui->radioButtonBCRightReflexive)
+        else if (button == ui->radioButtonBCRightReflexive
+                 && bcRight.has_value())
             bcRight.reset();
-        else
+        else if (bcRight.has_value())
             bcRight->clear();
 
         if(button == ui->radioButtonBCRightPrescribed)
@@ -380,7 +381,7 @@ void RegionInputData::setSpinBoxQuota(int regionNumber, int left, int top, int w
     scene->addItem(proxyWidget);
 
     connect( quote, &QDoubleSpinBox::valueChanged, this,
-                [quote, this](double value)
+             [quote, this](double value)
     {
         bool ok = false;
         int quoteIndex = quote->objectName().toInt(&ok);
@@ -476,7 +477,6 @@ void RegionInputData::saveGUI()
 
     proj->regionArray = regionArray;
     proj->regionNumber = ui->spinBoxRegionQtt->value();
-    proj->maximumIterationsNumber = ui->spinBoxMaxNumberIteration->value();
     proj->energyGroup = ui->spinBoxGroup->value();
 
     int leftBC = ui->buttonGroupLeftBoundaryConditions->checkedId();
@@ -491,7 +491,6 @@ void RegionInputData::saveGUI()
     proj->leftBoundaryConditionsType = eBoundaryConditionsType(leftBC);
     proj->rightBoundaryConditionsType = eBoundaryConditionsType(rightBC);
     proj->scateringFilePath = scatteringPath.toStdString();
-    proj->stopOrder = ui->spinBoxStopOrder->value();
     proj->zoneNumber = allZonasStr.size();
     proj->legendreOrder = ui->spinBoxLegendreOrder->value();
     proj->quadratureOrder = ui->spinBoxQuadratureOrder->value();

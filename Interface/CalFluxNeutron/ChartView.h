@@ -1,16 +1,32 @@
 #pragma once
 
-#include "qlabel.h"
 #include <QComboBox>
 #include <QLineSeries>
 #include <QtCharts/QChartView>
+#include <QLabel>
 #include <QLocale>
-#include <QSpinBox>
+#include <QDoubleSpinBox>
 
 #include <memory>
 
 class QLineSeries;
 class QValueAxis;
+
+class CustomComboBox : public QComboBox {
+    Q_OBJECT
+
+public:
+    using QComboBox::QComboBox;
+
+    explicit CustomComboBox(QWidget* parent = nullptr);
+
+protected:
+    virtual void focusOutEvent(QFocusEvent *event) override;
+
+    // QWidget interface
+protected:
+    virtual void leaveEvent(QEvent *event) override;
+};
 
 class ChartView : public QChartView
 {
@@ -22,9 +38,12 @@ public:
 
     void clearChart();
 
+    void hideLegend();
+
     void setGroup(int newGroup);
 
-    void setInputData(QList<QPointF> &points, int group = 0);
+    void setInputData(QList<QPointF> &value, int group);
+    void setInputData(QList<QPointF> &value);
 
     QChart *getChart();
 
@@ -49,12 +68,10 @@ public:
 
 public slots:
     void setChart();
-
-private slots:
     void filterChange(int option);
 
 signals:
-    void updatePeriodicity(int);
+    void updatePeriodicity(double);
 
 private:
 

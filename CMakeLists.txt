@@ -11,3 +11,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 add_subdirectory(Utilities/Utilities)
 add_subdirectory(DDMethod/DDMethod)
 add_subdirectory(Interface/CalFluxNeutron)
+
+message(STATUS "Project Source Directory: ${CMAKE_SOURCE_DIR}")
+

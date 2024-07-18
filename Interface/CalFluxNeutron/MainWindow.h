@@ -3,6 +3,7 @@
 
 #include "ProjectStructs.h"
 #include "VariablesUsed.h"
+#include "Worker.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -23,13 +24,13 @@ private slots:
     void changePaletteToDarkStyle();
     void openProject();
     void saveProjectDlg();
-    void saveProject();
+    bool saveProject();
     void updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult);
     void updateFluxChart(std::shared_ptr<CalculatedData> DDResult);
     void updateChartStep();
 
 signals:
-
+    void startProcess();
 private:
     enum tabs
     {
@@ -50,4 +51,13 @@ private:
     QString fileName;
 
     std::unique_ptr<ProjectData> proj;
- };
+
+    QThread* calculationThread;
+    Worker* worker;
+
+    void setFilterByGroup(int group);
+
+    // QWidget interface
+protected:
+    virtual bool focusNextPrevChild(bool next) override;
+};
