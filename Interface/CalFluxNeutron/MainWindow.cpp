@@ -131,6 +131,10 @@ void MainWindow::openProject()
     if (fileName.isEmpty())
         return;
 
+
+    QString title = QString(Interface::getWindowTitle()) + QString(": ") + fileName.split("/").back();
+    this->setWindowTitle(title);
+
     this->statusBar()->showMessage("Waite...");
     ui->widgetRegion->setPushButtonCalculateFluxEnable(false);
 
@@ -178,6 +182,9 @@ bool MainWindow::saveProject()
         NeutronFlowJsonIO::getInstance()->setRegionArray(std::move(proj->regionArray));
         NeutronFlowJsonIO::getInstance()->setGeneralProjectData(std::move(proj));
         NeutronFlowJsonIO::getInstance()->saveProject(Interface::jsonFormat, fileName);
+
+        QString title = QString(Interface::getWindowTitle()) + QString(": ") + fileName.split("/").back();
+        this->setWindowTitle(title);
     }
 
     return projectSaved;
@@ -236,11 +243,11 @@ void MainWindow::init()
 {
     qApp->setApplicationName("NeutronFluxCalculator");
 
+    this->setWindowTitle(Interface::getWindowTitle());
+
     ui->tabInputData->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
 
     ui->tabWidget->setCurrentIndex(tabInputData);
-
-    qInfo() << "foco"<<ui->comboBoxFilter->focusPolicy();
 
     calculationThread = new QThread(this);
     worker = new Worker();

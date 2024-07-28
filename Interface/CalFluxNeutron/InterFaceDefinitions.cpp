@@ -81,6 +81,11 @@ const char *getIAEAAdress()
     return iaeaPath;
 }
 
+const char *getWindowTitle()
+{
+    return "Neutron Scalar Flux Calculator";
+}
+
 const char *getZoneTableToolTip()
 {
     const char* str = "Drag and drop the material from the list below";
