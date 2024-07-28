@@ -10,17 +10,20 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(DD_METHOD "${CMAKE_SOURCE_DIR}/DDMethod/DDMethod")
-set(UTILITIES "${CMAKE_SOURCE_DIR}/Utilities/Utilities")
-set(LIBS "${CMAKE_SOURCE_DIR}/build/lib/")
+set(DD_METHOD_DIR "${CMAKE_SOURCE_DIR}/DDMethod/DDMethod")
+set(UTILITIES_DIR "${CMAKE_SOURCE_DIR}/Utilities/Utilities")
+set(LIBS "${CMAKE_BINARY_DIR}/lib")
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Charts)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Charts)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-include_directories(./)
-include_directories(${DD_METHOD})
+find_package(Qt6 REQUIRED COMPONENTS Widgets Charts Core)
+
+include_directories(${Qt6Widgets_INCLUDE_DIRS} ${Qt6Core_INCLUDE_DIRS} ${Qt6Charts_INCLUDE_DIRS})
+include_directories(${DD_METHOD_DIR})
+include_directories(${UTILITIES_DIR})
+include_directories(".")
 include_directories(${LIBS})
-include_directories(${UTILITIES})
 
 set(PROJECT_SOURCES
     main.cpp
@@ -61,22 +64,16 @@ set(PROJECT_SOURCES
 
 qt_add_resources(PROJECT_SOURCES Resources.qrc)
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+if(Qt${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(CalFluxNeutron
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET CalFluxNeutron APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
         add_library(CalFluxNeutron SHARED
             ${PROJECT_SOURCES}
         )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
         add_executable(CalFluxNeutron
             ${PROJECT_SOURCES}
@@ -84,10 +81,9 @@ else()
     endif()
 endif()
 
-link_directories(${DD_METHOD})
+add_dependencies(CalFluxNeutron DDMethod Utilities)
 
-target_link_libraries(CalFluxNeutron PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Charts
-    ${LIBS}/libDDMethod.so  ${LIBS}/libUtilities.so)
+target_link_libraries(CalFluxNeutron PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Charts Qt${QT_VERSION_MAJOR}::Core ${LIBS}/libDDMethod.so ${LIBS}/libUtilities.so)
 
 set_target_properties(CalFluxNeutron PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
@@ -101,8 +97,9 @@ install(TARGETS CalFluxNeutron
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-if(QT_VERSION_MAJOR EQUAL 6)
+if(Qt${QT_VERSION_MAJOR} EQUAL 6)
     qt_finalize_executable(CalFluxNeutron)
 endif()
 
+qt_finalize_executable(CalFluxNeutron)
 
