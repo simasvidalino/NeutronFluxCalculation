@@ -3,6 +3,9 @@
 #include "InterFaceDefinitions.h"
 #include "ProjectStructs.h"
 
+class QJsonObject;
+class QJsonArray;
+
 class NeutronFlowJsonIO
 {
 public:
