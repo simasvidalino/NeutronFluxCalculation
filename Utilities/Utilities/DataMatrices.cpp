@@ -3,6 +3,7 @@
 #include "LegendrePolynomial.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <numeric>      // std::accumulate
 #include <stdexcept>
 
@@ -22,9 +23,13 @@ std::unique_ptr<dados_entrada> BuildMatrices::copyProjectDataToRawPointers(Proje
 {
     auto data = std::make_unique<dados_entrada>();
     fileName  = proj.scateringFilePath;
+    std::filesystem::directory_entry entry{fileName};
 
-    if (fileName.empty())
+    if ( (true == fileName.empty() )
+        || (false == entry.exists()) )
+    {
         throw std::invalid_argument("Error: Material Data File issue. \nYou need to set a Cross Section File.");
+    }
 
     data->G   = proj.energyGroup;
     data->L   = proj.legendreOrder;
