@@ -44,6 +44,9 @@ private:
 
     void setConnections();
 
+    void startWork();
+    void stopWork();
+
     ProjectData projectData;
 
     double periodicityValue = 10.0;
@@ -56,8 +59,4 @@ private:
     Worker* worker;
 
     void setFilterByGroup(int group);
-
-    // QWidget interface
-protected:
-    virtual bool focusNextPrevChild(bool next) override;
 };

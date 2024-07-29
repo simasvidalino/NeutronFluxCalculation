@@ -1,7 +1,6 @@
 #include "MainWindow.h"
-#include "./ui_MainWindow.h"
+#include "ui_MainWindow.h"
 
-#include <iostream>
 #include <mutex>
 
 #include "NeutronFlowJsonIO.h"
@@ -14,7 +13,6 @@
 #include <QLineSeries>
 #include <QMessageBox>
 #include <QThread>
-
 std::mutex mtx1;
 std::mutex mtx2;
 
@@ -40,11 +38,15 @@ void MainWindow::calculateNeutronFluxUsingDD()
     if (!saveProject())
         return;
 
+    startWork();
+
     NeutronFlowJsonIO::getInstance()->loadProject(Interface::jsonFormat, fileName);
     proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
 
     if (!proj)
         proj = std::make_unique<ProjectData>();
+
+    worker->setProjData(*proj);
 
     this->statusBar()->showMessage("Calculating...");
 
@@ -74,7 +76,6 @@ void MainWindow::calculateNeutronFluxUsingDD()
 
     //    thread->start();
 
-    worker->setProjData(*proj);
     emit startProcess();
 }
 
@@ -130,7 +131,6 @@ void MainWindow::openProject()
 
     if (fileName.isEmpty())
         return;
-
 
     QString title = QString(Interface::getWindowTitle()) + QString(": ") + fileName.split("/").back();
     this->setWindowTitle(title);
@@ -255,8 +255,6 @@ void MainWindow::init()
 
     setConnections();
 
-    calculationThread->start();
-
     ui->widgetChart->setProjectionTitle("Scalar Flux of Neutral particles (DD method)");
     ui->widgetChart->setXLabel("Position x (cm)");
     ui->widgetChart->setYLabel("Scalar Flux");
@@ -323,6 +321,24 @@ void MainWindow::setConnections()
     });
 }
 
+void MainWindow::startWork()
+{
+    if (!calculationThread->isRunning())
+    {
+        calculationThread->start();
+    }
+}
+
+void MainWindow::stopWork()
+{
+    if (calculationThread->isRunning())
+    {
+        calculationThread->requestInterruption();
+        calculationThread->quit();
+        calculationThread->wait();
+    }
+}
+
 void MainWindow::setFilterByGroup(int group)
 {
     QStringList options;
@@ -345,11 +361,6 @@ void MainWindow::setFilterByGroup(int group)
 
     ui->comboBoxFilter->clear();
     ui->comboBoxFilter->addItems(options);
-}
-
-bool MainWindow::focusNextPrevChild(bool next)
-{
-qInfo()<<"focusNextPrevChild";
 }
 
 void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
@@ -431,5 +442,3 @@ void MainWindow::updateChartStep()
     ui->widgetChart->setTickNumber(tickCount + 1);
     ui->widgetChart->setChart();
 }
-
-
