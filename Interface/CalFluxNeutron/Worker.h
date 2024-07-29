@@ -31,6 +31,7 @@ protected:
     virtual void calculateAbsorptionNeutronRate();
     virtual void calculateAverageFluxPerRegion();
     virtual void calculateCrossSectionMatrices();
+    virtual void calculateScalarNeutronFlux();
     void    copyScalarNeutronFluxToVector();
     virtual void writeAverageNeutronFluxPerRegion();
     virtual void writeAbsorptionRateFile();
@@ -42,7 +43,9 @@ private:
     ProjectData proj;
     std::unique_ptr<dados_entrada> DDValues;
     std::shared_ptr<CalculatedData> DDResult;
+    std::vector<std::function<void()>> tasks;
 
+    void addTasksinVector();
     void writeCalculatedData();
     void writeCrossSectionFiles();
 };
