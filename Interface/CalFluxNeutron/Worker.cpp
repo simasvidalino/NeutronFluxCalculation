@@ -14,7 +14,7 @@ std::mutex mtx;
 
 Worker::Worker(QObject *parent) : QObject(parent)
 {
-    addTasksinVector();
+
 }
 
 Worker::~Worker()
@@ -29,27 +29,46 @@ void Worker::setProjData(ProjectData &proj)
 
 void Worker::process()
 {
-    std::unique_lock<std::mutex> lock(mtx);
-
     try
     {
-        for (const auto& task : tasks)
-        {
-            if (QThread::currentThread()->isInterruptionRequested())
-            {
-                emit errorOccurred("Qthread: Interruption Requested");
-                DDMethod::getInstance()->destroyInstance();
-                emit finished();
+        std::unique_lock<std::mutex> lock(mtx);
 
-                break;
-            }
+        // QThread::sleep(3);
 
-            task();
-        }
+        //Update struct data
+        updateDDValues();
 
-        emit outputData(std::move(DDResult));
-        DDMethod::getInstance()->destroyInstance();
+        //QThread::sleep(3);
+
+        //Calculate scalar neutron Flux
+        //DD(*DDValues);
+        DDMethod::getInstance()->run(*DDValues);
+
+        copyScalarNeutronFluxToVector();
+
+        // QThread::sleep(3);
+
+        calculateCrossSectionMatrices();
+
+        //Write Cross Section File
+        writeCrossSectionFiles();
+
+        //TBD
+        calculateAverageFluxPerRegion();
+
+        //Calculate Abs Rate
+        calculateAbsorptionNeutronRate();
+
+        //Write Abs Cross Section Rate and Scalar Flux Average by region
+        writeCalculatedData();
+
+        emit outputData(DDResult);
+
+        //QThread::sleep(3);
+
         emit finished();
+
+        DDMethod::getInstance()->destroyInstance();
     }
     catch(const std::exception& e)
     {
@@ -111,11 +130,6 @@ void Worker::calculateCrossSectionMatrices()
     BuildMatrices matrices;
 
     DDResult->matrices = matrices.calculateCrossSectionMatrices(DDValues.get());
-}
-void Worker::calculateScalarNeutronFlux()
-{
-    //DD(*DDValues);
-    DDMethod::getInstance()->run(*DDValues);
 }
 
 void Worker::copyScalarNeutronFluxToVector()
@@ -415,31 +429,6 @@ void Worker::writeScatteringCrossSectionFile()
     }
 
     output.close();
-}
-
-void Worker::addTasksinVector()
-{
-    // Update struct data
-    tasks.push_back([this]() { updateDDValues(); });
-
-    // Calculate scalar neutron Flux
-    tasks.push_back([this]() { calculateScalarNeutronFlux(); });
-
-    tasks.push_back([this]() { copyScalarNeutronFluxToVector(); });
-
-    tasks.push_back([this]() { calculateCrossSectionMatrices(); });
-
-    // Write Cross Section File
-    tasks.push_back([this]() { writeCrossSectionFiles(); });
-
-    // TBD
-    tasks.push_back([this]() { calculateAverageFluxPerRegion(); });
-
-    // Calculate Abs Rate
-    tasks.push_back([this]() { calculateAbsorptionNeutronRate(); });
-
-    // Write Abs Cross Section Rate and Scalar Flux Average by region
-    tasks.push_back([this]() { writeCalculatedData(); });
 }
 
 void Worker::writeCalculatedData()
