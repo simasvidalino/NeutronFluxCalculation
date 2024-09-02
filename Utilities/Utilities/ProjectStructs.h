@@ -30,7 +30,7 @@ struct ProjectData
     eBoundaryConditionsType rightBoundaryConditionsType = eVaccuo;
     eBoundaryConditionsType leftBoundaryConditionsType  = eVaccuo; //@TBD types
 
-    int maximumIterationsNumber = 500;
+    int maximumIterationsNumber = 1000;
     int energyGroup = 1;
     int legendreOrder = 0;
     int quadratureOrder = 2;

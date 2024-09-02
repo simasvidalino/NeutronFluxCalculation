@@ -12,7 +12,8 @@
 class QLineSeries;
 class QValueAxis;
 
-class CustomComboBox : public QComboBox {
+class CustomComboBox : public QComboBox
+{
     Q_OBJECT
 
 public:

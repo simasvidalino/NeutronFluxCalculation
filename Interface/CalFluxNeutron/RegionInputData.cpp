@@ -438,8 +438,11 @@ void RegionInputData::loadGUI()
         bcLeftButton->click();
 
     bcLeft.reset();
-    if (proj->bcLeft.has_value() && proj->leftBoundaryConditionsType == ePrescribed)
+    if (proj->bcLeft.has_value()
+        && proj->leftBoundaryConditionsType == ePrescribed)
+    {
         bcLeft = proj->bcLeft.value();
+    }
 
     QAbstractButton *bcRightButton = ui->buttonGroupRightBoundaryConditions->button(
                 proj->rightBoundaryConditionsType);
@@ -448,8 +451,11 @@ void RegionInputData::loadGUI()
         bcRightButton->click();
 
     bcRight.reset();
-    if (proj->bcRight.has_value() && proj->rightBoundaryConditionsType == ePrescribed)
+    if (proj->bcRight.has_value()
+        && proj->rightBoundaryConditionsType == ePrescribed)
+    {
         bcRight = proj->bcRight.value();
+    }
 
     ui->spinBoxStopOrder->setValue(proj->stopOrder);
 
@@ -494,6 +500,8 @@ void RegionInputData::saveGUI()
     proj->zoneNumber = allZonasStr.size();
     proj->legendreOrder = ui->spinBoxLegendreOrder->value();
     proj->quadratureOrder = ui->spinBoxQuadratureOrder->value();
+    proj->maximumIterationsNumber = ui->spinBoxMaxNumberIteration->value();
+    proj->stopOrder = ui->spinBoxStopOrder->value();
 }
 
 void RegionInputData::setPeriodicity(double newPeriodicity)

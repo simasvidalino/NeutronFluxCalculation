@@ -31,7 +31,7 @@ void Worker::process()
 {
     try
     {
-        std::unique_lock<std::mutex> lock(mtx);
+        //std::unique_lock<std::mutex> lock(mtx);
 
         // QThread::sleep(3);
 
@@ -62,7 +62,8 @@ void Worker::process()
         //Write Abs Cross Section Rate and Scalar Flux Average by region
         writeCalculatedData();
 
-        emit outputData(DDResult);
+        if (false == this->thread()->isInterruptionRequested())
+            emit outputData(DDResult);
 
         //QThread::sleep(3);
 
@@ -89,6 +90,9 @@ void Worker::process()
 
 void Worker::updateDDValues()
 {
+    if (this->thread()->isInterruptionRequested())
+        return;
+
     if (!DDValues)
         DDValues = std::unique_ptr<dados_entrada>();
 
@@ -134,6 +138,9 @@ void Worker::calculateCrossSectionMatrices()
 
 void Worker::copyScalarNeutronFluxToVector()
 {
+    if (this->thread()->isInterruptionRequested())
+        return;
+
     int nodex = 0;
     std::vector<std::vector<long double>> scalarFlux;
 
@@ -378,6 +385,9 @@ void Worker::writeNeutronFluxFile()
 
 void Worker::writeScatteringCrossSectionFile()
 {
+    if (this->thread()->isInterruptionRequested())
+        return;
+
     if (DDResult->matrices.scatteringCrossSection.empty())
     {
         qWarning() << "Scattering Cross Section Matrix is empty.";
@@ -431,8 +441,18 @@ void Worker::writeScatteringCrossSectionFile()
     output.close();
 }
 
+void Worker::setCancelResult(bool newCancelResult)
+{
+    this->thread()->requestInterruption();
+    this->thread()->quit();
+    this->thread()->wait();
+}
+
 void Worker::writeCalculatedData()
 {
+    if (this->thread()->isInterruptionRequested())
+        return;
+
     writeNeutronFluxFile();
     writeAbsorptionRateFile();
     writeAverageNeutronFluxPerRegion();
@@ -440,6 +460,9 @@ void Worker::writeCalculatedData()
 
 void Worker::writeCrossSectionFiles()
 {
+    if (this->thread()->isInterruptionRequested())
+        return;
+
     writeAbsorptionCrossSectionFile();
     writeScatteringCrossSectionFile();
 }

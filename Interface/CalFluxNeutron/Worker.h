@@ -15,6 +15,8 @@ public:
 
     void setProjData(ProjectData &proj);
 
+    void setCancelResult(bool newCancelResult);
+
 public slots:
     void process();
 
