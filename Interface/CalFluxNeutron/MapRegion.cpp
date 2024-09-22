@@ -267,7 +267,8 @@ std::unique_ptr<RegionData> MapRegion::getRegionData() const
 
         auto items = ui->listWidget->findItems(chosenMaterial, Qt::MatchExactly);
 
-        if (!items.isEmpty()) {
+        if (!items.isEmpty())
+        {
             auto item = items.at(0);
             data->zone = ui->listWidget->row(item) + 1;
             data->zoneStr = chosenMaterial.toStdString();

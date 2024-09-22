@@ -902,8 +902,20 @@ void BuildMatrices::copyRegionVectorToRowPointers(std::array<RegionData, 10> &re
         data->Map_R[iIndex]   = region.zone;
 
         if (region.physicalSource.has_value())
-            for(int j = 0; j < data->G; j++)
+        {
+            for (int j = 0; j < data->G; j++)
+            {
                 data->fonte_g[j][iIndex] = region.physicalSource.value()[j];
+            }
+        }
+        else
+        {
+            //Define zero to not set source
+            for (int j = 0; j < data->G; j++)
+            {
+                data->fonte_g[j][iIndex] = 0.0;
+            }
+        }
     }
 }
 
