@@ -264,15 +264,6 @@ void MainWindow::init()
     ui->widgetChartAbsorptionRate->setProjectionTitle("Neutron Absorption Rate");
     ui->widgetChartAbsorptionRate->setXLabel("Position x (cm)");
     ui->widgetChartAbsorptionRate->setYLabel("Rate");
-
-    QString tooltipStyle = "QToolTip {"
-                           "  background-color: #F0F0F0;"
-                           "  border: 1px solid #808080;"
-                           "  padding: 2px;"
-                           "};";
-
-
-    //qApp->setStyleSheet(tooltipStyle);
 }
 
 void MainWindow::setConnections()
