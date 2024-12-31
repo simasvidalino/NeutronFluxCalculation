@@ -114,7 +114,7 @@ void MainWindow::changePaletteToDarkStyle()
 
     if (ui->actionPalette->text() == darkText)
     {
-        ui->actionPalette->setText("Color scheme to Default");
+        ui->actionPalette->setText("Color scheme to Light");
         QApplication::setPalette(Interface::getDarkPalette());
     }
     else
@@ -242,6 +242,8 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
 void MainWindow::init()
 {
     qApp->setApplicationName("NeutronFluxCalculator");
+
+    QApplication::setPalette(Interface::getDarkPalette());
 
     this->setWindowTitle(Interface::getWindowTitle());
 

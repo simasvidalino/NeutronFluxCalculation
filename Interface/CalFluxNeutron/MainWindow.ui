@@ -38,7 +38,7 @@
         <item row="2" column="0" rowspan="2" colspan="2">
          <widget class="Line" name="line_2">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
          </widget>
         </item>
@@ -119,7 +119,7 @@
   </action>
   <action name="actionPalette">
    <property name="text">
-    <string>Color scheme to Dark</string>
+    <string>Color scheme to Light</string>
    </property>
   </action>
   <action name="actionOpen_Project">
