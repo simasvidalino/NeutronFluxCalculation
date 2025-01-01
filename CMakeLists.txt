@@ -14,3 +14,6 @@ add_subdirectory(Interface/CalFluxNeutron)
 
 message(STATUS "Project Source Directory: ${CMAKE_SOURCE_DIR}")
 
+# Include deploy and CPack configuration
+include(Deploy/DeployConfig.cmake)
+
