@@ -14,6 +14,13 @@ add_subdirectory(Interface/CalFluxNeutron)
 
 message(STATUS "Project Source Directory: ${CMAKE_SOURCE_DIR}")
 
-# Include deploy and CPack configuration
-include(Deploy/DeployConfig.cmake)
+#Deploy flag
+option(ENABLE_DEPLOY "Enable deploy process" OFF)
+
+if(ENABLE_DEPLOY)
+    message(STATUS "Deploy enabled.")
+    include(Deploy/DeployConfig.cmake)
+else()
+    message(STATUS "Deploy disabled. Use -DENABLE_DEPLOY=ON to enable.")
+endif()
 

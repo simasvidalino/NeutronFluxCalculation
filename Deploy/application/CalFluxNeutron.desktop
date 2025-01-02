@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Neutron Scalar Flux Calculator
+Exec=CalFluxNeutron
+Icon=CalFluxNeutron
+Type=Application
+Categories=Science;Utility;
+Name[en]=CalFluxNeutron.desktop
+
