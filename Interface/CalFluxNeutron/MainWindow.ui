@@ -18,7 +18,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabInputData">
        <attribute name="title">
@@ -34,21 +34,71 @@
        <attribute name="title">
         <string>Neutron Escalar Flux Result</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_9">
-        <item row="2" column="0" rowspan="2" colspan="2">
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="3" column="1" colspan="3">
          <widget class="Line" name="line_2">
           <property name="orientation">
            <enum>Qt::Orientation::Horizontal</enum>
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QWidget" name="widgetResults" native="true"/>
+        <item row="0" column="3">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="3">
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="1">
+         <widget class="QSpinBox" name="spinBoxPeriodicity">
+          <property name="suffix">
+           <string>cm</string>
+          </property>
+          <property name="singleStep">
+           <number>5</number>
+          </property>
+          <property name="value">
+           <number>15</number>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="CustomComboBox" name="comboBoxFilter"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Periodicity </string>
+          </property>
+         </widget>
         </item>
         <item row="0" column="0">
-         <widget class="QComboBox" name="comboBoxFilter"/>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>FIlter by Group</string>
+          </property>
+         </widget>
         </item>
-        <item row="1" column="0" colspan="2">
+        <item row="1" column="0" colspan="4">
          <widget class="ChartView" name="widgetChart" native="true"/>
         </item>
        </layout>
@@ -161,6 +211,11 @@
    <extends>QWidget</extends>
    <header>ChartView.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CustomComboBox</class>
+   <extends>QComboBox</extends>
+   <header location="global">CustomComboBox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

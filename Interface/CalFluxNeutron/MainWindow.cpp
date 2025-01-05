@@ -10,9 +10,11 @@
 #include <QColorDialog>
 #include <QFileDialog>
 #include <QFontDialog>
+#include <QLineEdit>
 #include <QLineSeries>
 #include <QMessageBox>
 #include <QThread>
+
 std::mutex mtx1;
 std::mutex mtx2;
 
@@ -154,7 +156,7 @@ void MainWindow::openProject()
 
     proj->regionArray =  std::move(NeutronFlowJsonIO::getInstance()->getRegionArray());
 
-    ui->widgetChart->setPeriodicity(proj->periodicity);
+    ui->spinBoxPeriodicity->setValue(proj->periodicity);
     ui->widgetRegion->setGeneralProjectData(std::move(proj));
 
     QTimer::singleShot(2000, this, [&](){
@@ -185,7 +187,7 @@ bool MainWindow::saveProject()
         auto proj = ui->widgetRegion->getGeneralProjectData();
 
         //Get periodicity
-        proj->periodicity = ui->widgetChart->getPeriodicity();
+        proj->periodicity = ui->spinBoxPeriodicity->value();
 
         NeutronFlowJsonIO::getInstance()->setRegionArray(std::move(proj->regionArray));
         NeutronFlowJsonIO::getInstance()->setGeneralProjectData(std::move(proj));
@@ -237,7 +239,6 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
 
     ui->widgetChartAbsorptionRate->setXRange(0, startPosition);
     ui->widgetChartAbsorptionRate->setYRange(0, maxFlux);
-    ui->widgetChartAbsorptionRate->showPeriodicity();
     ui->widgetChartAbsorptionRate->setChart();
 
     //setFilterByGroup(group);
@@ -273,6 +274,9 @@ void MainWindow::init()
     ui->widgetChartAbsorptionRate->setXLabel("Position x (cm)");
     ui->widgetChartAbsorptionRate->setYLabel("Rate");
 
+    QLineEdit *lineEdit = ui->spinBoxPeriodicity->findChild<QLineEdit*>(); //@TBDprotected member, the right way is create a child class
+    lineEdit->setFrame(false);
+
     //Open default project
     QTimer::singleShot(1000, this, [&]{    openProject();});
 }
@@ -287,7 +291,7 @@ void MainWindow::setConnections()
     connect(ui->widgetRegion, &RegionInputData::onCalculateScalarNeutronFlux,
             this, &MainWindow::calculateNeutronFluxUsingDD);
 
-    connect(ui->widgetChart, &ChartView::updatePeriodicity, this, [this](auto value)
+    connect(ui->spinBoxPeriodicity, &QSpinBox::valueChanged, this, [this](auto value)
     {
         periodicityValue = value;
         updateChartStep();
@@ -417,8 +421,8 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
     }
 
     ui->widgetChart->setXRange(0, totalRegionSize);
+    ui->spinBoxPeriodicity->setMaximum(totalRegionSize);
     ui->widgetChart->setYRange(0, maxFlux + 1);
-    ui->widgetChart->showPeriodicity();
     ui->widgetChart->setChart();
 
     setFilterByGroup(group);
