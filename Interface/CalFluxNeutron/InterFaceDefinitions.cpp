@@ -99,4 +99,9 @@ const int getMaxRegionQtt()
     return 10;
 }
 
+const char* getDefaultProjectName()
+{
+    return ":/Default_Project/Resources/Default_Project.json";
+}
+
 }

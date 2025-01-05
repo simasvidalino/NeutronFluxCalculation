@@ -23,8 +23,9 @@ private slots:
     void changeViewMode();
     void changePaletteToDarkStyle();
     void openProject();
-    void saveProjectDlg();
+    void openProjectFileDlg();
     bool saveProject();
+    void saveProjectFileDlg();
     void updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult);
     void updateFluxChart(std::shared_ptr<CalculatedData> DDResult);
     void updateChartStep();

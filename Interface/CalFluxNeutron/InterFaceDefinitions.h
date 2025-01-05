@@ -20,6 +20,7 @@ const char * getAboutApp();
 const char * getIAEAAdress();
 const char * getWindowTitle();
 const char * getZoneTableToolTip();
+const char * getDefaultProjectName();
 
 const int getMaxRegionQtt();
 };

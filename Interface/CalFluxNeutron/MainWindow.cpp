@@ -19,6 +19,7 @@ std::mutex mtx2;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , fileName(Interface::getDefaultProjectName())
 {
     ui->setupUi(this);
 
@@ -124,14 +125,21 @@ void MainWindow::changePaletteToDarkStyle()
     }
 }
 
-void MainWindow::openProject()
+void MainWindow::openProjectFileDlg()
 {
     QString filter = "JSON Files (*.json);;Text Files (*.txt)";
-    fileName = QFileDialog::getOpenFileName(this, "Open File", QDir::homePath(), filter);
+    auto fileStr = QFileDialog::getOpenFileName(this, "Open File", QDir::homePath(), filter);
 
-    if (fileName.isEmpty())
+    if (fileStr.isEmpty())
         return;
 
+    fileName = fileStr;
+
+    openProject();
+}
+
+void MainWindow::openProject()
+{
     QString title = QString(Interface::getWindowTitle()) + QString(": ") + fileName.split("/").back();
     this->setWindowTitle(title);
 
@@ -155,12 +163,12 @@ void MainWindow::openProject()
     });
 }
 
-void MainWindow::saveProjectDlg()
+void MainWindow::saveProjectFileDlg()
 {
     QString filter = "JSON Files (*.json);;Text Files (*.txt)";
     fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::homePath(), filter);
 
-    saveProject();
+    (void)saveProject();
 }
 
 bool MainWindow::saveProject()
@@ -264,14 +272,17 @@ void MainWindow::init()
     ui->widgetChartAbsorptionRate->setProjectionTitle("Neutron Absorption Rate");
     ui->widgetChartAbsorptionRate->setXLabel("Position x (cm)");
     ui->widgetChartAbsorptionRate->setYLabel("Rate");
+
+    //Open default project
+    QTimer::singleShot(1000, this, [&]{    openProject();});
 }
 
 void MainWindow::setConnections()
 {
     connect(ui->actionFont, &QAction::triggered, this, &MainWindow::changeFont);
-    connect(ui->actionOpen_Project, &QAction::triggered, this, &MainWindow::openProject);
+    connect(ui->actionOpen_Project, &QAction::triggered, this, &MainWindow::openProjectFileDlg);
     connect(ui->actionPalette, &QAction::triggered, this, &MainWindow::changePaletteToDarkStyle);
-    connect(ui->actionSave_Project, &QAction::triggered, this, &MainWindow::saveProjectDlg);
+    connect(ui->actionSave_Project, &QAction::triggered, this, &MainWindow::saveProjectFileDlg);
     connect(ui->actionScreenMode, &QAction::triggered, this, &MainWindow::changeViewMode);
     connect(ui->widgetRegion, &RegionInputData::onCalculateScalarNeutronFlux,
             this, &MainWindow::calculateNeutronFluxUsingDD);

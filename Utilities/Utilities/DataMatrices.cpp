@@ -7,6 +7,9 @@
 #include <numeric>      // std::accumulate
 #include <stdexcept>
 
+#include <QFile>
+#include <QTextStream>
+
 BuildMatrices::BuildMatrices()
 {
 
@@ -25,8 +28,9 @@ std::unique_ptr<dados_entrada> BuildMatrices::copyProjectDataToRawPointers(Proje
     fileName  = proj.scateringFilePath;
     std::filesystem::directory_entry entry{fileName};
 
-    if ( (true == fileName.empty() )
-        || (false == entry.exists()) )
+    if (   ( true == fileName.empty() )
+        || (    ( false == entry.exists() )
+             && ( fileName != ":/Default_Project/Resources/Default_Projetc.txt") ) )
     {
         throw std::invalid_argument("Error: Material Data File issue. \nYou need to set a Cross Section File.");
     }
@@ -44,18 +48,25 @@ std::unique_ptr<dados_entrada> BuildMatrices::copyProjectDataToRawPointers(Proje
     data->iteracao      = proj.maximumIterationsNumber;
 
     std::vector<double> bc;
+
     for (int iIndex = 0; iIndex < data->G; ++iIndex)
+    {
         bc.push_back(0.0);
+    }
 
     if (proj.bcLeft.has_value())
+    {
         copyVectorToRawPointer(proj.bcLeft.value(), data->cceg);
+    }
     else
     {
         copyVectorToRawPointer(bc, data->cceg);
     }
 
     if (proj.bcRight.has_value())
+    {
         copyVectorToRawPointer(proj.bcRight.value(), data->ccdg);
+    }
     else
     {
         copyVectorToRawPointer(bc, data->ccdg);
@@ -586,37 +597,42 @@ std::vector<double> BuildMatrices::saveFileDataInVector()
 {
     double j;
     std::string k;
-    std::ifstream file;
-    std::vector <double> vector;
-    file.open(fileName.c_str());
+    std::vector<double> vector;
 
-    if(!file)
+    // Open the file using QFile
+    QFile file(QString::fromStdString(fileName));
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        std::cout<<"FILE OPENING FAILED\n";
+        std::cerr << "FILE OPENING FAILED\n";
         throw std::invalid_argument("Error: Material Data file opening failed");
     }
-    else
+
+    QTextStream in(&file);
+
+    while (!in.atEnd())
     {
+        QString line = in.readLine(); // Read the file line by line
 
-        while(file >> k)
-        {  //lê todo o arquivo
-            //            dados_txt >> k;
+        if (!line.isEmpty() && line[0] == '/') // Skip comment lines
+        {
+            std::cout << line.toStdString() << std::endl;
+            continue;
+        }
 
-            if(k[0] == '/'){ //pega somente linhas com texto (primeira palavra)
-                file.ignore(1000,'\n');
-                std::cout<<k<<std::endl;
-            }
-            else
+        // Convert the line to std::string and process
+        std::string lineStr = line.toStdString();
+        std::stringstream ss(lineStr);
+        while (ss >> k) // Read words from the line
             {
                 std::stringstream(k) >> j;
                 vector.push_back(j);
-            }
         }
     }
 
-    std::cout<<"Vector size "<<vector.size()<<std::endl;
+    std::cout << "Vector size " << vector.size() << std::endl;
 
-    file.close(); //fecha o arquivo txt
+    file.close(); // Close the file
 
     return vector;
 }

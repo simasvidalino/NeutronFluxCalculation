@@ -47,9 +47,7 @@ void NeutronFlowJsonIO::saveProject(Interface::eSaveFormat saveFormat, QString p
 void NeutronFlowJsonIO::loadProject(Interface::eSaveFormat saveFormat,
                                     QString path)
 {
-    QFile loadFile(path/*saveFormat == Interface::jsonFormat
-                                                                                                                                                                                        ? QStringLiteral("NeutronFlow.json")
-                                                                                                                                                                                        : QStringLiteral("NeutronFlow.dat")*/);
+    QFile loadFile(path);
 
     if (!loadFile.open(QIODevice::ReadOnly))
     {
