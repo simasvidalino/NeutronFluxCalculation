@@ -22,7 +22,6 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets Charts Core)
 include_directories(${Qt6Widgets_INCLUDE_DIRS} ${Qt6Core_INCLUDE_DIRS} ${Qt6Charts_INCLUDE_DIRS})
 include_directories(${DD_METHOD_DIR})
 include_directories(${UTILITIES_DIR})
-include_directories(".")
 include_directories(${LIBS})
 
 set(PROJECT_SOURCES
@@ -35,6 +34,8 @@ set(PROJECT_SOURCES
     CrossSectionFileDlg.cpp
     CrossSectionFileDlg.h
     CrossSectionFileDlg.ui
+    CustomComboBox.h
+    CustomComboBox.cpp
     CustomTableModel.cpp
     CustomTableModel.h
     InterFaceDefinitions.cpp

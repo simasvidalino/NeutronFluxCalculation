@@ -12,23 +12,6 @@
 class QLineSeries;
 class QValueAxis;
 
-class CustomComboBox : public QComboBox
-{
-    Q_OBJECT
-
-public:
-    using QComboBox::QComboBox;
-
-    explicit CustomComboBox(QWidget* parent = nullptr);
-
-protected:
-    virtual void focusOutEvent(QFocusEvent *event) override;
-
-    // QWidget interface
-protected:
-    virtual void leaveEvent(QEvent *event) override;
-};
-
 class ChartView : public QChartView
 {
     Q_OBJECT
@@ -54,18 +37,11 @@ public:
 
     void setProjectionTitle(const QString value);
 
-    int getPeriodicity();
-    void setPeriodicity(int value);
-
     void setTickNumber(int newTickNumber);
 
     void setYRange(int min, int max);
 
     void setXRange(int min, int max);
-
-    void setFilterByGroup();
-
-    void showPeriodicity();
 
 public slots:
     void setChart();
@@ -97,10 +73,6 @@ private:
     QList<int> regionSize;
 
     QList<QColor> colors = {Qt::blue, Qt::red, Qt::cyan};
-
-    QComboBox* filter = nullptr;
-    QSpinBox* periodicity = nullptr;
-    QLabel* periodicityLabel = nullptr;
 
     int option = 0;
 
