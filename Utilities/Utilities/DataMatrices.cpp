@@ -578,19 +578,21 @@ void BuildMatrices::allocateMatrices(dados_entrada &valor)
     //Matriz com os polinômios de Legendre
     legendre_set ( valor.n,valor.mi,valor.w);
     valor.Mat_Legendre = new double *[valor.n];
-    valor.legendre_n = new double [valor.L+1];
-    for(int n = 0; n<valor.n; n ++){
+    double* legendre_n = new double [valor.L+1];
+    for (int n = 0; n<valor.n; n ++){
         valor.Mat_Legendre[n] = new double [valor.L + 1];
     }
 
     setlocale(LC_ALL,"portuguese");
 
-    for(int n = 0; n<valor.n; n ++){
-        Legendre::Pn(valor.L,valor.mi[n],valor.legendre_n);
-        for(int l = 0; l<valor.L+1;l++){
-            valor.Mat_Legendre[n][l] = valor.legendre_n[l];
+    for (int n = 0; n<valor.n; n ++){
+        Legendre::Pn(valor.L,valor.mi[n], legendre_n);
+        for (int l = 0; l<valor.L+1;l++){
+            valor.Mat_Legendre[n][l] = legendre_n[l];
         }
     }
+
+    delete [] legendre_n;
 }
 
 std::vector<double> BuildMatrices::saveFileDataInVector()
@@ -844,19 +846,21 @@ void BuildMatrices::allocateMatricesWithUserInterfaceData(dados_entrada &valor)
     //Matriz com os polinômios de Legendre
     legendre_set ( valor.n,valor.mi,valor.w);
     valor.Mat_Legendre = new double *[valor.n];
-    valor.legendre_n = new double [valor.L+1];
-    for(int n = 0; n<valor.n; n ++){
+    double* legendre_n = new double [valor.L+1];
+    for (int n = 0; n<valor.n; n ++){
         valor.Mat_Legendre[n] = new double [valor.L + 1];
     }
 
     setlocale(LC_ALL,"portuguese");
 
-    for(int n = 0; n<valor.n; n ++){
-        Legendre::Pn(valor.L,valor.mi[n],valor.legendre_n);
-        for(int l = 0; l<valor.L+1;l++){
-            valor.Mat_Legendre[n][l] = valor.legendre_n[l];
+    for (int n = 0; n<valor.n; n ++){
+        Legendre::Pn(valor.L,valor.mi[n],legendre_n);
+        for (int l = 0; l<valor.L+1;l++){
+            valor.Mat_Legendre[n][l] = legendre_n[l];
         }
     }
+
+    delete [] legendre_n;
 }
 
 std::vector<std::vector<long double> > BuildMatrices::
@@ -995,20 +999,23 @@ void BuildMatrices::calculateLegendreMatrix(dados_entrada* data)
     //Matriz com os polinômios de Legendre
     legendre_set ( data->n, data->mi, data->w);
 
-    data->Mat_Legendre = new double *[data->n];
-    data->legendre_n   = new double [data->L + 1];
+    data->Mat_Legendre   = new double *[data->n];
+    double* legendre_n   = new double [data->L + 1];
 
-    for(int n = 0; n < data->n; n++)
+    for (int n = 0; n < data->n; n++)
         data->Mat_Legendre[n] = new double [data->L + 1];
 
-    for(int n = 0; n < data->n; n++)
+    for (int n = 0; n < data->n; n++)
     {
-        Legendre::Pn(data->L, data->mi[n], data->legendre_n);
-        for(int l = 0; l < data->L + 1; l++)
+        Legendre::Pn(data->L, data->mi[n], legendre_n);
+
+        for (int l = 0; l < data->L + 1; l++)
         {
-            data->Mat_Legendre[n][l] = data->legendre_n[l];
+            data->Mat_Legendre[n][l] = legendre_n[l];
         }
     }
+
+    delete [] legendre_n;
 }
 
 void BuildMatrices::calculateDataMatrices(dados_entrada *data)
