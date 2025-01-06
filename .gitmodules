@@ -1,0 +1,9 @@
+[submodule "DDMethod"]
+	path = DDMethod
+	url = https://github.com/simasvidalino/Calc_fluxo_de_particulas_neutras
+[submodule "DDMethod/DDMethod"]
+	path = DDMethod/DDMethod
+	url = https://github.com/simasvidalino/Calc_fluxo_de_particulas_neutras
+[submodule "DDMethod/DDMethod/Calc_fluxo_de_particulas_neutras"]
+	path = DDMethod/DDMethod/Calc_fluxo_de_particulas_neutras
+	url = https://github.com/simasvidalino/Calc_fluxo_de_particulas_neutras

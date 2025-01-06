@@ -38,11 +38,8 @@ void Worker::process()
         //Update struct data
         updateDDValues();
 
-        //QThread::sleep(3);
-
         //Calculate scalar neutron Flux
-        //DD(*DDValues);
-        DDMethod::getInstance()->run(*DDValues);
+        DDMethod::getInstance()->runDDMethodWithOneThread(*DDValues);
 
         copyScalarNeutronFluxToVector();
 

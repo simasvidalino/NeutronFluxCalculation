@@ -23,6 +23,7 @@ include_directories(${Qt6Widgets_INCLUDE_DIRS} ${Qt6Core_INCLUDE_DIRS} ${Qt6Char
 include_directories(${DD_METHOD_DIR})
 include_directories(${UTILITIES_DIR})
 include_directories(${LIBS})
+include_directories(".")
 
 set(PROJECT_SOURCES
     main.cpp
