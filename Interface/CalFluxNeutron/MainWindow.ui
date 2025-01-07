@@ -99,7 +99,7 @@
          </widget>
         </item>
         <item row="1" column="0" colspan="4">
-         <widget class="ChartView" name="widgetChart" native="true"/>
+         <widget class="ChartView" name="widgetChartNeutronFlux" native="true"/>
         </item>
        </layout>
       </widget>

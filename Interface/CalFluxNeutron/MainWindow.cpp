@@ -138,6 +138,10 @@ void MainWindow::openProjectFileDlg()
     fileName = fileStr;
 
     openProject();
+
+    ui->tabWidget->setCurrentIndex(tabInputData);
+    ui->widgetChartNeutronFlux->clearChart();
+    ui->widgetChartNeutronFluxAbsorptionRate->clearChart();
 }
 
 void MainWindow::openProject()
@@ -266,13 +270,13 @@ void MainWindow::init()
 
     setConnections();
 
-    ui->widgetChart->setProjectionTitle("Scalar Flux of Neutral particles (DD method)");
-    ui->widgetChart->setXLabel("Position x (cm)");
-    ui->widgetChart->setYLabel("Scalar Flux");
+    ui->widgetChartNeutronFlux->setProjectionTitle("Scalar Flux of Neutral particles (DD method)");
+    ui->widgetChartNeutronFlux->setXLabel("Position x (cm)");
+    ui->widgetChartNeutronFlux->setYLabel("Scalar Flux");
 
-    ui->widgetChartAbsorptionRate->setProjectionTitle("Neutron Absorption Rate");
-    ui->widgetChartAbsorptionRate->setXLabel("Position x (cm)");
-    ui->widgetChartAbsorptionRate->setYLabel("Rate");
+    ui->widgetChartNeutronFluxAbsorptionRate->setProjectionTitle("Neutron Absorption Rate");
+    ui->widgetChartNeutronFluxAbsorptionRate->setXLabel("Position x (cm)");
+    ui->widgetChartNeutronFluxAbsorptionRate->setYLabel("Rate");
 
     QLineEdit *lineEdit = ui->spinBoxPeriodicity->findChild<QLineEdit*>(); //@TBDprotected member, the right way is create a child class
     lineEdit->setFrame(false);
@@ -325,7 +329,7 @@ void MainWindow::setConnections()
 
     connect(ui->comboBoxFilter, &QComboBox::activated, this, [this](int index)
     {
-        ui->widgetChart->filterChange(index);
+                ui->widgetChartNeutronFlux->filterChange(index);
     });
 }
 
@@ -396,7 +400,7 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
         nodex += proj->regionArray[rIndex].node;
     }
 
-    ui->widgetChart->clearChart();
+    ui->widgetChartNeutronFlux->clearChart();
 
     long double maxFlux = 0;
     for (int g = 0; g < group; ++g)
@@ -417,13 +421,13 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
             positionX += stepSize;
         }
 
-        ui->widgetChart->setInputData(points, g);
+        ui->widgetChartNeutronFlux->setInputData(points, g);
     }
 
-    ui->widgetChart->setXRange(0, totalRegionSize);
+    ui->widgetChartNeutronFlux->setXRange(0, totalRegionSize);
     ui->spinBoxPeriodicity->setMaximum(totalRegionSize);
-    ui->widgetChart->setYRange(0, maxFlux + 1);
-    ui->widgetChart->setChart();
+    ui->widgetChartNeutronFlux->setYRange(0, maxFlux + 1);
+    ui->widgetChartNeutronFlux->setChart();
 
     setFilterByGroup(group);
 
@@ -447,6 +451,6 @@ void MainWindow::updateChartStep()
 
     int tickCount = totalRegionSize/periodicityValue;
 
-    ui->widgetChart->setTickNumber(tickCount + 1);
-    ui->widgetChart->setChart();
+    ui->widgetChartNeutronFlux->setTickNumber(tickCount + 1);
+    ui->widgetChartNeutronFlux->setChart();
 }
