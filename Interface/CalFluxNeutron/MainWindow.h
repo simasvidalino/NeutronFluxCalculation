@@ -21,14 +21,15 @@ private slots:
     void calculateNeutronFluxUsingDD();
     void changeFont();
     void changeViewMode();
-    void changePaletteToDarkStyle();
+    void changePalette();
     void openProject();
     void openProjectFileDlg();
     bool saveProject();
     void saveProjectFileDlg();
     void updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult);
+    void updateAbsRateTable(std::shared_ptr<CalculatedData> DDResult);
     void updateFluxChart(std::shared_ptr<CalculatedData> DDResult);
-    void updateChartStep();
+    void updateFluxTable(std::shared_ptr<CalculatedData> DDResult);
 
 signals:
     void startProcess();
@@ -58,6 +59,4 @@ private:
 
     QThread* calculationThread;
     Worker* worker;
-
-    void setFilterByGroup(int group);
 };

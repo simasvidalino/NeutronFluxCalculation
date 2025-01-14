@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1028</width>
-    <height>635</height>
+    <width>1160</width>
+    <height>784</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tabInputData">
        <attribute name="title">
@@ -30,93 +30,25 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tabResults">
+      <widget class="QWidget" name="tab">
        <attribute name="title">
         <string>Neutron Escalar Flux Result</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="3" column="1" colspan="3">
-         <widget class="Line" name="line_2">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3">
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="3">
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="1">
-         <widget class="QSpinBox" name="spinBoxPeriodicity">
-          <property name="suffix">
-           <string>cm</string>
-          </property>
-          <property name="singleStep">
-           <number>5</number>
-          </property>
-          <property name="value">
-           <number>15</number>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="CustomComboBox" name="comboBoxFilter"/>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Periodicity </string>
-          </property>
-         </widget>
-        </item>
+       <layout class="QGridLayout" name="gridLayout_6">
         <item row="0" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>FIlter by Group</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="4">
-         <widget class="ChartView" name="widgetChartNeutronFlux" native="true"/>
+         <widget class="NeutronAnalysisChartWidget" name="widgetNeutronScalarFlux" native="true"/>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="widget">
+      <widget class="QWidget" name="tab_2">
        <attribute name="title">
         <string>Neutron Absorpt Rate</string>
        </attribute>
-       <widget class="ChartView" name="widgetChartAbsorptionRate" native="true">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>0</y>
-          <width>916</width>
-          <height>531</height>
-         </rect>
-        </property>
-       </widget>
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="0" column="0">
+         <widget class="NeutronAnalysisChartWidget" name="widgetNeutronAbsorpt" native="true"/>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -127,7 +59,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1028</width>
+     <width>1160</width>
      <height>23</height>
     </rect>
    </property>
@@ -207,15 +139,10 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ChartView</class>
+   <class>NeutronAnalysisChartWidget</class>
    <extends>QWidget</extends>
-   <header>ChartView.h</header>
+   <header location="global">NeutronAnalysisChartWidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>CustomComboBox</class>
-   <extends>QComboBox</extends>
-   <header location="global">CustomComboBox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

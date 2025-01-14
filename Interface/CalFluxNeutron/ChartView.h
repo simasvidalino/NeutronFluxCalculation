@@ -62,7 +62,6 @@ private:
 
     QLocale locale;
 
-    double maxY = 1;
     int tickNumber;
 
     QValueAxis* axisX;

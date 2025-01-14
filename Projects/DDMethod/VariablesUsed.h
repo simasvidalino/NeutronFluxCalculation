@@ -65,11 +65,6 @@ struct dados_entrada
     int NODOSX;
     double **Mat_Legendre;
 
-//    std::vector<std::vector<long double>> s_ab;
-//    std::vector<std::vector<long double>> s_scatt;
-//    std::vector<long double> absorptionRate;
-//    std::vector<std::vector<long double>> averageNeutronFluxPerRegion;
-
     ~dados_entrada() {
 
         std::cout<<"Call delete matrices"<<std::flush;

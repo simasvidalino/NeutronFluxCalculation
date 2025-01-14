@@ -12,7 +12,8 @@
 
 std::mutex mtx;
 
-Worker::Worker(QObject *parent) : QObject(parent)
+Worker::Worker(QObject *parent)
+    : QObject(parent)
 {
 
 }
@@ -31,9 +32,7 @@ void Worker::process()
 {
     try
     {
-        //std::unique_lock<std::mutex> lock(mtx);
-
-        // QThread::sleep(3);
+        std::unique_lock<std::mutex> lock(mtx);
 
         //Update struct data
         updateDDValues();
@@ -43,26 +42,25 @@ void Worker::process()
 
         copyScalarNeutronFluxToVector();
 
-        // QThread::sleep(3);
-
         calculateCrossSectionMatrices();
 
-        //Write Cross Section File
-        writeCrossSectionFiles();
-
-        //TBD
         calculateAverageFluxPerRegion();
 
         //Calculate Abs Rate
-        calculateAbsorptionNeutronRate();
+        calculateAbsorptionNeutronRatePerRegion();
+
+        calculateAbsorptionNeutronRatePerNode();
 
         //Write Abs Cross Section Rate and Scalar Flux Average by region
         writeCalculatedData();
 
+        //Write Cross Section File
+        writeCrossSectionFiles();
+
         if (false == this->thread()->isInterruptionRequested())
             emit outputData(DDResult);
 
-        //QThread::sleep(3);
+        QThread::sleep(3);
 
         emit finished();
 
@@ -98,14 +96,25 @@ void Worker::updateDDValues()
     DDValues = matrices.copyProjectDataToRawPointers(proj);
 }
 
-void Worker::calculateAbsorptionNeutronRate()
+void Worker::calculateAbsorptionNeutronRatePerNode()
 {
     if (!DDResult)
         DDResult = std::make_shared<CalculatedData>();
 
     BuildMatrices matrices;
 
-    matrices.calculateAbsorptionRate(DDValues.get(),
+    matrices.calculateAbsorptionRatePerNode(DDValues.get(),
+                                              DDResult.get());
+}
+
+void Worker::calculateAbsorptionNeutronRatePerRegion()
+{
+    if (!DDResult)
+        DDResult = std::make_shared<CalculatedData>();
+
+    BuildMatrices matrices;
+
+    matrices.calculateAbsorptionRatePerRegion(DDValues.get(),
                                      DDResult.get());
 }
 
@@ -157,7 +166,6 @@ void Worker::copyScalarNeutronFluxToVector()
         }
 
         scalarFlux.push_back(scalarFluxGroup);
-
     }
 
     DDResult->scalarFlux.swap(scalarFlux);

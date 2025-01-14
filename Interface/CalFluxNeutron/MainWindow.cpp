@@ -10,13 +10,9 @@
 #include <QColorDialog>
 #include <QFileDialog>
 #include <QFontDialog>
-#include <QLineEdit>
 #include <QLineSeries>
 #include <QMessageBox>
 #include <QThread>
-
-std::mutex mtx1;
-std::mutex mtx2;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -86,7 +82,7 @@ void MainWindow::changeFont()
 {
     bool ok;
     QFont font = QFontDialog::getFont(
-                &ok, QFont("Helvetica [Cronyx]", 10), this);
+        &ok, QFont("Helvetica [Cronyx]", 10), this);
     if (ok)
     {
         this->setFont(font);
@@ -111,7 +107,7 @@ void MainWindow::changeViewMode()
     }
 }
 
-void MainWindow::changePaletteToDarkStyle()
+void MainWindow::changePalette()
 {
     const QString darkText = "Color scheme to Dark";
 
@@ -140,8 +136,8 @@ void MainWindow::openProjectFileDlg()
     openProject();
 
     ui->tabWidget->setCurrentIndex(tabInputData);
-    ui->widgetChartNeutronFlux->clearChart();
-    ui->widgetChartNeutronFluxAbsorptionRate->clearChart();
+    ui->widgetNeutronAbsorpt->clearChart();
+    ui->widgetNeutronScalarFlux->clearChart();
 }
 
 void MainWindow::openProject()
@@ -160,7 +156,9 @@ void MainWindow::openProject()
 
     proj->regionArray =  std::move(NeutronFlowJsonIO::getInstance()->getRegionArray());
 
-    ui->spinBoxPeriodicity->setValue(proj->periodicity);
+    //do we need that?
+    ui->widgetNeutronAbsorpt->setPeriodicityValue(proj->periodicity);
+    ui->widgetNeutronScalarFlux->setPeriodicityValue(proj->periodicity);
     ui->widgetRegion->setGeneralProjectData(std::move(proj));
 
     QTimer::singleShot(2000, this, [&](){
@@ -191,9 +189,11 @@ bool MainWindow::saveProject()
         auto proj = ui->widgetRegion->getGeneralProjectData();
 
         //Get periodicity
-        proj->periodicity = ui->spinBoxPeriodicity->value();
+        proj->periodicity = ui->widgetNeutronScalarFlux->getPeriodicityValue();
 
         NeutronFlowJsonIO::getInstance()->setRegionArray(std::move(proj->regionArray));
+
+        qInfo()<<"MainWindow::saveProject"<<proj->maximumIterationsNumber;
         NeutronFlowJsonIO::getInstance()->setGeneralProjectData(std::move(proj));
         NeutronFlowJsonIO::getInstance()->saveProject(Interface::jsonFormat, fileName);
 
@@ -206,80 +206,98 @@ bool MainWindow::saveProject()
 
 void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
 {
-    std::unique_lock<std::mutex> lock(mtx2);
-
-    if (DDResult == nullptr)
+    if (!DDResult)
         return;
 
-    const auto& regionArray = proj->regionArray;
-    auto absorptionRate = DDResult->absorptionRate;
-    int group = proj->energyGroup;
+    if (!proj)
+        proj = std::make_unique<ProjectData>();
 
-    long double maxFlux = 0.0;
+    const auto regionArray  = proj->regionArray;
+    const auto regionNumber = proj->regionNumber;
+    const auto group        = proj->energyGroup;
 
-    ui->widgetChartAbsorptionRate->clearChart();
-    const int regionQtt = proj->regionNumber;
-    double startPosition = 0.0;
+    long double maxAbpRateValue = 0.0;
+    double totalRegionSize = 0.0;
+    int nodex = 0;
+    const auto absorptionRatePerNode = std::move(DDResult->absorptionRatePerNode);
+
+    for (int rIndex = 0; rIndex < regionNumber; ++rIndex)
+    {
+        totalRegionSize += regionArray[rIndex].quote;
+        nodex += proj->regionArray[rIndex].node;
+    }
+
+    ui->widgetNeutronAbsorpt->clearChart();
 
     for (int g = 0; g < group; ++g)
     {
         QList<QPointF> points;
-        startPosition = 0.0;
 
-        for (int rIndex = 0; rIndex < regionQtt; ++rIndex)
+        double positionX = 0.0;
+        double stepSize = totalRegionSize / static_cast<double>(nodex);
+
+        for (int nod = 0; nod < nodex; ++nod)
         {
-            auto absRateValue = absorptionRate[rIndex][g];
-            maxFlux = std::max(maxFlux, absRateValue);
+            long double abpValue = absorptionRatePerNode[g][nod];
+            maxAbpRateValue = std::max(maxAbpRateValue, abpValue);
 
-            points.append(QPointF(startPosition, absRateValue));
+            QPointF point(positionX, abpValue);
+            points.append(point);
 
-            startPosition += regionArray[rIndex].quote;
-
-            points.append(QPointF(startPosition, absRateValue));
+            positionX += stepSize;
         }
 
-        ui->widgetChartAbsorptionRate->setInputData(points, g);
+        ui->widgetNeutronAbsorpt->addSeries(points, g);
     }
 
-    ui->widgetChartAbsorptionRate->setXRange(0, startPosition);
-    ui->widgetChartAbsorptionRate->setYRange(0, maxFlux);
-    ui->widgetChartAbsorptionRate->setChart();
+    ui->widgetNeutronAbsorpt->setRange(0, 0, totalRegionSize, maxAbpRateValue);
+    ui->widgetNeutronAbsorpt->setMaxPeriodicity(totalRegionSize);
+    ui->widgetNeutronAbsorpt->setFilteredByGroup(group);
+}
 
-    //setFilterByGroup(group);
+void MainWindow::updateAbsRateTable(std::shared_ptr<CalculatedData> DDResult)
+{
+    const auto regionNumber = proj->regionNumber;
+    const auto energyGroup  = proj->energyGroup;
 
-    this->statusBar()->showMessage("Finished");
+    QStringList regions;
+    for (int rIndex = 1; rIndex <= regionNumber; ++rIndex)
+    {
+        regions << "Region " + QString::number(rIndex);
+    }
 
-    QTimer::singleShot(2000, this, [&](){ this->statusBar()->showMessage(""); });
+    QStringList groups;
+    for (int groupIndex = 1; groupIndex <= energyGroup; ++groupIndex)
+    {
+        groups << "Group " + QString::number(groupIndex);
+    }
+
+    ui->widgetNeutronAbsorpt->setTableDimension(energyGroup, regions.size());
+    ui->widgetNeutronAbsorpt->setTableHeaders(regions, groups);
+    ui->widgetNeutronAbsorpt->setTableItems(std::move(DDResult->absorptionRate));
 }
 
 void MainWindow::init()
 {
-    qApp->setApplicationName("NeutronFluxCalculator");
-
-    QApplication::setPalette(Interface::getDarkPalette());
-
-    this->setWindowTitle(Interface::getWindowTitle());
-
-    ui->tabInputData->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-
-    ui->tabWidget->setCurrentIndex(tabInputData);
-
     calculationThread = new QThread(this);
     worker = new Worker();
     worker->moveToThread(calculationThread);
 
     setConnections();
 
-    ui->widgetChartNeutronFlux->setProjectionTitle("Scalar Flux of Neutral particles (DD method)");
-    ui->widgetChartNeutronFlux->setXLabel("Position x (cm)");
-    ui->widgetChartNeutronFlux->setYLabel("Scalar Flux");
+    qApp->setApplicationName("NeutronFluxCalculator");
 
-    ui->widgetChartNeutronFluxAbsorptionRate->setProjectionTitle("Neutron Absorption Rate");
-    ui->widgetChartNeutronFluxAbsorptionRate->setXLabel("Position x (cm)");
-    ui->widgetChartNeutronFluxAbsorptionRate->setYLabel("Rate");
+    QApplication::setPalette(Interface::getDarkPalette());
 
-    QLineEdit *lineEdit = ui->spinBoxPeriodicity->findChild<QLineEdit*>(); //@TBDprotected member, the right way is create a child class
-    lineEdit->setFrame(false);
+    this->setWindowTitle(Interface::getWindowTitle());
+
+    ui->tabWidget->setCurrentIndex(tabInputData);
+
+    ui->widgetNeutronScalarFlux->setProjectionTitle("Scalar Flux of Neutral particles (DD method)");
+    ui->widgetNeutronScalarFlux->setLabels("Position x (cm)", "Scalar Flux");
+
+    ui->widgetNeutronAbsorpt->setProjectionTitle("Neutron Absorption Rate");
+    ui->widgetNeutronAbsorpt->setLabels("Position x (cm)", "Rate");
 
     //Open default project
     QTimer::singleShot(1000, this, [&]{    openProject();});
@@ -289,48 +307,41 @@ void MainWindow::setConnections()
 {
     connect(ui->actionFont, &QAction::triggered, this, &MainWindow::changeFont);
     connect(ui->actionOpen_Project, &QAction::triggered, this, &MainWindow::openProjectFileDlg);
-    connect(ui->actionPalette, &QAction::triggered, this, &MainWindow::changePaletteToDarkStyle);
+    connect(ui->actionPalette, &QAction::triggered, this, &MainWindow::changePalette);
     connect(ui->actionSave_Project, &QAction::triggered, this, &MainWindow::saveProjectFileDlg);
     connect(ui->actionScreenMode, &QAction::triggered, this, &MainWindow::changeViewMode);
     connect(ui->widgetRegion, &RegionInputData::onCalculateScalarNeutronFlux,
             this, &MainWindow::calculateNeutronFluxUsingDD);
 
-    connect(ui->spinBoxPeriodicity, &QSpinBox::valueChanged, this, [this](auto value)
-    {
-        periodicityValue = value;
-        updateChartStep();
-    });
-
     connect(ui->actionThe_app, &QAction::triggered, this, [this](){
         QMessageBox::information(this, "About", Interface::getAboutApp());
     });
 
-
     //Thread
     connect(worker, &Worker::outputData, this, [this](const auto& data)
-    {
-        updateFluxChart(data);
-        updateAbsRateChart(data);
-    });
+            {
+                updateFluxChart(data);
+                updateFluxTable(data);
+                updateAbsRateChart(data);
+                updateAbsRateTable(data);
+
+                ui->widgetNeutronAbsorpt->commitChanges();
+                ui->widgetNeutronScalarFlux->commitChanges();
+            });
 
     connect(worker, &Worker::finished, this, [this]()
-    {
-        this->statusBar()->showMessage("Finished");
-        ui->widgetRegion->setPushButtonCalculateFluxEnable(true);
-        QTimer::singleShot(2000, this, [&](){ this->statusBar()->showMessage(""); });
-    });
+            {
+                this->statusBar()->showMessage("Finished");
+                ui->widgetRegion->setPushButtonCalculateFluxEnable(true);
+                QTimer::singleShot(2000, this, [&](){ this->statusBar()->showMessage(""); });
+            });
 
     connect(worker, &Worker::errorOccurred, this, [this](auto errors)
-    {
-        QMessageBox::information(this, "Error", errors);
-    });
+            {
+                QMessageBox::information(this, "Error", errors);
+            });
 
     connect(this, &MainWindow::startProcess, worker, &Worker::process);
-
-    connect(ui->comboBoxFilter, &QComboBox::activated, this, [this](int index)
-    {
-                ui->widgetChartNeutronFlux->filterChange(index);
-    });
 }
 
 void MainWindow::startWork()
@@ -351,34 +362,8 @@ void MainWindow::stopWork()
     }
 }
 
-void MainWindow::setFilterByGroup(int group)
-{
-    QStringList options;
-    options << "All";
-
-    qInfo()<<"setFilterByGroup"<<group;
-
-    for (int ig = 0; ig < group; ++ig)
-    {
-        options << "Group " + QString::number(ig + 1);
-    }
-
-    //if we have only one group we don't need a filter
-    if (group == 1)
-        ui->comboBoxFilter->hide();
-    else
-        ui->comboBoxFilter->show();
-
-    ui->comboBoxFilter->setFixedWidth(300);
-
-    ui->comboBoxFilter->clear();
-    ui->comboBoxFilter->addItems(options);
-}
-
 void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
 {
-    std::unique_lock<std::mutex> lock(mtx1);
-
     if (!DDResult)
         return;
 
@@ -389,7 +374,7 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
     const auto regionNumber = proj->regionNumber;
     const auto group        = proj->energyGroup;
 
-    double maxY = 1; //@TBD
+    long double maxY = 0.0;
     double totalRegionSize = 0.0;
     int nodex = 0;
     const auto scalarFlux = std::move(DDResult->scalarFlux);
@@ -400,20 +385,19 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
         nodex += proj->regionArray[rIndex].node;
     }
 
-    ui->widgetChartNeutronFlux->clearChart();
+    ui->widgetNeutronScalarFlux->clearChart();
 
-    long double maxFlux = 0;
     for (int g = 0; g < group; ++g)
     {
         QList<QPointF> points;
 
         double positionX = 0.0;
-        double stepSize = totalRegionSize / static_cast<double>(nodex); // Calcula o tamanho de cada passo baseado no total de nodos
+        double stepSize = totalRegionSize / static_cast<double>(nodex);
 
         for (int nod = 0; nod < nodex; ++nod)
         {
             long double fluxValue = scalarFlux[g][nod];
-            maxFlux = std::max(maxFlux, fluxValue);
+            maxY = std::max(maxY, fluxValue);
 
             QPointF point(positionX, fluxValue);
             points.append(point);
@@ -421,36 +405,35 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
             positionX += stepSize;
         }
 
-        ui->widgetChartNeutronFlux->setInputData(points, g);
+        ui->widgetNeutronScalarFlux->addSeries(points, g);
     }
 
-    ui->widgetChartNeutronFlux->setXRange(0, totalRegionSize);
-    ui->spinBoxPeriodicity->setMaximum(totalRegionSize);
-    ui->widgetChartNeutronFlux->setYRange(0, maxFlux + 1);
-    ui->widgetChartNeutronFlux->setChart();
-
-    setFilterByGroup(group);
+    ui->widgetNeutronScalarFlux->setRange(0, 0, totalRegionSize, maxY);
+    ui->widgetNeutronScalarFlux->setMaxPeriodicity(totalRegionSize);
+    ui->widgetNeutronScalarFlux->setFilteredByGroup(group);
 
     ui->tabWidget->setCurrentIndex(TabResult);
 }
 
-void MainWindow::updateChartStep()
+void MainWindow::updateFluxTable(std::shared_ptr<CalculatedData> DDResult)
 {
-    NeutronFlowJsonIO::getInstance()->loadProject(Interface::jsonFormat, fileName);
-    auto proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
+    const auto regionNumber = proj->regionNumber;
+    const auto energyGroup = proj->energyGroup;
 
-    if (!proj)
-        proj = std::make_unique<ProjectData>();
-
-    double totalRegionSize = 0.0;
-
-    for (int rIndex = 0; rIndex < proj->regionNumber; ++rIndex)
+    QStringList regions;
+    for (int rIndex = 1; rIndex <= regionNumber; ++rIndex)
     {
-        totalRegionSize += proj->regionArray[rIndex].quote;
+        regions << "Region " + QString::number(rIndex);
     }
 
-    int tickCount = totalRegionSize/periodicityValue;
+    QStringList groups;
+    for (int groupIndex = 1; groupIndex <= energyGroup; ++groupIndex)
+    {
+        groups << "Group " + QString::number(groupIndex);
+    }
 
-    ui->widgetChartNeutronFlux->setTickNumber(tickCount + 1);
-    ui->widgetChartNeutronFlux->setChart();
+    ui->widgetNeutronScalarFlux->setTableDimension(energyGroup, regions.size());
+    ui->widgetNeutronScalarFlux->setTableHeaders(regions, groups);
+    ui->widgetNeutronScalarFlux->setTableItems(std::move(DDResult->averageNeutronFluxPerRegion));
 }
+

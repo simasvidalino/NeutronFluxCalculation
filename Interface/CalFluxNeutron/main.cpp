@@ -1,6 +1,8 @@
 #include "MainWindow.h"
 
 #include <QApplication>
+#include <QDebug>
+#include <QTimer>
 
 int main(int argc, char *argv[])
 {

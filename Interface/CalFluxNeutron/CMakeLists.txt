@@ -47,6 +47,9 @@ set(PROJECT_SOURCES
     MapRegion.cpp
     MapRegion.h
     MapRegion.ui
+    NeutronAnalysisChartWidget.h
+    NeutronAnalysisChartWidget.cpp
+    NeutronAnalysisChartWidget.ui
     NeutronFlowJsonIO.cpp
     NeutronFlowJsonIO.h
     NJOYInputDlg.cpp

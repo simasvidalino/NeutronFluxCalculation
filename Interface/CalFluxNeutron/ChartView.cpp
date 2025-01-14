@@ -34,6 +34,7 @@ void ChartView::setInputData(QList<QPointF> &value, int group)
     }
 
     QLineSeries *serie = new QLineSeries();
+
     for (const auto &point : value)
     {
         serie->append(point);
@@ -96,7 +97,6 @@ void ChartView::setYRange(int min, int max)
 
 void ChartView::setXRange(int min, int max)
 {
-    maxY = max;
     axisX->setRange(min, max);
 }
 
