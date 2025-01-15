@@ -25,7 +25,11 @@ RegionInputData::RegionInputData(QWidget *parent)
 {
     ui->setupUi(this);
 
+    //TBD
     QTimer::singleShot(1000, this, [&](){ init(); });
+
+    //Future implementation
+    ui->pushButtonNJOY->hide();
 }
 
 RegionInputData::~RegionInputData()
@@ -251,7 +255,23 @@ void RegionInputData::init()
 
     setConnections();
 
-    ui->spinBoxRegionQtt->setValue(0);
+    ui->pushButtonCreateCrossSection->setToolTip(Interface::getCrossSessionDataToolTip());
+
+
+    //Accepts only even quadrature values.
+    QLineEdit *lineEdit = ui->spinBoxQuadratureOrder->findChild<QLineEdit*>();
+
+    if (lineEdit)
+    {
+        lineEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("^[0-9]*[02468]$"), ui->spinBoxQuadratureOrder));
+
+        connect(ui->spinBoxQuadratureOrder, QOverload<int>::of(&QSpinBox::valueChanged), this, [this, lineEdit](int value) {
+            if (value % 2 != 0)
+            {
+                ui->spinBoxQuadratureOrder->setValue(value + 1);
+            }
+        });
+    }
 }
 
 void RegionInputData::setConnections()
@@ -438,6 +458,7 @@ void RegionInputData::loadGUI()
         bcLeftButton->click();
 
     bcLeft.reset();
+
     if (proj->bcLeft.has_value()
         && proj->leftBoundaryConditionsType == ePrescribed)
     {
@@ -451,6 +472,7 @@ void RegionInputData::loadGUI()
         bcRightButton->click();
 
     bcRight.reset();
+
     if (proj->bcRight.has_value()
         && proj->rightBoundaryConditionsType == ePrescribed)
     {
@@ -460,6 +482,7 @@ void RegionInputData::loadGUI()
     ui->spinBoxStopOrder->setValue(proj->stopOrder);
 
     allZonasStr.clear();
+
     for (int iIndex = 0; iIndex < proj->regionNumber; ++iIndex)
     {
         if (!regionArray.empty() || regionArray.size() > iIndex)

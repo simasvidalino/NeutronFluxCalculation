@@ -56,8 +56,6 @@ private:
 
     QStringList materialList;
 
-    std::vector<std::vector<legendreData>> dataPerMaterial;
-
     ParseFile::ParseErrors eParseError;
 
     QString pathCrossSection;

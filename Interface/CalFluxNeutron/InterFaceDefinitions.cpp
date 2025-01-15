@@ -104,4 +104,9 @@ const char* getDefaultProjectName()
     return ":/Default_Project/Resources/Default_Project.json";
 }
 
+const char *getCrossSessionDataToolTip()
+{
+    return "Use this button to input total cross-section and group-to-group scattering data in a format that the program can interpret.";
+}
+
 }

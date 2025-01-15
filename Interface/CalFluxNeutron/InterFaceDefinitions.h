@@ -15,6 +15,7 @@ enum eSaveFormat
 
 QPalette getDarkPalette();
 QPalette getLightPalette();
+const char * getCrossSessionDataToolTip();
 const char * getDefaultZoneString();
 const char * getAboutApp();
 const char * getIAEAAdress();
