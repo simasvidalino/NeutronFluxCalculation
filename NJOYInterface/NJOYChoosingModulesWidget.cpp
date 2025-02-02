@@ -82,20 +82,20 @@ void NJOYChoosingModulesWidget::createFile(const QString sourceFile, const QStri
             finalFile.write(fileOrigin.readAll());
 
             if (finalFile.error() != QFile::NoError)
-                qInfo() << "Error copying file.:" << finalFile.errorString();
+                qInfo() << "Error copyinf file:" << finalFile.errorString();
 
             finalFile.close();
         }
         else
         {
-            qInfo() << "Error opening target file.:" << finalFile.errorString();
+            qInfo() << "Error opening target file:" << finalFile.errorString();
         }
 
         fileOrigin.close();
     }
     else
     {
-        qInfo() << "Error opening target file.:" << fileOrigin.errorString();
+        qInfo() << "Error opening target file:" << fileOrigin.errorString();
     }
 }
 

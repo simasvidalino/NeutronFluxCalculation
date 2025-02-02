@@ -6,19 +6,19 @@
 #include "ParseFile.h"
 
 namespace Ui {
-class CrossSectionFileDlg;
+class FileViewerDlg;
 }
 
-class CrossSectionFileDlg : public QDialog
+class FileViewerDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit CrossSectionFileDlg(QWidget *parent   = nullptr,
+    explicit FileViewerDlg(QWidget *parent   = nullptr,
                                  QStringList materials = {},
                                  int energyGroup   = 0,
                                  int legendreOrder = 0);
-    ~CrossSectionFileDlg();
+    ~FileViewerDlg();
 
     ParseFile::ParseErrors getEParseError() const;
 
@@ -48,7 +48,7 @@ private:
         std::map<double, double> scattering;
     };
 
-    Ui::CrossSectionFileDlg *ui;
+    Ui::FileViewerDlg *ui;
 
     void initDlg();
     void setConnection();

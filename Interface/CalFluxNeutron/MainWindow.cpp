@@ -3,7 +3,7 @@
 
 #include <mutex>
 
-#include "CrossSectionFileDlg.h"
+#include "FileViewerDlg.h"
 #include "NeutronFlowJsonIO.h"
 #include "VariablesUsed.h"
 
@@ -181,7 +181,7 @@ void MainWindow::showCrossSectionFile(std::string& file)
     if (file.empty())
         return;
 
-    CrossSectionFileDlg dlg(this);
+    FileViewerDlg dlg(this);
 
     dlg.loadCrossSectionFile(file);
     dlg.makeReadOnly();

@@ -1,5 +1,5 @@
 #include "RegionInputData.h"
-#include "CrossSectionFileDlg.h"
+#include "FileViewerDlg.h"
 #include "ui_RegionInputData.h"
 
 #include <QGraphicsRectItem>
@@ -116,7 +116,7 @@ void RegionInputData::onCreateCrossSectionFile()
         return;
     }
 
-    CrossSectionFileDlg dlg(this,
+    FileViewerDlg dlg(this,
                             allZonasStr,
                             group,
                             ui->spinBoxLegendreOrder->value());

@@ -1,5 +1,5 @@
-#include "CrossSectionFileDlg.h"
-#include "ui_CrossSectionFileDlg.h"
+#include "FileViewerDlg.h"
+#include "ui_FileViewerDlg.h"
 
 #include "ParseFile.h"
 
@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-CrossSectionFileDlg::CrossSectionFileDlg(QWidget *parent,
+FileViewerDlg::FileViewerDlg(QWidget *parent,
                                          QStringList materials,
                                          int energyGroup,
                                          int legendreOrder) :
@@ -16,19 +16,19 @@ CrossSectionFileDlg::CrossSectionFileDlg(QWidget *parent,
     energyGroup(energyGroup),
     legendreOrder(legendreOrder),
     materialList(materials),
-    ui(new Ui::CrossSectionFileDlg)
+    ui(new Ui::FileViewerDlg)
 {
     ui->setupUi(this);
 
     initDlg();
 }
 
-CrossSectionFileDlg::~CrossSectionFileDlg()
+FileViewerDlg::~FileViewerDlg()
 {
     delete ui;
 }
 
-void CrossSectionFileDlg::accept()
+void FileViewerDlg::accept()
 {
     parseFile();
 
@@ -38,11 +38,11 @@ void CrossSectionFileDlg::accept()
     }
 }
 
-void CrossSectionFileDlg::clearText()
+void FileViewerDlg::clearText()
 {
     ui->textEdit->clear();
 }
-void CrossSectionFileDlg::openFile()
+void FileViewerDlg::openFile()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Open File", "", "Text Files (*.txt)");
 
@@ -51,7 +51,7 @@ void CrossSectionFileDlg::openFile()
     readFile(fileName);
 }
 
-void CrossSectionFileDlg::parseFile()
+void FileViewerDlg::parseFile()
 {
     const QString instruction = "<p><strong>To create a valid text format, follow the rules below:</strong></p> <ol>"
                                 "<li><strong>Before the numerical data for material zone,</strong> start the line with <code>///</code>.</li>"
@@ -78,7 +78,7 @@ void CrossSectionFileDlg::parseFile()
 
 }
 
-void CrossSectionFileDlg::saveText()
+void FileViewerDlg::saveText()
 {
     QString fileName = QFileDialog::getSaveFileName(this, "Save File", "", "File Text(txt) (*.txt)");
 
@@ -92,7 +92,7 @@ void CrossSectionFileDlg::saveText()
     }
 }
 
-void CrossSectionFileDlg::readFile(QString &filePath)
+void FileViewerDlg::readFile(QString &filePath)
 {
     QFile file(filePath);
 
@@ -123,7 +123,7 @@ void CrossSectionFileDlg::readFile(QString &filePath)
     file.close();
 }
 
-void CrossSectionFileDlg::writeFile(QString &filePath)
+void FileViewerDlg::writeFile(QString &filePath)
 {
     QFile file(filePath);
 
@@ -139,29 +139,29 @@ void CrossSectionFileDlg::writeFile(QString &filePath)
     file.close();
 }
 
-void CrossSectionFileDlg::initDlg()
+void FileViewerDlg::initDlg()
 {
     setConnection();
 }
 
-void CrossSectionFileDlg::setConnection()
+void FileViewerDlg::setConnection()
 {
-    connect(ui->commandLinkButtonOpen, &QCommandLinkButton::clicked, this, &CrossSectionFileDlg::openFile);
-    connect(ui->commandLinkButtonClear, &QCommandLinkButton::clicked, this, &CrossSectionFileDlg::clearText);
-    connect(ui->commandLinkButtonSave, &QCommandLinkButton::clicked, this, &CrossSectionFileDlg::saveText);
-    connect(ui->commandLinkButtonParse, &QCommandLinkButton::clicked, this, &CrossSectionFileDlg::parseFile);
+    connect(ui->commandLinkButtonOpen, &QCommandLinkButton::clicked, this, &FileViewerDlg::openFile);
+    connect(ui->commandLinkButtonClear, &QCommandLinkButton::clicked, this, &FileViewerDlg::clearText);
+    connect(ui->commandLinkButtonSave, &QCommandLinkButton::clicked, this, &FileViewerDlg::saveText);
+    connect(ui->commandLinkButtonParse, &QCommandLinkButton::clicked, this, &FileViewerDlg::parseFile);
 
-    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &CrossSectionFileDlg::accept);
-    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &CrossSectionFileDlg::reject);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &FileViewerDlg::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &FileViewerDlg::reject);
 }
 
-void CrossSectionFileDlg::loadCrossSectionFile(std::string &newPathCrossSection)
+void FileViewerDlg::loadCrossSectionFile(std::string &newPathCrossSection)
 {
     pathCrossSection = QString::fromStdString(newPathCrossSection);
     readFile(pathCrossSection);
 }
 
-void CrossSectionFileDlg::makeReadOnly()
+void FileViewerDlg::makeReadOnly()
 {
     ui->groupBox->hide();
     ui->buttonBox->setVisible(false);
@@ -169,12 +169,12 @@ void CrossSectionFileDlg::makeReadOnly()
     ui->textEdit->setReadOnly(true);
 }
 
-QString CrossSectionFileDlg::getPathCrossSection() const
+QString FileViewerDlg::getPathCrossSection() const
 {
     return pathCrossSection;
 }
 
-ParseFile::ParseErrors CrossSectionFileDlg::getEParseError() const
+ParseFile::ParseErrors FileViewerDlg::getEParseError() const
 {
     return eParseError;
 }

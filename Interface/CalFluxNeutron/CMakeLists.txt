@@ -17,6 +17,8 @@ set(LIBS "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 find_package(Qt6 REQUIRED COMPONENTS Widgets Charts Core)
 
 include_directories(${Qt6Widgets_INCLUDE_DIRS} ${Qt6Core_INCLUDE_DIRS} ${Qt6Charts_INCLUDE_DIRS})
@@ -32,9 +34,9 @@ set(PROJECT_SOURCES
     AbsorptionRateWidget.ui
     ChartView.cpp
     ChartView.h
-    CrossSectionFileDlg.cpp
-    CrossSectionFileDlg.h
-    CrossSectionFileDlg.ui
+    FileViewerDlg.cpp
+    FileViewerDlg.h
+    FileViewerDlg.ui
     CustomComboBox.h
     CustomComboBox.cpp
     CustomTableModel.cpp
@@ -106,5 +108,4 @@ if(Qt${QT_VERSION_MAJOR} EQUAL 6)
     qt_finalize_executable(CalFluxNeutron)
 endif()
 
-qt_finalize_executable(CalFluxNeutron)
 
