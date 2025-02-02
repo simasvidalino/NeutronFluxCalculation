@@ -100,6 +100,8 @@ void Worker::calculateAbsorptionNeutronRatePerNode()
 
     BuildMatrices::getInstance()->calculateAbsorptionRatePerNode(DDValues.get(),
                                               DDResult.get());
+
+    BuildMatrices::getInstance()->writeAbsRatePerNode(DDValues.get(), DDResult.get());
 }
 
 void Worker::calculateAbsorptionNeutronRatePerRegion()

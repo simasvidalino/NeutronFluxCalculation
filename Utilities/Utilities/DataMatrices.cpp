@@ -987,8 +987,8 @@ void BuildMatrices::writeAbsRatePerNode(dados_entrada *DDValues, CalculatedData 
         throw std::runtime_error("absorptionRatePerNode is empty");
     }
 
-    std::ofstream output;
     std::string titleStr = computerFileName(DDValues, "Absorption_Rate_Per_Node");
+    std::ofstream output(titleStr);
 
     if (!output.is_open())
     {
