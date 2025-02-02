@@ -24,8 +24,8 @@ public:
     explicit RegionInputData(QWidget *parent = nullptr);
     ~RegionInputData();
 
-    void setGeneralProjectData(std::unique_ptr<ProjectData> &&proj);
-    std::unique_ptr<ProjectData> &&getGeneralProjectData();
+    void setGeneralProjectData(std::shared_ptr<ProjectData> proj);
+    std::shared_ptr<ProjectData> getGeneralProjectData();
 
     std::shared_ptr<dados_entrada> getDdValues() const;
 
@@ -50,7 +50,7 @@ private slots:
     void onSelectionRegionChange();
 
 signals:
-    void updateProjectFiles();
+    void onCalculateCrossSectionMatrices();
     void onCalculateScalarNeutronFlux();
 
 private:
@@ -109,7 +109,7 @@ private:
         QColor(253, 223, 182)  // Light Pastel Orange
     };
 
-    std::unique_ptr<ProjectData> proj;
+    std::shared_ptr<ProjectData> proj;
 
     QStringList allZonasStr;
     QString scatteringPath = "";

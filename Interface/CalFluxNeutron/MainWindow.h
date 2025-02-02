@@ -22,6 +22,7 @@ private slots:
     void changeFont();
     void changeViewMode();
     void changePalette();
+    void onOutputData(std::shared_ptr<CalculatedData> data);
     void openProject();
     void openProjectFileDlg();
     bool saveProject();
@@ -60,7 +61,7 @@ private:
 
     QString fileName;
 
-    std::unique_ptr<ProjectData> proj;
+    std::shared_ptr<ProjectData> proj;
 
     QThread* calculationThread;
     Worker* worker;

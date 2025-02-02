@@ -89,24 +89,10 @@
       <string>Cross-Section Data</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="0">
-       <widget class="QPushButton" name="pushButtonAb">
-        <property name="text">
-         <string>Absorption Cross-Section</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="0">
        <widget class="QPushButton" name="pushButtonCreateCrossSection">
         <property name="text">
          <string>File Data</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="pushButton_2">
-        <property name="text">
-         <string>Scattering Cross-Section</string>
         </property>
        </widget>
       </item>

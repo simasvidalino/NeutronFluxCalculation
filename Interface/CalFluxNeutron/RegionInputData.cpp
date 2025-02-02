@@ -37,18 +37,18 @@ RegionInputData::~RegionInputData()
     delete ui;
 }
 
-void RegionInputData::setGeneralProjectData(std::unique_ptr<ProjectData> &&proj)
+void RegionInputData::setGeneralProjectData(std::shared_ptr<ProjectData> proj)
 {
-    this->proj = std::move(proj);
+    this->proj = proj;
 
     loadGUI();
 }
 
-std::unique_ptr<ProjectData> &&RegionInputData::getGeneralProjectData()
+std::shared_ptr<ProjectData> RegionInputData::getGeneralProjectData()
 {
     saveGUI();
 
-    return std::move(proj);
+    return proj;
 }
 
 std::shared_ptr<dados_entrada> RegionInputData::getDdValues() const
@@ -129,6 +129,7 @@ void RegionInputData::onCreateCrossSectionFile()
         return;
 
     scatteringPath = dlg.getPathCrossSection();
+    emit onCalculateCrossSectionMatrices();
 }
 
 void RegionInputData::onNJOYClicked()
@@ -288,7 +289,9 @@ void RegionInputData::setConnections()
 
     //all operations are done in the MainWindow so as not to overload this window.
     connect(ui->pushButtonCalculateFlux, &QPushButton::clicked, this, [this](){
-        emit onCalculateScalarNeutronFlux();});
+        emit onCalculateCrossSectionMatrices();
+        emit onCalculateScalarNeutronFlux();
+    });
 
     connect(scene.get(), &QGraphicsScene::selectionChanged, this,
             &RegionInputData::onSelectionRegionChange);
@@ -438,7 +441,7 @@ void RegionInputData::styleSpinBoxQuota(QDoubleSpinBox *quota)
 void RegionInputData::loadGUI()
 {
     if (!proj)
-        proj = std::make_unique<ProjectData>();
+        proj = std::make_shared<ProjectData>();
 
     regionArray = std::move(proj->regionArray);
 
@@ -502,7 +505,7 @@ void RegionInputData::loadGUI()
 void RegionInputData::saveGUI()
 {
     if (!proj)
-        proj = std::make_unique<ProjectData>();
+        proj = std::make_shared<ProjectData>();
 
     proj->regionArray = regionArray;
     proj->regionNumber = ui->spinBoxRegionQtt->value();

@@ -18,14 +18,14 @@ public:
     void loadProject(Interface::eSaveFormat saveFormat = Interface::jsonFormat,
                       QString path = "");
 
-    std::unique_ptr<ProjectData> &&getGeneralProjectData();
-    void setGeneralProjectData(std::unique_ptr<ProjectData> newGeneralProjectData);
+    ProjectData* getGeneralProjectDataPtr();
+    std::shared_ptr<ProjectData> getGeneralProjectData();
+    void setGeneralProjectData(std::shared_ptr<ProjectData> newGeneralProjectData);
 
     std::vector<std::shared_ptr<RegionData> > getDataPerRegion();
     void setDataPerRegion(const std::vector<std::shared_ptr<RegionData> > &newDataPerRegion);
 
     std::array<RegionData, 10> getRegionArray() const;
-    void setRegionArray(const std::array<RegionData, 10> &newRegionArray);
 
 protected:
     void read(const QJsonObject &json);
@@ -42,8 +42,7 @@ private:
 
     static NeutronFlowJsonIO* mClass;
 
-    std::unique_ptr<ProjectData> generalProjectData;
-    std::array<RegionData, 10> regionArray;
+    std::shared_ptr<ProjectData> generalProjectData;
 
     const char *EnergyGroupKey = "EnergyGroup";
     const char *GeneralProjectDataKey = "GeneralProjectData";

@@ -38,9 +38,6 @@ void NeutronFlowJsonIO::saveProject(Interface::eSaveFormat saveFormat, QString p
 
     QJsonObject obj;
     write(obj);
-    //    saveFile.write(saveFormat == Interface::jsonFormat
-    //                   ? QJsonDocument(obj).toJson()
-    //                   : QCborValue::fromJsonValue(obj).toCbor());
     saveFile.write(QJsonDocument(obj).toJson());
 }
 
@@ -67,39 +64,45 @@ void NeutronFlowJsonIO::loadProject(Interface::eSaveFormat saveFormat,
                         << (saveFormat != Interface::jsonFormat ? "CBOR" : "JSON") << "...\n";
 }
 
-std::unique_ptr<ProjectData> &&NeutronFlowJsonIO::getGeneralProjectData()
+ProjectData *NeutronFlowJsonIO::getGeneralProjectDataPtr()
 {
-    return std::move(generalProjectData);
+    return generalProjectData.get();
 }
-void NeutronFlowJsonIO::setGeneralProjectData(std::unique_ptr<ProjectData> newGeneralProjectData)
+
+std::shared_ptr<ProjectData> NeutronFlowJsonIO::getGeneralProjectData()
 {
-    generalProjectData = std::move(newGeneralProjectData);
+    return generalProjectData;
+}
+
+void NeutronFlowJsonIO::setGeneralProjectData(std::shared_ptr<ProjectData> newGeneralProjectData)
+{
+    generalProjectData = newGeneralProjectData;
 }
 
 void NeutronFlowJsonIO::read(const QJsonObject &json)
 {
     if (json.contains(GeneralProjectDataKey))
     {
-        generalProjectData = std::make_unique<ProjectData>(
+        generalProjectData = std::make_shared<ProjectData>(
                     loadGeneralProjectData(json[GeneralProjectDataKey].toObject()));
     }
 
     if (json.contains(DataPerRegionKey))
     {
         QJsonArray regionObjArray = json[DataPerRegionKey].toArray();
-        regionArray = loadRegionArray(regionObjArray);
-        generalProjectData->regionArray = regionArray;
+        generalProjectData->regionArray = loadRegionArray(regionObjArray);;
     }
 }
 
 void NeutronFlowJsonIO::write(QJsonObject &json) const
 {
     if (generalProjectData)
+    {
         json[GeneralProjectDataKey] = saveGeneralProjectData();
 
-    if (!regionArray.empty())
-        json[DataPerRegionKey] = saveDataPerRegion();
-
+        if (!generalProjectData->regionArray.empty())
+            json[DataPerRegionKey] = saveDataPerRegion();
+    }
 }
 
 QJsonObject NeutronFlowJsonIO::saveGeneralProjectData() const
@@ -293,6 +296,8 @@ QJsonArray NeutronFlowJsonIO::saveDataPerRegion() const
 {
     QJsonArray regionJsonArray;
 
+    auto& regionArray = generalProjectData->regionArray;
+
     for (int iIndex = 0; iIndex < generalProjectData->regionNumber; ++iIndex)
     {
         auto region = regionArray[iIndex];
@@ -393,11 +398,6 @@ std::array<RegionData, 10> NeutronFlowJsonIO::loadRegionArray(const QJsonArray &
 
 std::array<RegionData, 10> NeutronFlowJsonIO::getRegionArray() const
 {
-    return regionArray;
-}
-
-void NeutronFlowJsonIO::setRegionArray(const std::array<RegionData, 10> &newRegionArray)
-{
-    regionArray = newRegionArray;
+    return generalProjectData->regionArray;
 }
 

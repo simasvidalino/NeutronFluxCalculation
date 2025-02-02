@@ -40,41 +40,14 @@ void MainWindow::calculateNeutronFluxUsingDD()
 
     startWork();
 
-    NeutronFlowJsonIO::getInstance()->loadProject(Interface::jsonFormat, fileName);
-    proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
-
     if (!proj)
-        proj = std::make_unique<ProjectData>();
+        proj = std::make_shared<ProjectData>();
 
     worker->setProjData(*proj);
 
     this->statusBar()->showMessage("Calculating...");
 
     ui->widgetRegion->setPushButtonCalculateFluxEnable(false);
-
-    //    QThread *thread = new QThread(this);
-    //    Worker *worker = new Worker();
-    //    worker->moveToThread(thread);
-    //    worker->setProjData(*proj);
-
-    //    connect(worker, &Worker::finished, thread, &QThread::quit);
-    //    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-    //    connect(worker, &Worker::finished, this, [this]()
-    //    {
-    //        ui->widgetRegion->setPushButtonCalculateFluxEnable(true);
-    //    });
-
-    //    connect(worker, &Worker::finished, worker, &Worker::deleteLater);
-
-    //    connect(thread, &QThread::started, worker, &Worker::process);
-
-    //    connect(worker, &Worker::outputData, this, [this](const auto data)
-    //    {
-    //        updateFluxChart(data);
-    //        updateAbsRateChart(data);
-    //    });
-
-    //    thread->start();
 
     emit startProcess();
 }
@@ -124,6 +97,35 @@ void MainWindow::changePalette()
     }
 }
 
+void MainWindow::onOutputData(std::shared_ptr<CalculatedData> data)
+{
+    proj->totalScatteringCrossSectionFilePath =  data->matrices.scatteringCrossSectionFile;
+    proj->absorptionCrossSectionFilePath      =  data->matrices.absorptionCrossSectionFile;
+
+    proj->scalarFluxFile = data->scalarFluxFile;
+    proj->absorptionRateFile = data->absorptionRateFile;
+    proj->absorptionRatePerNodeFile = data->absorptionRatePerNodeFile;
+    proj->averageNeutronFluxPerRegionFile = data->averageNeutronFluxPerRegionFile;
+
+    updateFluxChart(data);
+    updateFluxTable(data);
+    updateAbsRateChart(data);
+    updateAbsRateTable(data);
+
+    ui->widgetNeutronAbsorpt->commitChanges();
+    ui->widgetNeutronScalarFlux->commitChanges();
+
+    if (!QString(proj->scatteringFilePath.c_str()).contains("Default"))
+    {
+        NeutronFlowJsonIO::getInstance()->setGeneralProjectData(proj);
+        NeutronFlowJsonIO::getInstance()->saveProject(Interface::jsonFormat, fileName);
+    }
+    else
+    {
+        showDefaultProjectWarning();
+    }
+}
+
 void MainWindow::openProjectFileDlg()
 {
     QString filter = "JSON Files (*.json);;Text Files (*.txt)";
@@ -150,17 +152,15 @@ void MainWindow::openProject()
     ui->widgetRegion->setPushButtonCalculateFluxEnable(false);
 
     NeutronFlowJsonIO::getInstance()->loadProject(Interface::jsonFormat, fileName);
-    auto proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
+    proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
 
     if (!proj)
-        proj = std::make_unique<ProjectData>();
+        proj = std::make_shared<ProjectData>();
 
-    proj->regionArray =  std::move(NeutronFlowJsonIO::getInstance()->getRegionArray());
-
-    //do we need that?
     ui->widgetNeutronAbsorpt->setPeriodicityValue(proj->periodicity);
     ui->widgetNeutronScalarFlux->setPeriodicityValue(proj->periodicity);
-    ui->widgetRegion->setGeneralProjectData(std::move(proj));
+
+    ui->widgetRegion->setGeneralProjectData(proj);
 
     QTimer::singleShot(2000, this, [&](){
         this->statusBar()->showMessage("Ready");
@@ -198,16 +198,12 @@ bool MainWindow::saveProject()
     }
     else
     {
+        //Here we save dlg project, the calculated data files are calculated later
         projectSaved = true;
-        auto proj = ui->widgetRegion->getGeneralProjectData();
+        proj = ui->widgetRegion->getGeneralProjectData();
 
-        //Get periodicity
         proj->periodicity = ui->widgetNeutronScalarFlux->getPeriodicityValue();
-
-        NeutronFlowJsonIO::getInstance()->setRegionArray(std::move(proj->regionArray));
-
-        qInfo()<<"MainWindow::saveProject"<<proj->maximumIterationsNumber;
-        NeutronFlowJsonIO::getInstance()->setGeneralProjectData(std::move(proj));
+        NeutronFlowJsonIO::getInstance()->setGeneralProjectData(proj);
         NeutronFlowJsonIO::getInstance()->saveProject(Interface::jsonFormat, fileName);
 
         QString title = QString(Interface::getWindowTitle()) + QString(": ") + fileName.split("/").back();
@@ -223,7 +219,7 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
         return;
 
     if (!proj)
-        proj = std::make_unique<ProjectData>();
+        proj = std::make_shared<ProjectData>();
 
     const auto regionArray  = proj->regionArray;
     const auto regionNumber = proj->regionNumber;
@@ -349,21 +345,42 @@ void MainWindow::setConnections()
     connect(ui->widgetRegion, &RegionInputData::onCalculateScalarNeutronFlux,
             this, &MainWindow::calculateNeutronFluxUsingDD);
 
+    connect(ui->actionAbsorption_Cross_Section, &QAction::triggered, this, [this]()
+            {
+                showCrossSectionFile(proj->absorptionCrossSectionFilePath);
+            });
+
+    connect(ui->actionScattering_Cross_Section, &QAction::triggered, this, [this]()
+            {
+                showCrossSectionFile(proj->totalScatteringCrossSectionFilePath);
+            });
+
+    connect(ui->actionScalar_Flux, &QAction::triggered, this, [this]()
+            {
+                showCrossSectionFile(proj->scalarFluxFile);
+            });
+
+    connect(ui->actionAbsorption_Rate, &QAction::triggered, this, [this]()
+            {
+                showCrossSectionFile(proj->absorptionRateFile);
+            });
+
+    connect(ui->actionAbsorption_Rate_Per_Node, &QAction::triggered, this, [this]()
+            {
+                showCrossSectionFile(proj->absorptionRatePerNodeFile);
+            });
+
+    connect(ui->actionAverage_Neutron_Flux_Per_Region, &QAction::triggered, this, [this]()
+            {
+                showCrossSectionFile(proj->averageNeutronFluxPerRegionFile);
+            });
+
     connect(ui->actionThe_app, &QAction::triggered, this, [this](){
         QMessageBox::information(this, "About", Interface::getAboutApp());
     });
 
     //Thread
-    connect(worker, &Worker::outputData, this, [this](const auto& data)
-            {
-                updateFluxChart(data);
-                updateFluxTable(data);
-                updateAbsRateChart(data);
-                updateAbsRateTable(data);
-
-                ui->widgetNeutronAbsorpt->commitChanges();
-                ui->widgetNeutronScalarFlux->commitChanges();
-            });
+    connect(worker, &Worker::outputData, this, &MainWindow::onOutputData);
 
     connect(worker, &Worker::finished, this, [this]()
             {
@@ -404,7 +421,7 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
         return;
 
     if (!proj)
-        proj = std::make_unique<ProjectData>();
+        proj = std::make_shared<ProjectData>();
 
     const auto regionArray  = proj->regionArray;
     const auto regionNumber = proj->regionNumber;
