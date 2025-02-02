@@ -40,7 +40,14 @@ struct ProjectData
 
     double periodicity = 10.0;
 
-    std::string scateringFilePath;
+    std::string scatteringFilePath;
+    std::string totalScatteringCrossSectionFilePath;
+    std::string absorptionCrossSectionFilePath;
+
+    std::string scalarFluxFile;
+    std::string absorptionRateFile;
+    std::string absorptionRatePerNodeFile;
+    std::string averageNeutronFluxPerRegionFile;
 
     //They are optional because we can have reflexive bc and we don't need to set them
     std::optional<std::vector<double>> bcLeft;

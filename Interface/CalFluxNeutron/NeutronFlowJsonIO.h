@@ -68,5 +68,12 @@ private:
     const char *ZoneNumberKey = "ZoneNumber";
     const char *ZoneStrKey = "ZoneStr";
 
+    const char *TotalScatteringCrossSectionFilePathKey = "TotalScatteringCrossSectionFilePath";
+    const char *AbsorptionCrossSectionFilePath = "AbsorptionCrossSectionFilePath";
+
+    const char *ScalarFluxFileKey = "ScalarFluxFile";
+    const char *AbsorptionRateFileKey = "AbsorptionRateFile";
+    const char *AbsorptionRatePerNodeFileKey = "AbsorptionRatePerNodeFile";
+    const char *AverageNeutronFluxPerRegionFileKey = "AverageNeutronFluxPerRegionFile";
 };
 

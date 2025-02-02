@@ -26,6 +26,8 @@ public:
 
     void loadCrossSectionFile(std::string &newPathCrossSection);
 
+    void makeReadOnly();
+
 protected:
     virtual void accept();
 

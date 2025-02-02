@@ -126,11 +126,18 @@ QJsonObject NeutronFlowJsonIO::saveGeneralProjectData() const
         obj[MaximumIterationsNumberKey]     = QString::number(generalProjectData->maximumIterationsNumber);
         obj[LeftBoundaryConditionsTypeKey]  = QString::number(((int)generalProjectData->leftBoundaryConditionsType));
         obj[RightBoundaryConditionsTypeKey] = QString::number(((int)generalProjectData->rightBoundaryConditionsType));
-        obj[ScatteringCrossSectionFileKey]  = generalProjectData->scateringFilePath.c_str();
+        obj[ScatteringCrossSectionFileKey]  = generalProjectData->scatteringFilePath.c_str();
+        obj[TotalScatteringCrossSectionFilePathKey]  = generalProjectData->totalScatteringCrossSectionFilePath.c_str();
+        obj[AbsorptionCrossSectionFilePath]          = generalProjectData->absorptionCrossSectionFilePath.c_str();
         obj[StopOrderKey]                   = QString::number(generalProjectData->stopOrder);
         obj[RegionDataKey]                  = QString::number(generalProjectData->regionNumber);
         obj[PeriodicityKey]                 = generalProjectData->periodicity;
         obj[ZoneNumberKey]                  = generalProjectData->zoneNumber;
+
+        obj[ScalarFluxFileKey]              = generalProjectData->scalarFluxFile.c_str();
+        obj[AbsorptionRateFileKey]          = generalProjectData->absorptionRateFile.c_str();
+        obj[AbsorptionRatePerNodeFileKey]   = generalProjectData->absorptionRatePerNodeFile.c_str();
+        obj[AverageNeutronFluxPerRegionFileKey] = generalProjectData->averageNeutronFluxPerRegionFile.c_str();
 
         if (generalProjectData->bcLeft.has_value())
             obj[LeftBoundaryValuesKey] = saveObjArray(generalProjectData->bcLeft.value());
@@ -187,7 +194,25 @@ ProjectData NeutronFlowJsonIO::loadGeneralProjectData(const QJsonObject &obj)
     }
 
     if (obj.contains(ScatteringCrossSectionFileKey))
-        ProjectData.scateringFilePath = obj[ScatteringCrossSectionFileKey].toString().toStdString();
+        ProjectData.scatteringFilePath = obj[ScatteringCrossSectionFileKey].toString().toStdString();
+
+    if (obj.contains(TotalScatteringCrossSectionFilePathKey))
+        ProjectData.totalScatteringCrossSectionFilePath = obj[TotalScatteringCrossSectionFilePathKey].toString().toStdString();
+
+    if (obj.contains(AbsorptionCrossSectionFilePath))
+        ProjectData.absorptionCrossSectionFilePath = obj[AbsorptionCrossSectionFilePath].toString().toStdString();
+
+    if (obj.contains(ScalarFluxFileKey))
+        ProjectData.scalarFluxFile = obj[ScalarFluxFileKey].toString().toStdString();
+
+    if (obj.contains(AbsorptionRateFileKey))
+        ProjectData.absorptionRateFile = obj[AbsorptionRateFileKey].toString().toStdString();
+
+    if (obj.contains(AbsorptionRatePerNodeFileKey))
+        ProjectData.absorptionRatePerNodeFile = obj[AbsorptionRatePerNodeFileKey].toString().toStdString();
+
+    if (obj.contains(AverageNeutronFluxPerRegionFileKey))
+        ProjectData.averageNeutronFluxPerRegionFile = obj[AverageNeutronFluxPerRegionFileKey].toString().toStdString();
 
     if (obj.contains(QuadratureOrderKey))
     {

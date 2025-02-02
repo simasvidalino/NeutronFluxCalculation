@@ -24,13 +24,14 @@ public:
         eUserInterfaceDataAndTextFile
     };
 
-    BuildMatrices();
+    static BuildMatrices* getInstance();
+    void destroyInstance();
 
     BuildMatrices(dados_entrada *newDatricesDD_Data, ProjectData *newProjectInterfaceData);
 
-    void calculateAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *output);
+    void calculateAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult);
 
-    void calculateAbsorptionRatePerNode(dados_entrada *data, CalculatedData *output);
+    void calculateAbsorptionRatePerNode(dados_entrada *data, CalculatedData *DDResult);
 
     std::vector<std::vector<long double> > calculateAverageNeutronFluxPerRegion(dados_entrada *data);
 
@@ -61,12 +62,24 @@ public:
     int getIterationNumber() const;
     void setIterationNumber(int newIterationNumber);
 
-    void setProjValue(dados_entrada *newProjValue);
-
     dados_entrada *getMatricesDDData() const;
     void setMatricesDDData(dados_entrada *newMatricesDDData);
 
+    void writeAbsRatePerNode(dados_entrada *DDValues, CalculatedData *DDResult);
+    void writeAverageNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult);
+    void writeAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult);
+    void writeNeutronFluxFile(dados_entrada *DDValues, CalculatedData *DDResult);
+
+
+    void writeAbsorptionCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);
+    void writeScatteringCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);
+
+protected:
+    virtual std::string computerFileName(dados_entrada *DDValues, std::string name);
+
 private:
+    BuildMatrices();
+
     void allocateMatrices(dados_entrada &valor);
     void allocateMatricesWithUserInterfaceData(dados_entrada &valor);
 
@@ -101,4 +114,6 @@ private:
 
     dados_entrada *matricesDD_Data;
     ProjectData *projectInterfaceData;
+
+    static BuildMatrices* m_ptr;
 };

@@ -141,8 +141,6 @@ void CrossSectionFileDlg::writeFile(QString &filePath)
 
 void CrossSectionFileDlg::initDlg()
 {
-    setWindowFlag(Qt::FramelessWindowHint);
-
     setConnection();
 }
 
@@ -161,6 +159,14 @@ void CrossSectionFileDlg::loadCrossSectionFile(std::string &newPathCrossSection)
 {
     pathCrossSection = QString::fromStdString(newPathCrossSection);
     readFile(pathCrossSection);
+}
+
+void CrossSectionFileDlg::makeReadOnly()
+{
+    ui->groupBox->hide();
+    ui->buttonBox->setVisible(false);
+    setWindowTitle(pathCrossSection);
+    ui->textEdit->setReadOnly(true);
 }
 
 QString CrossSectionFileDlg::getPathCrossSection() const

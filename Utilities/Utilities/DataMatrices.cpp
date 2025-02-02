@@ -4,15 +4,37 @@
 
 #include <algorithm>
 #include <filesystem>
-#include <numeric>      // std::accumulate
+#include <numeric>
 #include <stdexcept>
 
+#include <QCoreApplication>
 #include <QFile>
 #include <QTextStream>
+
+BuildMatrices* BuildMatrices::m_ptr = nullptr;
 
 BuildMatrices::BuildMatrices()
 {
 
+}
+
+BuildMatrices *BuildMatrices::getInstance()
+{
+    if (nullptr == m_ptr)
+    {
+        m_ptr = new BuildMatrices;
+    }
+
+    return m_ptr;
+}
+
+void BuildMatrices::destroyInstance()
+{
+    if (nullptr != m_ptr)
+    {
+        delete m_ptr;
+        m_ptr = nullptr;
+    }
 }
 
 BuildMatrices::BuildMatrices(dados_entrada *newDatricesDD_Data,
@@ -25,7 +47,7 @@ BuildMatrices::BuildMatrices(dados_entrada *newDatricesDD_Data,
 std::unique_ptr<dados_entrada> BuildMatrices::copyProjectDataToRawPointers(ProjectData &proj)
 {
     auto data = std::make_unique<dados_entrada>();
-    fileName  = proj.scateringFilePath;
+    fileName  = proj.scatteringFilePath;
     std::filesystem::directory_entry entry{fileName};
 
     if (   ( true == fileName.empty() )
@@ -93,14 +115,14 @@ CalculatedCrossSectionMatrices BuildMatrices::calculateCrossSectionMatrices(dado
 }
 
 void BuildMatrices::calculateAbsorptionRatePerRegion(dados_entrada *data,
-                                                     CalculatedData *output)
+                                                     CalculatedData *DDResult)
 {
     std::vector<std::vector<long double>> absorptionRate;
 
-    if (output->matrices.absorptionCrossSection.empty())
+    if (DDResult->matrices.absorptionCrossSection.empty())
         throw std::invalid_argument("Error: Absorption Cross Section Matrix is empty");
 
-    if (output->averageNeutronFluxPerRegion.empty())
+    if (DDResult->averageNeutronFluxPerRegion.empty())
         throw std::invalid_argument("Error: Average Neutron Flux Per Region Matrix is empty");
 
     for (int rIndex = 0; rIndex < data->n_R; ++rIndex)
@@ -111,10 +133,10 @@ void BuildMatrices::calculateAbsorptionRatePerRegion(dados_entrada *data,
         {
             auto zIndex = data->Map_R[rIndex] - 1;
 
-            if (zIndex < output->matrices.absorptionCrossSection.size())
+            if (zIndex < DDResult->matrices.absorptionCrossSection.size())
             {
-                auto sigmaAbsor = output->matrices.absorptionCrossSection[zIndex][gIndex] *
-                                  output->averageNeutronFluxPerRegion[rIndex][gIndex];
+                auto sigmaAbsor = DDResult->matrices.absorptionCrossSection[zIndex][gIndex] *
+                                  DDResult->averageNeutronFluxPerRegion[rIndex][gIndex];
 
                 absorptionByGroup.push_back(sigmaAbsor);
             }
@@ -123,12 +145,12 @@ void BuildMatrices::calculateAbsorptionRatePerRegion(dados_entrada *data,
         absorptionRate.push_back(absorptionByGroup);
     }
 
-    output->absorptionRate.swap(absorptionRate);
+    DDResult->absorptionRate.swap(absorptionRate);
 }
 
-void BuildMatrices::calculateAbsorptionRatePerNode(dados_entrada *data, CalculatedData *output)
+void BuildMatrices::calculateAbsorptionRatePerNode(dados_entrada *data, CalculatedData *DDResult)
 {
-    if (output->matrices.absorptionCrossSection.empty())
+    if (DDResult->matrices.absorptionCrossSection.empty())
         throw std::invalid_argument("Error: Absorption Cross Section Matrix is empty");
 
     if (data->FLUXO_ESCALAR == nullptr)
@@ -146,7 +168,7 @@ void BuildMatrices::calculateAbsorptionRatePerNode(dados_entrada *data, Calculat
 
             for (int nIndex = 0; nIndex <= data->NODOSX; ++nIndex)
             {
-                long double sigmaAbsor = output->matrices.absorptionCrossSection[zIndex][gIndex]  *
+                long double sigmaAbsor = DDResult->matrices.absorptionCrossSection[zIndex][gIndex]  *
                                          data->FLUXO_ESCALAR[gIndex][nIndex];
 
                 absorptionByGroup.push_back(sigmaAbsor);
@@ -156,7 +178,7 @@ void BuildMatrices::calculateAbsorptionRatePerNode(dados_entrada *data, Calculat
         }
     }
 
-    output->absorptionRatePerNode.swap( absorptionRatePerRegion );
+    DDResult->absorptionRatePerNode.swap( absorptionRatePerRegion );
 }
 
 
@@ -750,8 +772,8 @@ std::vector<std::vector<long double>> BuildMatrices::calculateAbsorptionCrossSec
 
             if (sigmaAbsor < 0.0L)
             {
-                throw std::invalid_argument(
-                    "Error: Absorption cross-section is negative. Check your total and scattering cross-section data.");
+                //throw std::invalid_argument(
+                //"Error: Absorption cross-section is negative. Check your total and scattering cross-section data.");
             }
 
             // Store the result
@@ -956,4 +978,347 @@ int BuildMatrices::getIterationNumber() const
 void BuildMatrices::setIterationNumber(int newIterationNumber)
 {
     iterationNumber = newIterationNumber;
+}
+
+void BuildMatrices::writeAbsRatePerNode(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    if (DDResult->absorptionRatePerNode.empty())
+    {
+        throw std::runtime_error("absorptionRatePerNode is empty");
+    }
+
+    std::ofstream output;
+    std::string titleStr = computerFileName(DDValues, "Absorption_Rate_Per_Node");
+
+    if (!output.is_open())
+    {
+        throw std::runtime_error( "Error opening file: " + titleStr);
+    }
+
+    DDResult->absorptionRatePerNodeFile = titleStr;
+
+    int colWidth = 25;
+    int precision = 2;
+
+    //Write compile information
+    output << std::string(colWidth * 3, '-') << std::endl;
+    output << "Iteration Number: "
+           << DDValues->iteracaoFinal<<"\nTime: "
+           << DDValues->tempoFinalDeProcessamento<<"s\n";
+
+    output << std::string(colWidth * 3, '-') << std::endl;
+
+    // Write table headers
+    output << std::left << std::setw(colWidth) << "Position x (cm)"
+           << std::setw(colWidth) << "Group"
+           << std::setw(colWidth) << "Absorption Rate Per Node" << std::endl;
+    output << std::string(colWidth * 3, '-') << std::endl;
+
+    double t = 0;
+    int nod  = 0;
+    double totalRegionSize = 0.0;
+
+    for (int r = 0; r < DDValues->n_R; ++r)
+        totalRegionSize += DDValues->TAM[r];
+
+    while (t <= totalRegionSize)
+    {
+        for (int g = 0; g < DDValues->G; ++g)
+        {
+            if (g == 0)
+            {
+                output << std::left << std::setw(colWidth) << std::fixed << std::setprecision(precision) << t
+                       << std::setw(colWidth) << g + 1
+                       << std::fixed << std::setprecision(15) << DDResult->absorptionRatePerNode[g][nod] << std::endl;
+            }
+            else
+            {
+                output << std::left << std::setw(colWidth) << ""
+                       << std::setw(colWidth) << g + 1
+                       << std::fixed << std::setprecision(15) << DDResult->absorptionRatePerNode[g][nod] << std::endl;
+            }
+        }
+
+        t += DDValues->periodicidade;
+        nod += static_cast<int>((DDValues->NODOSX * DDValues->periodicidade) / DDValues->TAM_TOTAL);
+        output << std::string(colWidth * 3, '-') << std::endl;
+    }
+}
+
+std::string BuildMatrices::computerFileName(dados_entrada* DDValues, std::string name)
+{
+    std::ostringstream title;
+    std::string titleStr;
+    std::string directory;
+
+    std::filesystem::path filePath(fileName);
+
+    if (QString(fileName.c_str()).contains("Default"))
+    {
+        std::string binaryDir = QCoreApplication::applicationDirPath().toStdString();
+
+        directory = binaryDir;
+    }
+    else
+    {
+        directory = filePath.parent_path().string();
+    }
+
+    title << directory       <<"/"
+          << name
+          << "_R"            << DDValues->n_R
+          << "_G"            << DDValues->G
+          << "_L"            << DDValues->L
+          << "_N"            << DDValues->n
+          << "_Nod"          << DDValues->NODOSX
+          << ".txt";
+
+    titleStr = title.str();
+
+    return titleStr;
+}
+
+void BuildMatrices::writeAverageNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    std::string titleStr = computerFileName(DDValues, "Average_Neutron_Flux_Per_Region");
+    std::ofstream outFile(titleStr);
+
+    if (!outFile.is_open())
+    {
+        throw std::runtime_error("Error opening file: " + titleStr);
+    }
+
+    DDResult->averageNeutronFluxPerRegionFile = titleStr;
+
+    // Iterate over zones
+    for (size_t rIndex = 0; rIndex < DDValues->n_R; ++rIndex)
+    {
+        // Write zoneIndex as table title
+        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
+        outFile << "Region " << rIndex + 1 << std::endl;
+
+        // Write table headers
+        outFile << std::left << std::setw(15) << "Group" << "Average Neutron Flux" << std::endl;
+
+        for (size_t group = 0; group < DDValues->G; ++group)
+        {
+            outFile << std::left << std::setw(15) << group + 1
+                    << DDResult->averageNeutronFluxPerRegion[rIndex][group] << std::endl;
+        }
+
+        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
+
+        // Add a newline for separation between Region if there are multiple Regions
+        if (rIndex < DDResult->averageNeutronFluxPerRegion.size() - 1)
+        {
+            outFile << std::endl;
+        }
+    }
+
+    outFile.close();
+}
+
+void BuildMatrices::writeAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    if (DDResult->absorptionRate.empty())
+    {
+        throw std::runtime_error("Absorption Matrix is empty.");
+    }
+
+    std::string titleStr = computerFileName(DDValues, "Absorption_Rate");
+    std::ofstream outFile(titleStr);
+
+    if (!outFile.is_open())
+    {
+        throw std::runtime_error("Error opening file: " + titleStr);
+    }
+
+    DDResult->absorptionRateFile = titleStr;
+
+    // Iterate over zones
+    for (size_t rIndex = 0; rIndex < DDValues->n_R; ++rIndex)
+    {
+        // Write zoneIndex as table title
+        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
+        outFile << "Region " << rIndex + 1 << std::endl;
+
+        // Write table headers
+        outFile << std::left << std::setw(15) << "Group" << "Absorption Rate" << std::endl;
+
+        for (size_t group = 0; group < DDValues->G; ++group)
+        {
+            outFile << std::left << std::setw(15) << group + 1
+                    << DDResult->absorptionRate[rIndex][group] << std::endl;
+        }
+
+        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
+
+        // Add a newline for separation between Region if there are multiple Regions
+        if (rIndex < DDResult->absorptionRate.size() - 1)
+        {
+            outFile << std::endl;
+        }
+    }
+
+    outFile.close();
+}
+
+void BuildMatrices::writeAbsorptionCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult)
+{
+    if (DDResult->absorptionCrossSection.empty())
+    {
+        throw std::runtime_error("Absorption Cross Section Matrix is empty.");
+    }
+
+    auto absorptionCrossSection = DDResult->absorptionCrossSection;
+    auto zoneNumber  = DDValues->n_Z;
+    auto groupNumber = DDValues->G;
+
+    std::string titleStr = computerFileName(DDValues, "Absorption_Cross_Section");
+    std::ofstream outFile(titleStr);
+
+    if (!outFile.is_open())
+    {
+        throw std::runtime_error("Error opening file: " + titleStr);
+    }
+
+    DDResult->absorptionCrossSectionFile = titleStr;
+
+    // Iterate over zones
+    for (size_t zoneIndex = 0; zoneIndex < zoneNumber; ++zoneIndex)
+    {
+        // Write zoneIndex as table title
+        outFile << "Zone " << zoneIndex + 1 << std::endl;
+
+        // Write table headers
+        outFile << std::left << std::setw(15) << "Energy Group" << "Absorption Cross-Section" << std::endl;
+
+        // Iterate over energy groups within each zone
+        for (size_t group = 0; group < groupNumber; ++group)
+        {
+            // Write the energy group and corresponding absorption cross-section
+            outFile << std::left << std::setw(15) << group + 1
+                    << absorptionCrossSection[zoneIndex][group] << std::endl;
+        }
+
+        // Add a newline for separation between zones if there are multiple zones
+        if (zoneIndex < DDResult->absorptionCrossSection.size() - 1)
+        {
+            outFile << std::endl;
+        }
+    }
+
+    outFile.close();
+}
+
+void BuildMatrices::writeNeutronFluxFile(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    if (nullptr == DDValues->FLUXO_ESCALAR)
+    {
+        throw std::runtime_error("NeutronFlux Matrix is null.");
+    }
+
+    std::string titleStr = computerFileName(DDValues, "Scalar_Flux");
+    std::ofstream output(titleStr);
+
+    if (!output.is_open())
+    {
+        throw std::runtime_error( "Error opening file: " + titleStr);
+    }
+
+    DDResult->scalarFluxFile = titleStr;
+
+    int colWidth = 25;
+    int precision = 2;
+
+    //Write compile information
+    output << std::string(colWidth * 3, '-') << std::endl;
+    output << "Iteration Number: "
+             << DDValues->iteracaoFinal<<"\nTime: "
+             << DDValues->tempoFinalDeProcessamento<<"s\n";
+
+    output << std::string(colWidth * 3, '-') << std::endl;
+
+    // Write table headers
+    output << std::left << std::setw(colWidth) << "Position x (cm)"
+             << std::setw(colWidth) << "Group"
+             << std::setw(colWidth) << "Scalar Neutron Flux" << std::endl;
+    output << std::string(colWidth * 3, '-') << std::endl;
+
+    double t = 0;
+    int nod  = 0;
+    double totalRegionSize = 0.0;
+
+    for (int r = 0; r < DDValues->n_R; ++r)
+        totalRegionSize += DDValues->TAM[r];
+
+    while (t <= totalRegionSize)
+    {
+        for (int g = 0; g < DDValues->G; ++g)
+        {
+            if (g == 0)
+            {
+                output << std::left << std::setw(colWidth) << std::fixed << std::setprecision(precision) << t
+                         << std::setw(colWidth) << g + 1
+                         << std::fixed << std::setprecision(15) << DDValues->FLUXO_ESCALAR[g][nod] << std::endl;
+            }
+            else
+            {
+                output << std::left << std::setw(colWidth) << ""
+                         << std::setw(colWidth) << g + 1
+                         << std::fixed << std::setprecision(15) << DDValues->FLUXO_ESCALAR[g][nod] << std::endl;
+            }
+        }
+
+        t += DDValues->periodicidade;
+        nod += static_cast<int>((DDValues->NODOSX * DDValues->periodicidade) / DDValues->TAM_TOTAL);
+        output << std::string(colWidth * 3, '-') << std::endl;
+    }
+
+}
+
+void BuildMatrices::writeScatteringCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult)
+{
+    if (DDResult->scatteringCrossSection.empty())
+    {
+        throw std::runtime_error("scattering Cross Section Matrix is empty.");
+    }
+
+    auto scttCrossSection = DDResult->scatteringCrossSection;
+    auto zoneNumber       = DDValues->n_Z;
+    auto groupNumber      = DDValues->G;
+
+    std::string titleStr = computerFileName(DDValues, "Scattering_Cross_Section");
+    std::ofstream output(titleStr);
+
+    if (!output.is_open())
+    {
+        throw std::runtime_error( "Error opening file: " + titleStr);
+    }
+
+    DDResult->scatteringCrossSectionFile = titleStr;
+
+    // Iterate over zones
+    for (size_t zoneIndex = 0; zoneIndex < zoneNumber; ++zoneIndex)
+    {
+        // Write zoneIndex as table title
+        output << "Zone " << zoneIndex << std::endl;
+        // Write table headers
+        output << std::left << std::setw(15) << "Energy Group" << "Scattering Cross-Section" << std::endl;
+
+        // Iterate over energy groups within each zone
+        for (size_t group = 0; group < groupNumber; ++group)
+        {
+            // Write the energy group and corresponding absorption cross-section
+            output << std::left << std::setw(15) << group + 1 << scttCrossSection[zoneIndex][group] << std::endl;
+        }
+
+        // Add a newline for separation between zones if there are multiple zones
+        if (zoneIndex < DDResult->absorptionCrossSection.size() - 1)
+        {
+            output << std::endl;
+        }
+    }
+
+    output.close();
 }

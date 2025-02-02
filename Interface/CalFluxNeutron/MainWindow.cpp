@@ -3,9 +3,9 @@
 
 #include <mutex>
 
+#include "CrossSectionFileDlg.h"
 #include "NeutronFlowJsonIO.h"
 #include "VariablesUsed.h"
-#include "qtimer.h"
 
 #include <QColorDialog>
 #include <QFileDialog>
@@ -13,6 +13,7 @@
 #include <QLineSeries>
 #include <QMessageBox>
 #include <QThread>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -175,6 +176,18 @@ void MainWindow::saveProjectFileDlg()
     (void)saveProject();
 }
 
+void MainWindow::showCrossSectionFile(std::string& file)
+{
+    if (file.empty())
+        return;
+
+    CrossSectionFileDlg dlg(this);
+
+    dlg.loadCrossSectionFile(file);
+    dlg.makeReadOnly();
+    dlg.exec();
+}
+
 bool MainWindow::saveProject()
 {
     bool projectSaved = false;
@@ -299,8 +312,31 @@ void MainWindow::init()
     ui->widgetNeutronAbsorpt->setProjectionTitle("Neutron Absorption Rate");
     ui->widgetNeutronAbsorpt->setLabels("Position x (cm)", "Rate");
 
+    enableGenerateFilesMenu();
+
     //Open default project
     QTimer::singleShot(1000, this, [&]{    openProject();});
+}
+
+void MainWindow::showDefaultProjectWarning()
+{
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle("Default Project Notice");
+
+    msgBox.setText("This project is the default project and cannot be modified. "
+                   "If you wish to proceed, any changes made on the screen will be disregarded. "
+                   "To apply and save your changes, you must first save the project or open a different project.");
+
+    msgBox.addButton(QMessageBox::Ok);
+    msgBox.addButton(QMessageBox::Save);
+
+
+    int ret = msgBox.exec();
+
+    if (ret == QMessageBox::Save)
+    {
+        saveProjectFileDlg();
+    }
 }
 
 void MainWindow::setConnections()
@@ -435,5 +471,10 @@ void MainWindow::updateFluxTable(std::shared_ptr<CalculatedData> DDResult)
     ui->widgetNeutronScalarFlux->setTableDimension(energyGroup, regions.size());
     ui->widgetNeutronScalarFlux->setTableHeaders(regions, groups);
     ui->widgetNeutronScalarFlux->setTableItems(std::move(DDResult->averageNeutronFluxPerRegion));
+}
+
+void MainWindow::enableGenerateFilesMenu()
+{
+    ui->menuGenerated_Files->setEnabled(true);
 }
 

@@ -86,8 +86,26 @@
     </property>
     <addaction name="actionThe_app"/>
    </widget>
+   <widget class="QMenu" name="menuGenerated_Files">
+    <property name="title">
+     <string>Generated Files</string>
+    </property>
+    <widget class="QMenu" name="menuOpen">
+     <property name="title">
+      <string>Open</string>
+     </property>
+     <addaction name="actionAbsorption_Cross_Section"/>
+     <addaction name="actionScattering_Cross_Section"/>
+     <addaction name="actionScalar_Flux"/>
+     <addaction name="actionAbsorption_Rate"/>
+     <addaction name="actionAbsorption_Rate_Per_Node"/>
+     <addaction name="actionAverage_Neutron_Flux_Per_Region"/>
+    </widget>
+    <addaction name="menuOpen"/>
+   </widget>
    <addaction name="menuFiles"/>
    <addaction name="menuStyles"/>
+   <addaction name="menuGenerated_Files"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -128,6 +146,36 @@
   <action name="actionThe_app">
    <property name="text">
     <string>The App</string>
+   </property>
+  </action>
+  <action name="actionAbsorption_Cross_Section">
+   <property name="text">
+    <string>Absorption Cross Section</string>
+   </property>
+  </action>
+  <action name="actionScattering_Cross_Section">
+   <property name="text">
+    <string>Scattering Cross Section</string>
+   </property>
+  </action>
+  <action name="actionScalar_Flux">
+   <property name="text">
+    <string>Scalar_Flux</string>
+   </property>
+  </action>
+  <action name="actionAbsorption_Rate">
+   <property name="text">
+    <string>Absorption_Rate</string>
+   </property>
+  </action>
+  <action name="actionAbsorption_Rate_Per_Node">
+   <property name="text">
+    <string>Absorption_Rate_Per_Node</string>
+   </property>
+  </action>
+  <action name="actionAverage_Neutron_Flux_Per_Region">
+   <property name="text">
+    <string>Average_Neutron_Flux_Per_Region</string>
    </property>
   </action>
  </widget>

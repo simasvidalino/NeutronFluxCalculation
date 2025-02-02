@@ -26,6 +26,7 @@ private slots:
     void openProjectFileDlg();
     bool saveProject();
     void saveProjectFileDlg();
+    void showCrossSectionFile(std::string &file);
     void updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult);
     void updateAbsRateTable(std::shared_ptr<CalculatedData> DDResult);
     void updateFluxChart(std::shared_ptr<CalculatedData> DDResult);
@@ -42,7 +43,11 @@ private:
 
     Ui::MainWindow *ui;
 
+    void enableGenerateFilesMenu();
+
     void init();
+
+    void showDefaultProjectWarning();
 
     void setConnections();
 

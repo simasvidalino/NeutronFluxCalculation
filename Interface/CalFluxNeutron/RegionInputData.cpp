@@ -449,7 +449,7 @@ void RegionInputData::loadGUI()
     ui->spinBoxGroup->setValue(proj->energyGroup);
     ui->spinBoxQuadratureOrder->setValue(proj->quadratureOrder);
 
-    scatteringPath = QString::fromStdString(proj->scateringFilePath);
+    scatteringPath = QString::fromStdString(proj->scatteringFilePath);
 
     QAbstractButton *bcLeftButton = ui->buttonGroupLeftBoundaryConditions->button(
                 proj->leftBoundaryConditionsType);
@@ -519,7 +519,7 @@ void RegionInputData::saveGUI()
 
     proj->leftBoundaryConditionsType = eBoundaryConditionsType(leftBC);
     proj->rightBoundaryConditionsType = eBoundaryConditionsType(rightBC);
-    proj->scateringFilePath = scatteringPath.toStdString();
+    proj->scatteringFilePath = scatteringPath.toStdString();
     proj->zoneNumber = allZonasStr.size();
     proj->legendreOrder = ui->spinBoxLegendreOrder->value();
     proj->quadratureOrder = ui->spinBoxQuadratureOrder->value();
