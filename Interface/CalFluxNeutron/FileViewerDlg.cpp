@@ -34,6 +34,8 @@ void FileViewerDlg::accept()
 
     if (eParseError == ParseFile::ParseErrors::eOk)
     {
+        writeFile(pathCrossSection);
+
         QDialog::accept();
     }
 }
@@ -80,7 +82,12 @@ void FileViewerDlg::parseFile()
 
 void FileViewerDlg::saveText()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, "Save File", "", "File Text(txt) (*.txt)");
+    QString fileName = QFileDialog::getSaveFileName(this, "Save File", "", "Text Files (*.txt)");
+
+    if (!fileName.contains(".txt"))
+    {
+        fileName.push_back(".txt");
+    }
 
     if (!fileName.isEmpty())
     {
@@ -88,7 +95,7 @@ void FileViewerDlg::saveText()
 
         pathCrossSection = fileName;
 
-        writeFile(fileName);
+        writeFile(pathCrossSection);
     }
 }
 
@@ -125,6 +132,7 @@ void FileViewerDlg::readFile(QString &filePath)
 
 void FileViewerDlg::writeFile(QString &filePath)
 {
+    //The filePath will be updated in json only when the user runs the app.
     QFile file(filePath);
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
