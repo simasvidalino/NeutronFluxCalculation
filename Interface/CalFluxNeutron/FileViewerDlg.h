@@ -28,6 +28,8 @@ public:
 
     void makeReadOnly();
 
+    ParseFile::ParseErrors parseFile();
+
 protected:
     virtual void accept();
 
@@ -38,7 +40,6 @@ protected:
 private slots:
     void clearText();
     void openFile(); //use a screen to choose a file
-    void parseFile();
     void saveText();
 
 private:

@@ -53,7 +53,7 @@ void FileViewerDlg::openFile()
     readFile(fileName);
 }
 
-void FileViewerDlg::parseFile()
+ ParseFile::ParseErrors FileViewerDlg::parseFile()
 {
     const QString instruction = "<p><strong>To create a valid text format, follow the rules below:</strong></p> <ol>"
                                 "<li><strong>Before the numerical data for material zone,</strong> start the line with <code>///</code>.</li>"
@@ -70,14 +70,14 @@ void FileViewerDlg::parseFile()
 
     if (eParseError == ParseFile::ParseErrors::eOk)
     {
-        QMessageBox::information(this, "Parser Information",
-                                 "Simple analysis passed");
+        qInfo("Parser Information: Simple analysis passed");
     }
     else
     {
         QMessageBox::information(this, "Project data and material data do not match.", instruction);
     }
 
+    return eParseError;
 }
 
 void FileViewerDlg::saveText()

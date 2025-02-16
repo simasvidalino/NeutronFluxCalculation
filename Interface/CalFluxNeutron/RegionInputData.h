@@ -40,6 +40,8 @@ public:
 
     void setPushButtonCalculateFluxEnable(bool enable);
 
+    QStringList getAllZonasStr() const;
+
 private slots:
     void clear();
     void onCreateCrossSectionFile();

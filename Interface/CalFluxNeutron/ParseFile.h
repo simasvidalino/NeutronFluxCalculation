@@ -9,11 +9,11 @@ public:
 
     enum ParseErrors
     {
-        eOk,
-        eNumberOfGroupDoesNotMatch,
-        eNumberOfZoneDoesNotMatch,
-        eNumberOfRegionDoesNotMatch,
-        eLegendreOrderDoesNotMatch,
+        eOk = 0,
+        eNumberOfGroupDoesNotMatch = 2,
+        eNumberOfZoneDoesNotMatch = 4,
+        eNumberOfRegionDoesNotMatch = 8,
+        eLegendreOrderDoesNotMatch = 16,
         eTextIsEmpt,
         eUnknowError
     };
@@ -29,6 +29,7 @@ public:
 protected:
     int countOccurrences(std::string &str, std::string key);
     int findNumberBetween(std::string &input, std::regex beginPattern);
+    int findLegenderOrder(std::string &input, std::regex beginPattern);
 
 private:
     ParseFile();

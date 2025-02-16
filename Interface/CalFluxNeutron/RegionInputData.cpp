@@ -530,6 +530,11 @@ void RegionInputData::saveGUI()
     proj->stopOrder = ui->spinBoxStopOrder->value();
 }
 
+QStringList RegionInputData::getAllZonasStr() const
+{
+    return allZonasStr;
+}
+
 void RegionInputData::setPeriodicity(double newPeriodicity)
 {
     periodicity = newPeriodicity;

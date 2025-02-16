@@ -27,15 +27,28 @@ ParseFile::ParseErrors ParseFile::parseString(std::string &str)
     ParseErrors eError = ParseErrors::eOk;
     std::regex beginPattern(R"(\/\/\/.*?\n\/\/)");
 
-    auto countMaterial  = countOccurrences(str, "///");
+    auto countMaterial1  = countOccurrences(str, "///");
+    auto countMaterial2  = countOccurrences(str, "Zon");
 
-    if (countMaterial != referenceNumberOfZones)
+    if (    ( countMaterial1 != referenceNumberOfZones )
+         || ( countMaterial2 != referenceNumberOfZones ) )
+    {
         eError = ParseErrors::eNumberOfZoneDoesNotMatch;
+    }
 
     auto numberOfGroup = findNumberBetween(str, beginPattern);
 
     if (referenceEnergyGroup != numberOfGroup)
+    {
         eError = ParseErrors::eNumberOfGroupDoesNotMatch;
+    }
+
+    auto legenderOder = findLegenderOrder(str, beginPattern);
+
+    if (referencelegendreOrder != legenderOder)
+    {
+        eError = ParseErrors::eLegendreOrderDoesNotMatch;
+    }
 
     return eError;
 }
@@ -68,8 +81,6 @@ int ParseFile::findNumberBetween(std::string &input, std::regex beginPattern)
         {
             std::string section = std::string(searchStart, match.prefix().second);
 
-            // Filtrar linhas específicas aqui, se necessário
-
             std::regex numberPattern(R"([-+]?\b\d*\.?\d+([eE][-+]?\d+)?)");
             std::sregex_iterator it(section.begin(), section.end(), numberPattern);
             std::sregex_iterator it_end;
@@ -81,6 +92,27 @@ int ParseFile::findNumberBetween(std::string &input, std::regex beginPattern)
     return qttFound;
 }
 
+int ParseFile::findLegenderOrder(std::string &input, std::regex beginPattern)
+{
+    int legenderOrder = 0;
+    std::smatch match;
+
+    if (std::regex_search(input, match, beginPattern))
+    {
+        std::string::const_iterator searchStart = match.suffix().first;
+        std::regex doubleSlashPattern(R"(//)");
+
+        std::sregex_iterator it(searchStart, input.cend(), doubleSlashPattern);
+        std::sregex_iterator end;
+
+        legenderOrder = std::count_if(it, end, [&](const std::smatch& m) {
+            std::string line = m.prefix().str() + m.str() + m.suffix().str();
+            return line.find("///") == std::string::npos;
+        });
+    }
+
+    return legenderOrder > 0 ? legenderOrder - 2 : 0;
+}
 
 
 ParseFile::ParseFile()
