@@ -25,9 +25,10 @@ private slots:
     void onOutputData(std::shared_ptr<CalculatedData> data);
     void openProject();
     void openProjectFileDlg();
-    bool saveProject();
+    void saveMaterialData();
+    bool saveProject(bool saveMaterialDataFile = false);
     void saveProjectFileDlg();
-    void showCrossSectionFile(std::string &file);
+    void showDataInFile(std::string &file);
     void updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult);
     void updateAbsRateTable(std::shared_ptr<CalculatedData> DDResult);
     void updateFluxChart(std::shared_ptr<CalculatedData> DDResult);
@@ -35,6 +36,7 @@ private slots:
 
 signals:
     void startProcess();
+
 private:
     enum tabs
     {

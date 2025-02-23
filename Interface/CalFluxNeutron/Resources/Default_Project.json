@@ -34,7 +34,7 @@
         "QuadratureOrder": "4",
         "RegionDataKey": "3",
         "RightBoundaryConditionsType": "0",
-        "ScatteringCrossSectionFileType": ":/Default_Project/Resources/Default_Projetc.txt",
+        "ScatteringCrossSectionFileType": ":/Default_Project/Resources/Default_Projet.txt",
         "StopOrder": "7",
         "ZoneNumber": 2
     }

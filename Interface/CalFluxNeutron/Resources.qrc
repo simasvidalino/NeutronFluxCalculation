@@ -3,7 +3,7 @@
         <file>Resources/njoy16.pdf</file>
     </qresource>
     <qresource prefix="/Default_Project">
-        <file>Resources/Default_Projetc.txt</file>
+        <file>Resources/Default_Projet.txt</file>
         <file>Resources/Default_Project.json</file>
     </qresource>
 </RCC>

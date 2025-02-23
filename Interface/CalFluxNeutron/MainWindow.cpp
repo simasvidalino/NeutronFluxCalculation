@@ -3,6 +3,7 @@
 
 #include <mutex>
 
+#include "DataMatrices.h"
 #include "FileViewerDlg.h"
 #include "NeutronFlowJsonIO.h"
 #include "VariablesUsed.h"
@@ -152,6 +153,23 @@ void MainWindow::openProjectFileDlg()
     ui->widgetNeutronScalarFlux->clearChart();
 }
 
+void MainWindow::saveMaterialData()
+{
+    std::string pathSaved;
+
+    try
+    {
+        std::string newPath = fileName.toStdString();
+        std::string oldPath =  proj->scatteringFilePath;
+
+        proj->scatteringFilePath = BuildMatrices::getInstance()->saveMaterialData(newPath, oldPath);
+    }
+    catch (const std::filesystem::filesystem_error& e)
+    {
+        qWarning() << "Error:" << e.what();
+    }
+}
+
 void MainWindow::openProject()
 {
     QString title = QString(Interface::getWindowTitle()) + QString(": ") + fileName.split("/").back();
@@ -180,12 +198,18 @@ void MainWindow::openProject()
 void MainWindow::saveProjectFileDlg()
 {
     QString filter = "JSON Files (*.json);;Text Files (*.txt)";
-    fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::homePath(), filter);
+    auto fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::homePath(), filter);
+    const bool saveMaterialData = true;
 
-    (void)saveProject();
+    if (fileName.isEmpty())
+        return;
+
+    this->fileName = fileName;
+
+    (void)saveProject(saveMaterialData);
 }
 
-void MainWindow::showCrossSectionFile(std::string& file)
+void MainWindow::showDataInFile(std::string& file)
 {
     if (file.empty())
         return;
@@ -197,7 +221,7 @@ void MainWindow::showCrossSectionFile(std::string& file)
     dlg.exec();
 }
 
-bool MainWindow::saveProject()
+bool MainWindow::saveProject(bool saveMaterialDataFile)
 {
     bool projectSaved = false;
 
@@ -210,8 +234,11 @@ bool MainWindow::saveProject()
         //Here we save dlg project, the calculated data files are calculated later
         projectSaved = true;
         proj = ui->widgetRegion->getGeneralProjectData();
-
         proj->periodicity = ui->widgetNeutronScalarFlux->getPeriodicityValue();
+
+        if (saveMaterialDataFile)
+            saveMaterialData();
+
         NeutronFlowJsonIO::getInstance()->setGeneralProjectData(proj);
         NeutronFlowJsonIO::getInstance()->saveProject(Interface::jsonFormat, fileName);
 
@@ -356,32 +383,32 @@ void MainWindow::setConnections()
 
     connect(ui->actionAbsorption_Cross_Section, &QAction::triggered, this, [this]()
             {
-                showCrossSectionFile(proj->absorptionCrossSectionFilePath);
+                showDataInFile(proj->absorptionCrossSectionFilePath);
             });
 
     connect(ui->actionScattering_Cross_Section, &QAction::triggered, this, [this]()
             {
-                showCrossSectionFile(proj->totalScatteringCrossSectionFilePath);
+                showDataInFile(proj->totalScatteringCrossSectionFilePath);
             });
 
     connect(ui->actionScalar_Flux, &QAction::triggered, this, [this]()
             {
-                showCrossSectionFile(proj->scalarFluxFile);
+                showDataInFile(proj->scalarFluxFile);
             });
 
     connect(ui->actionAbsorption_Rate, &QAction::triggered, this, [this]()
             {
-                showCrossSectionFile(proj->absorptionRateFile);
+                showDataInFile(proj->absorptionRateFile);
             });
 
     connect(ui->actionAbsorption_Rate_Per_Node, &QAction::triggered, this, [this]()
             {
-                showCrossSectionFile(proj->absorptionRatePerNodeFile);
+                showDataInFile(proj->absorptionRatePerNodeFile);
             });
 
     connect(ui->actionAverage_Neutron_Flux_Per_Region, &QAction::triggered, this, [this]()
             {
-                showCrossSectionFile(proj->averageNeutronFluxPerRegionFile);
+                showDataInFile(proj->averageNeutronFluxPerRegionFile);
             });
 
     connect(ui->actionThe_app, &QAction::triggered, this, [this](){

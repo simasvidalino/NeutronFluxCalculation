@@ -9,6 +9,7 @@
 
 #include <QCoreApplication>
 #include <QFile>
+#include <QTemporaryFile>
 #include <QTextStream>
 
 BuildMatrices* BuildMatrices::m_ptr = nullptr;
@@ -216,6 +217,38 @@ std::vector<std::vector<long double>> BuildMatrices::calculateAverageNeutronFlux
 
     return averageNeutronFlux;
 }
+
+void BuildMatrices::copyResourceToDestination(const std::string &resourcePath, const std::string &destinationPath)
+{
+    QFile resourceFile(resourcePath.c_str());
+
+    if (!resourceFile.open(QIODevice::ReadOnly))
+    {
+        qWarning() << "Failed to open the resource:" << resourcePath;
+        return;
+    }
+
+    QTemporaryFile tempFile;
+
+    if (!tempFile.open())
+    {
+        qWarning() << "Failed to create a temporary file.";
+        return;
+    }
+
+    tempFile.write(resourceFile.readAll());
+    tempFile.close();
+
+    if (QFile::copy(tempFile.fileName(), destinationPath.c_str()))
+    {
+        qDebug() << "File copied to:" << destinationPath;
+    }
+    else
+    {
+        qWarning() << "Failed to copy the file to:" << destinationPath;
+    }
+}
+
 std::vector<std::vector<long double>> BuildMatrices::calculateScatteringCrossSectionMatrix(dados_entrada *data)
 {
     std::vector<std::vector<long double>> sigmaScattering;
@@ -236,14 +269,14 @@ std::vector<std::vector<long double>> BuildMatrices::calculateScatteringCrossSec
                 for (int lIndex = 0; lIndex < data->L + 1; ++lIndex) // Loop over Legendre moments
                 {
                     double value = data->s_s[gLineIndex][gIndex][zIndex][lIndex];
-                    std::cout << "g" << gIndex << " g'" << gLineIndex
-                              << " legendre = " << lIndex << " value = " << value << std::endl;
+                   // std::cout << "g" << gIndex << " g'" << gLineIndex
+                              //<< " legendre = " << lIndex << " value = " << value << std::endl;
 
                     sum += value; // Add the current value to the total sum
                 }
             }
 
-            std::cout << "sum for g " << gIndex << " = " << sum << std::endl;
+            //std::cout << "sum for g " << gIndex << " = " << sum << std::endl;
 
             // Store the total sum for the current group gIndex
             scattering_g.push_back(sum);
@@ -978,6 +1011,36 @@ int BuildMatrices::getIterationNumber() const
 void BuildMatrices::setIterationNumber(int newIterationNumber)
 {
     iterationNumber = newIterationNumber;
+}
+
+std::string BuildMatrices::saveMaterialData(std::string &finalPath, std::string &oldPath)
+{
+    namespace fs = std::filesystem;
+
+    fs::path filePath(finalPath);
+    fs::path scatteringFile(oldPath);
+    fs::path destinationPath = filePath.parent_path() / (scatteringFile.stem().string() + " (copy)" + scatteringFile.extension().string());
+    int counter = 0;
+
+    while (fs::exists(destinationPath))
+    {
+        destinationPath = filePath.parent_path() / (scatteringFile.stem().string() + " (copy " + std::to_string(counter) + ")" + scatteringFile.extension().string());
+        counter++;
+    }
+
+    if (oldPath.find(":/") == std::string::npos)
+    {
+        std::filesystem::copy(scatteringFile, destinationPath, std::filesystem::copy_options::overwrite_existing);
+
+        qInfo() << "File was copied to:" << QString::fromStdString(destinationPath.string());
+    }
+    else
+    {
+        //The path is a r
+        copyResourceToDestination(oldPath, destinationPath);
+    }
+
+    return destinationPath;
 }
 
 void BuildMatrices::writeAbsRatePerNode(dados_entrada *DDValues, CalculatedData *DDResult)

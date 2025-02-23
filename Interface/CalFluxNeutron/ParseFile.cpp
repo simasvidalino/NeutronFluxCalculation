@@ -33,21 +33,21 @@ ParseFile::ParseErrors ParseFile::parseString(std::string &str)
     if (    ( countMaterial1 != referenceNumberOfZones )
          || ( countMaterial2 != referenceNumberOfZones ) )
     {
-        eError = ParseErrors::eNumberOfZoneDoesNotMatch;
+        eError |= ParseErrors::eNumberOfZoneDoesNotMatch;
     }
 
     auto numberOfGroup = findNumberBetween(str, beginPattern);
 
     if (referenceEnergyGroup != numberOfGroup)
     {
-        eError = ParseErrors::eNumberOfGroupDoesNotMatch;
+        eError |= ParseErrors::eNumberOfGroupDoesNotMatch;
     }
 
     auto legenderOder = findLegenderOrder(str, beginPattern);
 
     if (referencelegendreOrder != legenderOder)
     {
-        eError = ParseErrors::eLegendreOrderDoesNotMatch;
+        eError |= ParseErrors::eLegendreOrderDoesNotMatch;
     }
 
     return eError;
@@ -124,3 +124,4 @@ ParseFile::~ParseFile()
 {
 
 }
+
