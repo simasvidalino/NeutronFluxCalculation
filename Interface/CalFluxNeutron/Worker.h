@@ -37,6 +37,8 @@ protected:
     virtual void calculateCrossSectionMatrices();
     void copyScalarNeutronFluxToVector();
 
+    void parseCrossSectionDataFileValues();
+
 private:
     ProjectData* proj;
     std::unique_ptr<dados_entrada> DDValues;

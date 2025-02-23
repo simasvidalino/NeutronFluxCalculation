@@ -100,15 +100,6 @@ void MainWindow::changePalette()
 
 void MainWindow::onOutputData(std::shared_ptr<CalculatedData> data)
 {
-    FileViewerDlg dlg(this, ui->widgetRegion->getAllZonasStr(),
-                      proj->energyGroup,
-                      proj->legendreOrder);
-
-    dlg.loadCrossSectionFile(proj->scatteringFilePath);
-
-    if (ParseFile::ParseErrors::eOk != dlg.parseFile())
-        return;
-
     proj->totalScatteringCrossSectionFilePath =  data->matrices.scatteringCrossSectionFile;
     proj->absorptionCrossSectionFilePath      =  data->matrices.absorptionCrossSectionFile;
 

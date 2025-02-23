@@ -9,13 +9,13 @@
 #include <iostream>
 
 FileViewerDlg::FileViewerDlg(QWidget *parent,
-                                         QStringList materials,
-                                         int energyGroup,
-                                         int legendreOrder) :
+                             int izoneNumber,
+                             int ienergyGroup,
+                             int ilegendreOrder) :
     QDialog(parent),
-    energyGroup(energyGroup),
-    legendreOrder(legendreOrder),
-    materialList(materials),
+    energyGroup(ienergyGroup),
+    legendreOrder(ilegendreOrder),
+    zoneNumber(izoneNumber),
     ui(new Ui::FileViewerDlg)
 {
     ui->setupUi(this);
@@ -30,12 +30,8 @@ FileViewerDlg::~FileViewerDlg()
 
 void FileViewerDlg::accept()
 {
-    parseFile();
-
-    if (eParseError == ParseFile::ParseErrors::eOk)
+    if (saveText())
     {
-        writeFile(pathCrossSection);
-
         QDialog::accept();
     }
 }
@@ -55,16 +51,9 @@ void FileViewerDlg::openFile()
 
  ParseFile::ParseErrors FileViewerDlg::parseFile()
 {
-    const QString instruction = "<p><strong>To create a valid text format, follow the rules below:</strong></p> <ol>"
-                                "<li><strong>Before the numerical data for material zone,</strong> start the line with <code>///</code>.</li>"
-                                "<li><strong>Right after what was done in step 1,</strong> make a line identifying the total cross section starting "
-                                "with <code>//</code>.</li><li><strong>Write the total cross section data.</strong></li>"
-                                "<li><strong>Create the scattering matrix</strong> considering that for each degree of Legendre, you will have a "
-                                "g x g matrix where g is the number of energy groups.</li></p>";
-
     auto fileContent = ui->textEdit->toPlainText().toStdString();
 
-    ParseFile::getInstance()->setProjectData(energyGroup, legendreOrder, materialList.size());
+    ParseFile::getInstance()->setProjectData(energyGroup, legendreOrder, zoneNumber);
 
     eParseError = ParseFile::getInstance()->parseString(fileContent);
 
@@ -74,29 +63,42 @@ void FileViewerDlg::openFile()
     }
     else
     {
-        QMessageBox::information(this, "Project data and material data do not match.", instruction);
+        QMessageBox::information(this, "Project data and material data do not match.", ParseFile::getInstance()->makeInstruction().c_str());
     }
 
     return eParseError;
 }
 
-void FileViewerDlg::saveText()
+bool FileViewerDlg::saveText()
+{
+    bool isSave = false;
+
+    parseFile();
+
+    if (eParseError == ParseFile::ParseErrors::eOk)
+    {
+        isSave = true;
+        writeFile(pathCrossSection);
+    }
+
+    return isSave;
+}
+
+void FileViewerDlg::saveTextDlg()
 {
     QString fileName = QFileDialog::getSaveFileName(this, "Save File", "", "Text Files (*.txt)");
+
+    if (fileName.isEmpty())
+        return;
 
     if (!fileName.contains(".txt"))
     {
         fileName.push_back(".txt");
     }
 
-    if (!fileName.isEmpty())
-    {
-        parseFile();
+    pathCrossSection = fileName;
 
-        pathCrossSection = fileName;
-
-        writeFile(pathCrossSection);
-    }
+    saveText();
 }
 
 void FileViewerDlg::readFile(QString &filePath)

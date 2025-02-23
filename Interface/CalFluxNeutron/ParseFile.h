@@ -4,6 +4,8 @@
 #include <string>
 #include <cstdint>
 
+#include "DataMatrices.h"
+
 class ParseFile
 {
 public:
@@ -18,16 +20,24 @@ public:
         eUnknowError                = 1 << 6  // 64
     };
 
+    friend ParseErrors operator&(ParseErrors lhs, ParseErrors rhs);
     friend ParseErrors operator|(ParseErrors lhs, ParseErrors rhs);
     friend ParseErrors& operator|=(ParseErrors& lhs, ParseErrors rhs);
 
     static ParseFile* getInstance();
+    static std::string getErrorDescription(ParseErrors error);
 
     void setProjectData(int energyGroup,
                         int legendreOrder,
                         int numberOfZones);
 
+    std::string makeInstruction();
+
+    ParseErrors parseFile(std::string &fileName);
+
     ParseErrors parseString(std::string &str);
+
+    CrossSectionDataFilerParameters &getCrossSectionDataFileInfomation();
 
 protected:
     int countOccurrences(std::string &str, std::string key);
@@ -39,12 +49,21 @@ private:
     ~ParseFile();
 
     static ParseFile* mClass;
+    static const std::map<ParseErrors, std::string> errorMessages;
+    CrossSectionDataFilerParameters crossSectionDataFileInfomation;
 
     int referenceEnergyGroup;
     int referencelegendreOrder;
     int referenceNumberOfZones;
     int referenceNumberOfRegion;
+
+    ParseErrors eError = ParseErrors::eOk;
 };
+
+inline ParseFile::ParseErrors operator&(ParseFile::ParseErrors lhs, ParseFile::ParseErrors rhs)
+{
+    return static_cast<ParseFile::ParseErrors>(static_cast<uint32_t>(lhs) & static_cast<uint32_t>(rhs));
+}
 
 inline ParseFile::ParseErrors operator|(ParseFile::ParseErrors lhs, ParseFile::ParseErrors rhs)
 {

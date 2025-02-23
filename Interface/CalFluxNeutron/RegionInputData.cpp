@@ -116,8 +116,7 @@ void RegionInputData::onCreateCrossSectionFile()
         return;
     }
 
-    FileViewerDlg dlg(this,
-                            allZonasStr,
+    FileViewerDlg dlg(this, allZonasStr.size(),
                             group,
                             ui->spinBoxLegendreOrder->value());
 

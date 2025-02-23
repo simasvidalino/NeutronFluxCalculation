@@ -2,8 +2,24 @@
 
 #include <iostream>
 #include <iterator>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
+#include <QDebug>
+#include <QFile>
 
 ParseFile * ParseFile::mClass = nullptr;
+
+const std::map<ParseFile::ParseErrors, std::string> ParseFile::errorMessages = {
+    {ParseErrors::eOk, "No errors found."},
+    {ParseErrors::eNumberOfGroupDoesNotMatch, "The number of energy groups does not match."},
+    {ParseErrors::eNumberOfZoneDoesNotMatch, "The number of zones does not match."},
+    {ParseErrors::eNumberOfRegionDoesNotMatch, "The number of regions does not match."},
+    {ParseErrors::eLegendreOrderDoesNotMatch, "The Legendre order does not match."},
+    {ParseErrors::eTextIsEmpt, "The input text is empty."},
+    {ParseErrors::eUnknowError, "An unknown error occurred."}
+};
 
 ParseFile *ParseFile::getInstance()
 {
@@ -11,6 +27,18 @@ ParseFile *ParseFile::getInstance()
         mClass = new ParseFile();
 
     return mClass;
+}
+
+std::string ParseFile::getErrorDescription(ParseErrors error)
+{
+    auto it = errorMessages.find(error);
+    
+    if (it != errorMessages.end())
+    {
+        return it->second;
+    }
+
+    return "Unknown error.";
 }
 
 void ParseFile::setProjectData(int energyGroup,
@@ -22,30 +50,77 @@ void ParseFile::setProjectData(int energyGroup,
     referenceNumberOfZones  = numberOfZones;
 }
 
+std::string ParseFile::makeInstruction()
+{
+    std::string instruction = "<p><strong>To create a valid text format, follow the rules below:</strong></p> <ol>"
+                              "<li><strong>Before the numerical data for material zone,</strong> start the line with <code>///</code>.</li>"
+                              "<li><strong>Right after what was done in step 1,</strong> make a line identifying the total cross section starting "
+                              "with <code>//</code>.</li><li><strong>Write the total cross section data.</strong></li>"
+                              "<li><strong>Create the scattering matrix</strong> considering that for each degree of Legendre, you will have a "
+                              "g x g matrix where g is the number of energy groups.</li></ol>";
+
+    if ((eError & ParseFile::ParseErrors::eNumberOfGroupDoesNotMatch) == ParseFile::ParseErrors::eNumberOfGroupDoesNotMatch)
+    {
+        instruction.append("<p><strong>Error:</strong> " + ParseFile::getErrorDescription(ParseFile::ParseErrors::eNumberOfGroupDoesNotMatch) + "</p>");
+    }
+    if ((eError & ParseFile::ParseErrors::eNumberOfZoneDoesNotMatch) == ParseFile::ParseErrors::eNumberOfZoneDoesNotMatch)
+    {
+        instruction.append("<p><strong>Error:</strong> " + ParseFile::getErrorDescription(ParseFile::ParseErrors::eNumberOfZoneDoesNotMatch) + "</p>");
+    }
+    if ((eError & ParseFile::ParseErrors::eNumberOfRegionDoesNotMatch) == ParseFile::ParseErrors::eNumberOfRegionDoesNotMatch)
+    {
+        instruction.append("<p><strong>Error:</strong> " + ParseFile::getErrorDescription(ParseFile::ParseErrors::eNumberOfRegionDoesNotMatch) + "</p>");
+    }
+    if ((eError & ParseFile::ParseErrors::eLegendreOrderDoesNotMatch) == ParseFile::ParseErrors::eLegendreOrderDoesNotMatch)
+    {
+        instruction.append("<p><strong>Error:</strong> " + ParseFile::getErrorDescription(ParseFile::ParseErrors::eLegendreOrderDoesNotMatch) + "</p>");
+    }
+
+    return instruction;
+}
+
+ParseFile::ParseErrors ParseFile::parseFile(std::string &fileName)
+{
+    QFile file(fileName.c_str());
+
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qWarning() << "Failed to open file" << QString::fromStdString(fileName);
+        return ParseErrors::eUnknowError;
+    }
+
+    QTextStream in(&file);
+    std::string fileContent = in.readAll().toStdString();
+
+    file.close();
+
+    return parseString(fileContent);
+}
+
 ParseFile::ParseErrors ParseFile::parseString(std::string &str)
 {
-    ParseErrors eError = ParseErrors::eOk;
+    eError = ParseErrors::eOk;
     std::regex beginPattern(R"(\/\/\/.*?\n\/\/)");
 
-    auto countMaterial1  = countOccurrences(str, "///");
-    auto countMaterial2  = countOccurrences(str, "Zon");
+    auto countMaterial  = countOccurrences(str, "///");
 
-    if (    ( countMaterial1 != referenceNumberOfZones )
-         || ( countMaterial2 != referenceNumberOfZones ) )
+    crossSectionDataFileInfomation.numberOfZones = countMaterial;
+
+    if ( countMaterial != referenceNumberOfZones  )
     {
         eError |= ParseErrors::eNumberOfZoneDoesNotMatch;
     }
 
-    auto numberOfGroup = findNumberBetween(str, beginPattern);
+    crossSectionDataFileInfomation.numberOfEnergyGroup = findNumberBetween(str, beginPattern);
 
-    if (referenceEnergyGroup != numberOfGroup)
+    if (referenceEnergyGroup > crossSectionDataFileInfomation.numberOfEnergyGroup)
     {
         eError |= ParseErrors::eNumberOfGroupDoesNotMatch;
     }
 
-    auto legenderOder = findLegenderOrder(str, beginPattern);
+    crossSectionDataFileInfomation.numberOfLegendre = findLegenderOrder(str, beginPattern);
 
-    if (referencelegendreOrder != legenderOder)
+    if (referencelegendreOrder > crossSectionDataFileInfomation.numberOfLegendre)
     {
         eError |= ParseErrors::eLegendreOrderDoesNotMatch;
     }
@@ -123,5 +198,10 @@ ParseFile::ParseFile()
 ParseFile::~ParseFile()
 {
 
+}
+
+CrossSectionDataFilerParameters& ParseFile::getCrossSectionDataFileInfomation()
+{
+    return crossSectionDataFileInfomation;
 }
 

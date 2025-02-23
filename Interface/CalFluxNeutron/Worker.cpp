@@ -7,6 +7,7 @@
 #include "DDNumericalMethod.h"
 #include "DataMatrices.h"
 #include "VariablesUsed.h"
+#include "ParseFile.h"
 
 #include <mutex>
 
@@ -33,6 +34,8 @@ void Worker::process()
     try
     {
         std::unique_lock<std::mutex> lock(mtx);
+
+        parseCrossSectionDataFileValues();
 
         //Update struct data
         updateDDValues();
@@ -90,7 +93,7 @@ void Worker::updateDDValues()
     if (!DDValues)
         DDValues = std::unique_ptr<dados_entrada>();
 
-    DDValues = BuildMatrices::getInstance()->copyProjectDataToRawPointers(*proj);
+    DDValues = BuildMatrices::getInstance()->copyProjectDataToRawPointers(*proj, ParseFile::getInstance()->getCrossSectionDataFileInfomation());
 }
 
 void Worker::calculateAbsorptionNeutronRatePerNode()
@@ -169,6 +172,17 @@ void Worker::copyScalarNeutronFluxToVector()
     DDResult->scalarFlux.swap(scalarFlux);
 
     BuildMatrices::getInstance()->writeNeutronFluxFile(DDValues.get(), DDResult.get());
+}
+
+void Worker::parseCrossSectionDataFileValues()
+{
+    ParseFile::getInstance()->setProjectData(proj->energyGroup,
+                                             proj->legendreOrder,
+                                             proj->zoneNumber);
+
+    if (ParseFile::ParseErrors::eOk != ParseFile::getInstance()->parseFile(proj->scatteringFilePath))
+        throw std::logic_error(ParseFile::getInstance()->makeInstruction());
+
 }
 
 void Worker::setCancelResult(bool newCancelResult)

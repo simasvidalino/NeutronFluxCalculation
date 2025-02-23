@@ -8,11 +8,19 @@
 #include <sstream>         //converter std::string para double, usar ostd::stringstream para o titulo de saída
 #include <vector>          //para acessar funcoes como eraser e shrink_to_fit() no vector
 #include <iomanip>         //para mostrar maior numero de casas decimais na tela
+
 #include "ProjectStructs.h"
 #include "VariablesUsed.h"
 
 #include <memory>
 #include <optional>
+
+struct CrossSectionDataFilerParameters
+{
+    int numberOfEnergyGroup = 0;
+    int numberOfZones       = 0;
+    int numberOfLegendre    = 0;
+};
 
 struct CalculatedCrossSectionMatrices
 {
@@ -83,7 +91,7 @@ public:
 
     std::vector<std::vector<long double> > calculateAverageNeutronFluxPerRegion(dados_entrada *data);
 
-    std::unique_ptr<dados_entrada> copyProjectDataToRawPointers(ProjectData &proj);
+    std::unique_ptr<dados_entrada> copyProjectDataToRawPointers(ProjectData &proj,  CrossSectionDataFilerParameters& fileParameter);
 
     CalculatedCrossSectionMatrices calculateCrossSectionMatrices(dados_entrada *data);
 
@@ -119,7 +127,6 @@ public:
     void writeAverageNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult);
     void writeAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult);
     void writeNeutronFluxFile(dados_entrada *DDValues, CalculatedData *DDResult);
-
 
     void writeAbsorptionCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);
     void writeScatteringCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);

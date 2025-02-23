@@ -45,7 +45,7 @@ BuildMatrices::BuildMatrices(dados_entrada *newDatricesDD_Data,
 {
 };
 
-std::unique_ptr<dados_entrada> BuildMatrices::copyProjectDataToRawPointers(ProjectData &proj)
+std::unique_ptr<dados_entrada> BuildMatrices::copyProjectDataToRawPointers(ProjectData &proj, CrossSectionDataFilerParameters& fileParameter)
 {
     auto data = std::make_unique<dados_entrada>();
     fileName  = proj.scatteringFilePath;
@@ -53,16 +53,18 @@ std::unique_ptr<dados_entrada> BuildMatrices::copyProjectDataToRawPointers(Proje
 
     if (   ( true == fileName.empty() )
         || (    ( false == entry.exists() )
-             && ( fileName != ":/Default_Project/Resources/Default_Projetc.txt") ) )
+             && ( fileName != ":/Default_Project/Resources/Default_Projet.txt") ) )
     {
         throw std::invalid_argument("Error: Material Data File issue. \nYou need to set a Cross Section File.");
     }
 
-    data->G   = proj.energyGroup;
-    data->L   = proj.legendreOrder;
+    //Use the values from cross section data file
     data->n   = proj.quadratureOrder;
     data->n_R = proj.regionNumber;
-    data->n_Z = proj.zoneNumber;
+
+    data->G   = fileParameter.numberOfEnergyGroup;
+    data->L   = fileParameter.numberOfLegendre;
+    data->n_Z = fileParameter.numberOfZones;
 
     data->tipo_ce = static_cast<int>(proj.leftBoundaryConditionsType);
     data->tipo_cd = static_cast<int>(proj.rightBoundaryConditionsType);
@@ -98,6 +100,11 @@ std::unique_ptr<dados_entrada> BuildMatrices::copyProjectDataToRawPointers(Proje
     copyRegionVectorToRowPointers(proj.regionArray, proj.regionNumber, data.get());
 
     buildCrossSectionMatrices(data.get());
+
+    //update values that the user chose
+    data->G   = proj.energyGroup;
+    data->L   = proj.legendreOrder;
+    data->n_Z = proj.zoneNumber;
 
     return data;
 }
@@ -321,8 +328,6 @@ void BuildMatrices::allocateMatrices(dados_entrada &valor)
                            Distribuição de dados em matrizes
 
 *********************************************************************************************************/
-
-    std::cout<<"PAssou do close"<<std::endl;
     vector.erase(vector.begin(),vector.begin() + 9);
     int i = 0;
 

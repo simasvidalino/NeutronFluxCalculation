@@ -15,9 +15,9 @@ class FileViewerDlg : public QDialog
 
 public:
     explicit FileViewerDlg(QWidget *parent   = nullptr,
-                                 QStringList materials = {},
-                                 int energyGroup   = 0,
-                                 int legendreOrder = 0);
+                           int izoneNumber    = 0,
+                           int ienergyGroup   = 0,
+                           int ilegendreOrder = 0);
     ~FileViewerDlg();
 
     ParseFile::ParseErrors getEParseError() const;
@@ -32,15 +32,14 @@ public:
 
 protected:
     virtual void accept();
-
     void readFile(QString &filePath); //read the txt
+    bool saveText();
     void writeFile(QString &filePath);
-
 
 private slots:
     void clearText();
     void openFile(); //use a screen to choose a file
-    void saveText();
+    void saveTextDlg();
 
 private:
     struct legendreData
@@ -56,8 +55,7 @@ private:
 
     const int energyGroup;
     const int legendreOrder;
-
-    QStringList materialList;
+    const int zoneNumber;
 
     ParseFile::ParseErrors eParseError;
 
