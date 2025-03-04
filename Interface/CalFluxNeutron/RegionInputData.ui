@@ -15,7 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_8">
    <item row="0" column="0" rowspan="2">
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="groupBoxGeneralParameters">
      <property name="title">
       <string>General Parameters</string>
      </property>
@@ -107,7 +107,7 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="groupBoxBoundaryConditions">
      <property name="title">
       <string>Boundary Conditions</string>
      </property>
@@ -375,7 +375,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroupLeftBoundaryConditions"/>
   <buttongroup name="buttonGroupRightBoundaryConditions"/>
+  <buttongroup name="buttonGroupLeftBoundaryConditions"/>
  </buttongroups>
 </ui>

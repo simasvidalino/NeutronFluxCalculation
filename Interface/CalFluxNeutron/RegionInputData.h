@@ -24,6 +24,8 @@ public:
     explicit RegionInputData(QWidget *parent = nullptr);
     ~RegionInputData();
 
+    void setEnableGUI(bool enable);
+
     void setGeneralProjectData(std::shared_ptr<ProjectData> proj);
     std::shared_ptr<ProjectData> getGeneralProjectData();
 

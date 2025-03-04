@@ -116,7 +116,7 @@ void MainWindow::onOutputData(std::shared_ptr<CalculatedData> data)
     ui->widgetNeutronAbsorpt->commitChanges();
     ui->widgetNeutronScalarFlux->commitChanges();
 
-    if (!QString(proj->scatteringFilePath.c_str()).contains("Default"))
+    if (!fileName.contains("Default"))
     {
         NeutronFlowJsonIO::getInstance()->setGeneralProjectData(proj);
         NeutronFlowJsonIO::getInstance()->saveProject(Interface::jsonFormat, fileName);
@@ -134,6 +134,8 @@ void MainWindow::openProjectFileDlg()
 
     if (fileStr.isEmpty())
         return;
+
+    ui->widgetRegion->setEnableGUI(true);
 
     fileName = fileStr;
 
@@ -195,6 +197,7 @@ void MainWindow::saveProjectFileDlg()
     if (fileName.isEmpty())
         return;
 
+    ui->widgetRegion->setEnableGUI(true);
     this->fileName = fileName;
 
     (void)saveProject(saveMaterialData);
@@ -337,6 +340,8 @@ void MainWindow::init()
 
     enableGenerateFilesMenu();
 
+    ui->widgetRegion->setEnableGUI(false);
+
     //Open default project
     QTimer::singleShot(1000, this, [&]{    openProject();});
 }
@@ -346,9 +351,8 @@ void MainWindow::showDefaultProjectWarning()
     QMessageBox msgBox(this);
     msgBox.setWindowTitle("Default Project Notice");
 
-    msgBox.setText("This project is the default project and cannot be modified. "
-                   "If you wish to proceed, any changes made on the screen will be disregarded. "
-                   "To apply and save your changes, you must first save the project or open a different project.");
+    msgBox.setText("This project is a default example and cannot be modified. "
+                   "If you want to create your own project, please save this example to a folder first.");
 
     msgBox.addButton(QMessageBox::Ok);
     msgBox.addButton(QMessageBox::Save);
