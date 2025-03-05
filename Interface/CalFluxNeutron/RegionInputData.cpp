@@ -121,12 +121,6 @@ void RegionInputData::onCreateCrossSectionFile()
 {
     int group = ui->spinBoxGroup->value();
 
-    if (group == 0)
-    {
-        QMessageBox::information(this, "Warning", "Energy Group is zero");
-        return;
-    }
-
     FileViewerDlg dlg(this, allZonasStr.size(),
                             group,
                             ui->spinBoxLegendreOrder->value());

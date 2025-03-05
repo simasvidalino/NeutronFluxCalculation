@@ -350,13 +350,13 @@ void MainWindow::showDefaultProjectWarning()
 {
     QMessageBox msgBox(this);
     msgBox.setWindowTitle("Default Project Notice");
+    msgBox.setWindowFlags( Qt::Dialog | Qt::CustomizeWindowHint );
 
     msgBox.setText("This project is a default example and cannot be modified. "
                    "If you want to create your own project, please save this example to a folder first.");
-
+    msgBox.setIcon(QMessageBox::Information);
     msgBox.addButton(QMessageBox::Ok);
     msgBox.addButton(QMessageBox::Save);
-
 
     int ret = msgBox.exec();
 

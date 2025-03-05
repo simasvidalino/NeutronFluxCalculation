@@ -63,7 +63,13 @@ void FileViewerDlg::openFile()
     }
     else
     {
-        QMessageBox::information(this, "Project data and material data do not match.", ParseFile::getInstance()->makeInstruction().c_str());
+        QMessageBox msgBox(this);
+        msgBox.setWindowTitle("Project data and material data do not match.");
+        msgBox.setWindowFlags( Qt::Dialog | Qt::CustomizeWindowHint );
+        msgBox.setIcon(QMessageBox::Information);
+        msgBox.setText(ParseFile::getInstance()->makeInstruction().c_str());
+        msgBox.addButton(QMessageBox::Ok);
+        msgBox.exec();
     }
 
     return eParseError;

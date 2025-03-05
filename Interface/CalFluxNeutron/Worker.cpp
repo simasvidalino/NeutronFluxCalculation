@@ -1,7 +1,6 @@
 #include "Worker.h"
 
 #include <QDebug>
-#include <QMessageBox>
 #include <QThread>
 
 #include "DDNumericalMethod.h"

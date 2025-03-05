@@ -189,7 +189,15 @@ void MapRegion::isCellUnique(QListWidgetItem *item)
     }
 
     if (!itemUnique)
-        QMessageBox::warning(this, "Failed to add another item", "This item already exists");
+    {
+        QMessageBox msgBox(this);
+        msgBox.setWindowTitle("Failed to add another item");
+        msgBox.setWindowFlags( Qt::Dialog | Qt::CustomizeWindowHint );
+        msgBox.setText("This item already exists");
+        msgBox.setIcon(QMessageBox::Information);
+        msgBox.addButton(QMessageBox::Ok);
+        msgBox.exec();
+    }
 }
 
 void MapRegion::setConnections()

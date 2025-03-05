@@ -294,9 +294,14 @@ QString ClipboardTableFiller::fromDouble(int column, const QString &datum, bool 
 
 void ClipboardTableFiller::error(const QString &message)
 {
-    QMessageBox::warning(mTableView, "Warning", message);
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle("Warning");
+    msgBox.setWindowFlags( Qt::Dialog | Qt::CustomizeWindowHint );
+    msgBox.setText(message);
+    msgBox.setIcon(QMessageBox::Critical);
+    msgBox.addButton(QMessageBox::Ok);
+    msgBox.exec();
 }
-
 
 ClipboardTableFiller::Status ClipboardTableFiller::error(ClipboardTableFiller::Status status,
                                                          int row, int column)
