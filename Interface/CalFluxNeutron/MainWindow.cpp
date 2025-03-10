@@ -311,6 +311,7 @@ void MainWindow::updateAbsRateTable(std::shared_ptr<CalculatedData> DDResult)
         groups << "Group " + QString::number(groupIndex);
     }
 
+    ui->widgetNeutronAbsorpt->clearTable();
     ui->widgetNeutronAbsorpt->setTableDimension(energyGroup, regions.size());
     ui->widgetNeutronAbsorpt->setTableHeaders(regions, groups);
     ui->widgetNeutronAbsorpt->setTableItems(std::move(DDResult->absorptionRate));
@@ -519,6 +520,7 @@ void MainWindow::updateFluxTable(std::shared_ptr<CalculatedData> DDResult)
         groups << "Group " + QString::number(groupIndex);
     }
 
+    ui->widgetNeutronScalarFlux->clearTable();
     ui->widgetNeutronScalarFlux->setTableDimension(energyGroup, regions.size());
     ui->widgetNeutronScalarFlux->setTableHeaders(regions, groups);
     ui->widgetNeutronScalarFlux->setTableItems(std::move(DDResult->averageNeutronFluxPerRegion));

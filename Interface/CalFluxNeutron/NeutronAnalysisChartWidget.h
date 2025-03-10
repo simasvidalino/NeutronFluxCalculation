@@ -20,6 +20,8 @@ public:
 
     void clearChart();
 
+    void clearTable();
+
     void commitChanges();
 
     int getPeriodicityValue() const;

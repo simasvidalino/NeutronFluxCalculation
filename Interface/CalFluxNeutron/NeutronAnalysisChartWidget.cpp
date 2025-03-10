@@ -23,6 +23,11 @@ void NeutronAnalysisChartWidget::clearChart()
     ui->widgetChart->clearChart();
 }
 
+void NeutronAnalysisChartWidget::clearTable()
+{
+    ui->tableWidget->clear();
+}
+
 void NeutronAnalysisChartWidget::commitChanges()
 {
     ui->widgetChart->filterChange(0); //Set "All" option in filter
@@ -98,6 +103,9 @@ void NeutronAnalysisChartWidget::addTableItems()
 
     ui->tableWidget->resizeColumnsToContents();
     ui->tableWidget->resizeRowsToContents();
+
+    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 void NeutronAnalysisChartWidget::init()
