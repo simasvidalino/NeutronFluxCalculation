@@ -25,6 +25,8 @@ void NeutronAnalysisChartWidget::clearChart()
 
 void NeutronAnalysisChartWidget::commitChanges()
 {
+    ui->widgetChart->filterChange(0); //Set "All" option in filter
+
     ui->widgetChart->setChart();
 
     addTableItems();
@@ -116,7 +118,7 @@ void NeutronAnalysisChartWidget::setConnections()
     connect(ui->spinBoxPeriodicity, &QSpinBox::valueChanged, this, &NeutronAnalysisChartWidget::updateChartStep);
 
 
-    connect(ui->comboBoxFilterGroup, &QComboBox::activated, this, [this](int index)
+    connect(ui->comboBoxFilterGroup, &QComboBox::currentIndexChanged, this, [this](int index)
             {
                 ui->widgetChart->filterChange(index);
 
@@ -161,11 +163,13 @@ void NeutronAnalysisChartWidget::setFilteredByGroup(int group)
         options << "Group " + QString::number(ig + 1);
     }
 
+    ui->comboBoxFilterGroup->blockSignals(true);
     ui->comboBoxFilterGroup->show();
     ui->labeFilterGroup->show();
-
     ui->comboBoxFilterGroup->clear();
     ui->comboBoxFilterGroup->addItems(options);
+    ui->comboBoxFilterGroup->blockSignals(false);
+
 }
 
 void NeutronAnalysisChartWidget::setLabels(const QString &xLabel, const QString &yLabel)
