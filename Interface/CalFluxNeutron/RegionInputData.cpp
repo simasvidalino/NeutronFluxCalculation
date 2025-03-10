@@ -331,6 +331,8 @@ void RegionInputData::setConnections()
         if(button == ui->radioButtonBCRightPrescribed)
             enable = true;
         ui->pushButtonAddRightPrecribedBCValues->setEnabled(enable); });
+
+    connect(ui->pushButtonCancel, &QPushButton::clicked, this, [&](){emit onCancelCalc();});
 }
 
 void RegionInputData::setGraphicScene(int region)

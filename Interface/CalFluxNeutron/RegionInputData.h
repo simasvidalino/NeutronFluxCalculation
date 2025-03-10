@@ -56,6 +56,7 @@ private slots:
 signals:
     void onCalculateCrossSectionMatrices();
     void onCalculateScalarNeutronFlux();
+    void onCancelCalc();
 
 private:
     Ui::RegionInputData *ui;

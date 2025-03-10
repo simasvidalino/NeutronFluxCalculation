@@ -8,10 +8,6 @@
 #include "VariablesUsed.h"
 #include "ParseFile.h"
 
-#include <mutex>
-
-std::mutex mtx;
-
 Worker::Worker(QObject *parent)
     : QObject(parent)
 {
@@ -32,7 +28,7 @@ void Worker::process()
 {
     try
     {
-        std::unique_lock<std::mutex> lock(mtx);
+        QMutexLocker lock(&locker);
 
         parseCrossSectionDataFileValues();
 
@@ -53,10 +49,7 @@ void Worker::process()
 
         calculateAbsorptionNeutronRatePerNode();
 
-        if (false == this->thread()->isInterruptionRequested())
-            emit outputData(DDResult);
-
-        QThread::sleep(3);
+        emit outputData(DDResult);
 
         emit finished();
 
@@ -69,7 +62,7 @@ void Worker::process()
         BuildMatrices::getInstance()->destroyInstance();
 
         emit errorOccurred(e.what());
-        qCritical() << "Invalid argument: " << e.what();
+        qCritical() << "Exception inside worker thread: " << e.what();
 
         emit finished();
     }
@@ -181,13 +174,17 @@ void Worker::parseCrossSectionDataFileValues()
 
     if (ParseFile::ParseErrors::eOk != ParseFile::getInstance()->parseFile(proj->scatteringFilePath))
         throw std::logic_error(ParseFile::getInstance()->makeInstruction());
-
 }
 
-void Worker::setCancelResult(bool newCancelResult)
+void Worker::setCancelResult()
 {
-    this->thread()->requestInterruption();
-    this->thread()->quit();
-    this->thread()->wait();
+    if (this->thread()->isRunning())
+    {
+        DDValues->iteracao.store(0, std::memory_order_relaxed);
+
+        this->thread()->requestInterruption();
+        this->thread()->quit();
+        this->thread()->wait();
+    }
 }
 

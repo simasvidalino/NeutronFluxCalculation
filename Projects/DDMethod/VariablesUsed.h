@@ -67,8 +67,6 @@ struct dados_entrada
 
     ~dados_entrada() {
 
-        std::cout<<"Call delete matrices"<<std::flush;
-
         auto safeDelete = [](auto& ptr) {
             if (ptr != nullptr) {
                 delete[] ptr;

@@ -5,6 +5,7 @@
 #include "VariablesUsed.h"
 
 #include <QObject>
+#include <QMutex>
 
 class Worker : public QObject
 {
@@ -16,7 +17,7 @@ public:
 
     void setProjData(ProjectData &proj);
 
-    void setCancelResult(bool newCancelResult);
+    void setCancelResult();
 
 public slots:
     void process();
@@ -43,6 +44,8 @@ private:
     ProjectData* proj;
     std::unique_ptr<dados_entrada> DDValues;
     std::shared_ptr<CalculatedData> DDResult;
+
+    QMutex locker;
 
     void writeCalculatedData();
 };

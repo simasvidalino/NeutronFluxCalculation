@@ -376,6 +376,9 @@ void MainWindow::setConnections()
     connect(ui->widgetRegion, &RegionInputData::onCalculateScalarNeutronFlux,
             this, &MainWindow::calculateNeutronFluxUsingDD);
 
+    connect(ui->widgetRegion, &RegionInputData::onCancelCalc, this, [&](){worker->setCancelResult();});
+
+
     connect(ui->actionAbsorption_Cross_Section, &QAction::triggered, this, [this]()
             {
                 showDataInFile(proj->absorptionCrossSectionFilePath);
@@ -422,7 +425,7 @@ void MainWindow::setConnections()
 
     connect(worker, &Worker::errorOccurred, this, [this](auto errors)
             {
-                QMessageBox::information(this, "Error", errors);
+                QMessageBox::information(this, "Information", errors);
             });
 
     connect(this, &MainWindow::startProcess, worker, &Worker::process);
@@ -448,7 +451,7 @@ void MainWindow::stopWork()
 
 void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
 {
-    if (!DDResult)
+    if (!DDResult || DDResult->scalarFlux.empty())
         return;
 
     if (!proj)
