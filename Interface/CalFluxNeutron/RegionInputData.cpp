@@ -167,8 +167,7 @@ void RegionInputData::onOpenBCLeftInputTable()
 
     dlg.configTable(rowCount, QString("Left Boundary Conditions"), QString("Group"));
 
-    if (bcLeft.has_value())
-        dlg.setColumnValues(0, bcLeft.value());
+    dlg.setColumnValues(0, bcLeft.value_or(std::vector<double>{}));
 
     if (!dlg.exec())
         return;
@@ -306,31 +305,23 @@ void RegionInputData::setConnections()
         bool enable = false;
 
         if (button == ui->radioButtonBCLeftPrescribed)
+        {
             enable = true;
-        else if (button == ui->radioButtonBCLeftReflexive
-                 && bcLeft.has_value())
-            bcLeft.reset();
-        else if (bcLeft.has_value())
-            bcLeft->clear();
+        }
 
         ui->pushButtonAddLeftPrecribedBCValues->setEnabled(enable); });
 
     connect(ui->buttonGroupRightBoundaryConditions, &QButtonGroup::buttonClicked,
             this, [this](auto button)
     {
-        bool enable = false;
-
-        if (button == ui->radioButtonBCRightPrescribed)
-            enable = true;
-        else if (button == ui->radioButtonBCRightReflexive
-                 && bcRight.has_value())
-            bcRight.reset();
-        else if (bcRight.has_value())
-            bcRight->clear();
+        bool enableAddRightPrecribedButton = false;
 
         if(button == ui->radioButtonBCRightPrescribed)
-            enable = true;
-        ui->pushButtonAddRightPrecribedBCValues->setEnabled(enable); });
+        {
+            enableAddRightPrecribedButton = true;
+        }
+
+        ui->pushButtonAddRightPrecribedBCValues->setEnabled(enableAddRightPrecribedButton); });
 
     connect(ui->pushButtonCancel, &QPushButton::clicked, this, [&](){emit onCancelCalc();});
 }
@@ -521,10 +512,22 @@ void RegionInputData::saveGUI()
     int rightBC = ui->buttonGroupRightBoundaryConditions->checkedId();
 
     if (leftBC == ePrescribed)
+    {
         proj->bcLeft = bcLeft;
+    }
+    else
+    {
+        proj->bcLeft.reset();
+    }
 
     if (rightBC == ePrescribed)
+    {
         proj->bcRight = bcRight;
+    }
+    else
+    {
+        proj->bcRight.reset();
+    }
 
     proj->leftBoundaryConditionsType = eBoundaryConditionsType(leftBC);
     proj->rightBoundaryConditionsType = eBoundaryConditionsType(rightBC);
