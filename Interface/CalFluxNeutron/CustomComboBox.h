@@ -9,6 +9,7 @@ class CustomComboBox : public QComboBox
 
 public:
     explicit CustomComboBox(QWidget* parent = nullptr);
+    virtual ~CustomComboBox();
 
 protected:
     virtual void focusOutEvent(QFocusEvent *event) override;

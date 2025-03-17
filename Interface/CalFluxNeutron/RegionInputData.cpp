@@ -195,13 +195,10 @@ void RegionInputData::onSelectionRegionChange()
 
             auto regionPtr = std::make_unique<RegionData>(regionArray.at(number));
 
-            dlg.loadRegionData(std::move(regionPtr));
-            dlg.loadAllZonasStr(allZonasStr);
+            dlg.loadData(allZonasStr, std::move(regionPtr));
 
             if (!dlg.exec())
                 return;
-
-            qInfo() << "indice" << number << "array size" << regionArray.size();
 
             if (number < regionArray.size())
             {

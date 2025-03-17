@@ -1,5 +1,6 @@
 #include "MapRegion.h"
 
+#include "CustomComboBox.h"
 #include "InterFaceDefinitions.h"
 #include "TableInputDlg.h"
 #include "qevent.h"
@@ -22,8 +23,6 @@ MapRegion::MapRegion(QWidget *parent,
 
     setConnections();
     initDialog();
-
-    qApp->installEventFilter(this);
 }
 
 MapRegion::~MapRegion()
@@ -57,24 +56,8 @@ void MapRegion::deleteZones()
     {
         ui->tableWidgetRegion->removeCellWidget(0, 0);
     }
-}
 
-void MapRegion::onTimer()
-{
-    qInfo()<<"ontimer";
-
-    warningTimer.setInterval(50000);
-
-    if (blinkTimer.isActive())
-    {
-        blinkTimer.stop();
-    }
-    else
-    {
-        blinkingQtt = 0;
-        blinkTimer.start();
-        ui->labelWarning->show();
-    }
+    fillTableInMaterial();
 }
 
 QString MapRegion::vectorToString(std::vector<double> vect)
@@ -92,28 +75,27 @@ QString MapRegion::vectorToString(std::vector<double> vect)
     return result;
 }
 
-void MapRegion::onBlink()
+void MapRegion::fillTableInMaterial(QListWidgetItem *item)
 {
-    isWarning = !isWarning;
-    ++blinkingQtt;
+    auto comboBox = static_cast<CustomComboBox*>(ui->tableWidgetRegion->cellWidget(eMaterialZone, 0));
 
-    if (blinkingQtt >= 10)
+    if (nullptr == comboBox)
+        return;
+
+    comboBox->blockSignals(true);
+
+    comboBox->clear();
+
+    // Add items from the QListWidget to the QComboBox
+    for (int i = 0; i < ui->listWidget->count(); ++i)
     {
-        blinkTimer.stop();
+        auto *listItem = ui->listWidget->item(i);
+        comboBox->addItem(listItem->text());
     }
 
-    if (isWarning)
-    {
-        ui->labelWarning->show();
-        ui->tableWidgetRegion->setStyleSheet("QTableWidget { border: 2px solid red; }");
-        ui->listWidget->setStyleSheet("QListWidget { border: 2px solid red; }");
-    }
-    else
-    {
-        ui->labelWarning->hide();
-        ui->listWidget->setStyleSheet("");
-        ui->tableWidgetRegion->setStyleSheet("");
-    }
+    comboBox->blockSignals(false);
+
+    comboBox->setCurrentText( regionData->zoneStr.c_str() );
 }
 
 void MapRegion::onPhysicalSource()
@@ -136,15 +118,6 @@ void MapRegion::onPhysicalSource()
 
 void MapRegion::initDialog()
 {
-    warningTimer.start();
-
-    blinkTimer.setInterval(700);
-
-    ui->listWidget->setDragEnabled(true);
-    ui->tableWidgetRegion->setAcceptDrops(true);
-
-    ui->tableWidgetRegion->setToolTip(Interface::getZoneTableToolTip());
-
     setAcceptDrops(true);
 
     this->setStyleSheet("QDialog {"
@@ -154,16 +127,24 @@ void MapRegion::initDialog()
 
     ui->tableWidgetRegion->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    ui->tableWidgetRegion->setItem(eMaterialZone,   0, new QTableWidgetItem(""));
+    auto *comboBox = new CustomComboBox();
+    connect(comboBox, &QComboBox::currentTextChanged, this, [this](const QString &newText)
+            {
+        if (   (nullptr == regionData)
+            || (newText.isEmpty()))
+                    return;
+
+                regionData->zoneStr = newText.toStdString();
+            });
+
+    ui->tableWidgetRegion->setCellWidget(eMaterialZone, 0, comboBox);
+
     ui->tableWidgetRegion->setItem(eNodes,          0, new QTableWidgetItem(""));
     ui->tableWidgetRegion->setItem(eRegionSize,     0, new QTableWidgetItem(""));
     ui->tableWidgetRegion->setItem(ePhysicalSource, 0, new QTableWidgetItem(""));
 
     IntDelegate *intDelegate = new IntDelegate;
-    ui->tableWidgetRegion->setItemDelegateForRow(1, intDelegate);
-
-    ui->tableWidgetRegion->item(0, 0)->setFlags(
-                ui->tableWidgetRegion->item(0, 0)->flags() & ~Qt::ItemIsEditable);
+    ui->tableWidgetRegion->setItemDelegateForRow(eNodes, intDelegate);
 }
 
 void MapRegion::isCellUnique(QListWidgetItem *item)
@@ -208,16 +189,21 @@ void MapRegion::setConnections()
     //Save the old text and see if the new one is unique, if not, return to the old text.
     connect(ui->listWidget, &QListWidget::itemDoubleClicked, this, [this](QListWidgetItem *item){
         currentMatZone = item->text();});
+
     connect(ui->listWidget, &QListWidget::itemChanged, this,  &MapRegion::isCellUnique);
+    connect(ui->listWidget, &QListWidget::itemChanged, this,  &MapRegion::fillTableInMaterial);
 
     connect(ui->tableWidgetRegion, &QTableWidget::cellClicked, this, [this](int row, int column)
-    {
-        if (row == ePhysicalSource)
-            onPhysicalSource();
-    });
-
-    connect(&warningTimer, &QTimer::timeout, this,  &MapRegion::onTimer);
-    connect(&blinkTimer, &QTimer::timeout, this,  &MapRegion::onBlink);
+            {
+                switch(row)
+                {
+                case ePhysicalSource:
+                    onPhysicalSource();
+                    break;
+                default:
+                    break;
+                };
+            });
 
 }
 
@@ -234,7 +220,7 @@ bool MapRegion::eventFilter(QObject *watched, QEvent *event)
             int row = ui->tableWidgetRegion->rowAt(dropPos.y());
 
             if (row == 1
-                    || row == 2)
+                || row == 2)
             {
                 return true;
             }
@@ -244,32 +230,14 @@ bool MapRegion::eventFilter(QObject *watched, QEvent *event)
     return false;
 }
 
-void MapRegion::paintEvent(QPaintEvent *event)
-{
-    QDialog::paintEvent(event);
-
-    //    if (isWarning)
-    //    {
-    //        QPainter painter(this);
-
-    //        QRect listRect  = ui->listWidget->geometry();
-    //        QRect tableRect = ui->tableWidgetRegion->geometry();
-
-    //        listRect.adjust(-3, -3, 3, 3);
-    //        tableRect.adjust(-3, -3, 3, 3);
-
-    //        painter.setBrush(Qt::red);
-    //        painter.fillRect(listRect, Qt::red);
-    //    }
-}
 std::unique_ptr<RegionData> MapRegion::getRegionData() const
 {
     auto data = std::make_unique<RegionData>();
 
-    auto chosenMaterial = ui->tableWidgetRegion->item(eMaterialZone, 0)->text();
+    auto chosenMaterial = QString::fromStdString(regionData->zoneStr);
 
     if ( (chosenMaterial != Interface::getDefaultZoneString())
-         && !chosenMaterial.isEmpty() )
+        && !chosenMaterial.isEmpty() )
     {
         bool ok = false;
 
@@ -297,27 +265,14 @@ std::unique_ptr<RegionData> MapRegion::getRegionData() const
     return data;
 }
 
-void MapRegion::loadRegionData(std::unique_ptr<RegionData> newRegionData)
+void MapRegion::loadData(const QStringList &newAllZonasStr, std::unique_ptr<RegionData> newRegionData)
 {
     regionData = std::move(newRegionData);
+    allZonasStr = newAllZonasStr;
 
     if (!regionData)
         regionData = std::make_unique<RegionData>();
 
-    ui->tableWidgetRegion->item(eMaterialZone, 0)->setText(QString::fromStdString(regionData->zoneStr));
-
-    ui->tableWidgetRegion->item(eNodes, 0)->setText(QString::number(regionData->node));
-
-    ui->tableWidgetRegion->item(eRegionSize, 0)->setText(QString::number(regionData->quote));
-
-    //Create a string with physical source
-    if (regionData->physicalSource.has_value())
-        ui->tableWidgetRegion->item(ePhysicalSource, 0)->setText(vectorToString(regionData->physicalSource.value()));
-}
-
-void MapRegion::loadAllZonasStr(const QStringList &newAllZonasStr)
-{
-    allZonasStr = newAllZonasStr;
 
     for (const auto& zone : allZonasStr)
     {
@@ -327,6 +282,22 @@ void MapRegion::loadAllZonasStr(const QStringList &newAllZonasStr)
         item->setFlags(item->flags() | Qt::ItemIsEditable);
         ui->listWidget->addItem(item);
     }
+
+    fillTableInMaterial();
+
+    QComboBox *comboBox = qobject_cast<QComboBox*>(ui->tableWidgetRegion->cellWidget(eMaterialZone, 0));
+    if (comboBox)
+    {
+        comboBox->setCurrentText(QString::fromStdString(regionData->zoneStr));
+    }
+
+    ui->tableWidgetRegion->item(eNodes, 0)->setText(QString::number(regionData->node));
+    ui->tableWidgetRegion->item(eRegionSize, 0)->setText(QString::number(regionData->quote));
+
+    //Create a string with physical source
+    if (regionData->physicalSource.has_value())
+        ui->tableWidgetRegion->item(ePhysicalSource, 0)->setText(vectorToString(regionData->physicalSource.value()));
+
 }
 
 QList<QString> MapRegion::getAllZonasStr()

@@ -5,6 +5,10 @@ CustomComboBox::CustomComboBox(QWidget *parent) : QComboBox(parent)
 
 }
 
+CustomComboBox::~CustomComboBox()
+{
+}
+
 void CustomComboBox::focusOutEvent(QFocusEvent *event)
 {
     qInfo()<<"focusOutEvent";

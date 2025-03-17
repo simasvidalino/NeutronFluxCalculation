@@ -38,17 +38,15 @@ public:
     ~MapRegion();
 
     QList<QString> getAllZonasStr();
-    void loadAllZonasStr(const QStringList &newAllZonasStr);
+
+    void loadData(const QStringList &newAllZonasStr, std::unique_ptr<RegionData> newRegionData);
 
     std::unique_ptr<RegionData> getRegionData() const;
-    void loadRegionData(std::unique_ptr<RegionData> newRegionData);
 
 private slots:
     void addZones();
     void deleteZones();
-    void onBlink();
     void onPhysicalSource();
-    void onTimer();
 
 private:
     enum rows
@@ -62,6 +60,8 @@ private:
     QString vectorToString(std::vector<double> vect);
 
     Ui::MapRegion *ui;
+
+    void fillTableInMaterial(QListWidgetItem *item = nullptr);
 
     void initDialog();
 
@@ -77,17 +77,9 @@ private:
     int regionNumber;
     int groupNumber;
 
-    QTimer warningTimer;
-    QTimer blinkTimer;
-    int blinkingQtt = 0;
-
-    bool isWarning = false;
-
 public:
     virtual bool eventFilter(QObject *watched, QEvent *event) override;
 
     void setRegionNumber(int newRegionNumber);
 
-protected:
-    virtual void paintEvent(QPaintEvent *event) override;
 };
