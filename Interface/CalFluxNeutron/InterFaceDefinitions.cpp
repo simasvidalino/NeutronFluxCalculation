@@ -101,4 +101,9 @@ const char *getCrossSessionDataToolTip()
     return "Use this button to input total cross-section and group-to-group scattering data in a format that the program can interpret.";
 }
 
+const char *getToolTipForNodes()
+{
+    return "Defines the number of nodes for this region.\nToo few nodes may reduce accuracy, while too many may slow down the simulation.";
+}
+
 }

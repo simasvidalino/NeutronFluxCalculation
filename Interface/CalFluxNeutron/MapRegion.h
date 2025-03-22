@@ -77,9 +77,6 @@ private:
     int regionNumber;
     int groupNumber;
 
-public:
-    virtual bool eventFilter(QObject *watched, QEvent *event) override;
-
     void setRegionNumber(int newRegionNumber);
 
 };

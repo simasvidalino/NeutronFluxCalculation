@@ -139,7 +139,10 @@ void MapRegion::initDialog()
 
     ui->tableWidgetRegion->setCellWidget(eMaterialZone, 0, comboBox);
 
-    ui->tableWidgetRegion->setItem(eNodes,          0, new QTableWidgetItem(""));
+    auto nodesItem = new QTableWidgetItem("");
+    nodesItem->setToolTip(Interface::getToolTipForNodes());
+
+    ui->tableWidgetRegion->setItem(eNodes,          0, nodesItem);
     ui->tableWidgetRegion->setItem(eRegionSize,     0, new QTableWidgetItem(""));
     ui->tableWidgetRegion->setItem(ePhysicalSource, 0, new QTableWidgetItem(""));
 
@@ -205,29 +208,6 @@ void MapRegion::setConnections()
                 };
             });
 
-}
-
-bool MapRegion::eventFilter(QObject *watched, QEvent *event)
-{
-    if (event->type() == QEvent::Drop)
-    {
-        QDropEvent *dropEvent = dynamic_cast<QDropEvent*>(event);
-
-        if (dropEvent)
-        {
-            //The first row is "dropble"
-            QPoint dropPos = dropEvent->position().toPoint();
-            int row = ui->tableWidgetRegion->rowAt(dropPos.y());
-
-            if (row == 1
-                || row == 2)
-            {
-                return true;
-            }
-        }
-    }
-
-    return false;
 }
 
 std::unique_ptr<RegionData> MapRegion::getRegionData() const
