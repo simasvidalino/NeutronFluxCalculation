@@ -106,4 +106,14 @@ const char *getToolTipForNodes()
     return "Defines the number of nodes for this region.\nToo few nodes may reduce accuracy, while too many may slow down the simulation.";
 }
 
+const char *getScalarFluxChartTitle()
+{
+    return "Scalar Flux of Neutral particles (DD method)";
+}
+
+const char *getAbsorptionChartTitle()
+{
+    return "Neutron Absorption Rate";
+}
+
 }

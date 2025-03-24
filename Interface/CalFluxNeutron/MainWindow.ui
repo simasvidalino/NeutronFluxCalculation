@@ -42,7 +42,7 @@
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
-        <string>Neutron Absorpt Rate</string>
+        <string>Neutron Absorption Rate</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_7">
         <item row="0" column="0">

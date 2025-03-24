@@ -333,11 +333,11 @@ void MainWindow::init()
 
     ui->tabWidget->setCurrentIndex(tabInputData);
 
-    ui->widgetNeutronScalarFlux->setProjectionTitle("Scalar Flux of Neutral particles (DD method)");
-    ui->widgetNeutronScalarFlux->setLabels("Position x (cm)", "Scalar Flux");
+    ui->widgetNeutronScalarFlux->setProjectionTitle(Interface::getScalarFluxChartTitle());
+    ui->widgetNeutronScalarFlux->setLabels("Position x (cm)", "Scalar Flux ( neutrons/c².s )");
 
-    ui->widgetNeutronAbsorpt->setProjectionTitle("Neutron Absorption Rate");
-    ui->widgetNeutronAbsorpt->setLabels("Position x (cm)", "Rate");
+    ui->widgetNeutronAbsorpt->setProjectionTitle(Interface::getAbsorptionChartTitle());
+    ui->widgetNeutronAbsorpt->setLabels("Position x (cm)", "neutrons/c³.s");
 
     enableGenerateFilesMenu();
 
