@@ -192,11 +192,12 @@ void RegionInputData::onSelectionRegionChange()
 
         if (itemNameVariant.isValid() && ok)
         {
+            //Remove selection
+            rectItem->setSelected(false);
+
             // Create the dialog
             MapRegion dlg(this, regionQuant, groupNumber);
-
             auto regionPtr = std::make_unique<RegionData>(regionArray.at(number));
-
             dlg.loadData(allZonasStr, std::move(regionPtr));
 
             if (!dlg.exec())
@@ -382,10 +383,11 @@ void RegionInputData::setSpinBoxQuota(int regionNumber, int left, int top, int w
 {
     QDoubleSpinBox *quote = new QDoubleSpinBox;
 
-    quote->setValue(regionArray.at(regionNumber).quote);
     quote->setObjectName(QString::number(regionNumber));
 
     styleSpinBoxQuota(quote);
+
+    quote->setValue(regionArray.at(regionNumber).quote);
 
     QGraphicsProxyWidget *proxyWidget = new QGraphicsProxyWidget;
     proxyWidget->setWidget(quote);
@@ -420,9 +422,9 @@ void RegionInputData::styleSpinBoxQuota(QDoubleSpinBox *quota)
     QFont quoteFont("Arial", 9);
 
     quota->setDecimals(1);
-    quota->setRange(2, 999);
+    quota->setRange(1, 999);
     QLineEdit *lineEdit = quota->findChild<QLineEdit *>();
-    lineEdit->setValidator(new QDoubleValidator(2, 999, 1, quota));
+    lineEdit->setValidator(new QDoubleValidator(1, 999, 1, quota));
     quota->setFrame(false);
     quota->setSuffix("cm");
     quota->setFont(quoteFont);
