@@ -45,7 +45,7 @@ public:
     QStringList getAllZonasStr() const;
 
 private slots:
-    void clear();
+    void clearRegions();
     void onCreateCrossSectionFile();
     void onNJOYClicked();
     void onOpenBCLeftInputTable();

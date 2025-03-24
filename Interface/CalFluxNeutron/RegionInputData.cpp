@@ -107,14 +107,14 @@ std::vector<int> RegionInputData::calculateRegionHeights()
     return heights;
 }
 
-void RegionInputData::clear()
+void RegionInputData::clearRegions()
 {
-    if (!scene)
-        scene = std::make_unique<QGraphicsScene>();
-    else
+    if (scene)
+    {
         scene->clear();
+    }
 
-    init();
+    ui->spinBoxRegionQtt->setValue(0);
 }
 
 void RegionInputData::onCreateCrossSectionFile()
@@ -283,7 +283,7 @@ void RegionInputData::setConnections()
     connect(ui->pushButtonCreateCrossSection, &QPushButton::clicked, this, &RegionInputData::onCreateCrossSectionFile);
 
     connect(ui->spinBoxRegionQtt, &QSpinBox::valueChanged, this, &RegionInputData::setGraphicScene);
-    connect(ui->pushButtonClear, &QPushButton::clicked, this, &RegionInputData::clear);
+    connect(ui->pushButtonClear, &QPushButton::clicked, this, &RegionInputData::clearRegions);
 
     connect(ui->pushButtonNJOY, &QPushButton::clicked, this, &RegionInputData::onNJOYClicked);
 
