@@ -44,34 +44,36 @@ const char* getDefaultZoneString()
 
 const char *getAboutApp()
 {
-    const char* str = "<p><strong>Welcome to NeutronFlowPro</strong></p>"
+    const char* str = "<p><strong>Welcome to NeutronFluxPro</strong></p>"
                       "<p><strong>Version:</strong> 1.0.0</p>"
                       "<p><strong>Description:</strong></p>"
-                      "<div align='justify'>NeutronFlowPro is a didactic and user-friendly tool for calculating neutron scalar flux "
-                      "using the Diamond Difference Method for neutron transport problems. "
-                      "This application provides an intuitive interface that allows users to input data, run "
-                      "simulations, and visualize results in an effective manner.</p>"
-                      "<p><strong>Key Features:</strong></div>"
+                      "<div align='justify'>NeutronFluxPro — One-Dimensional Neutron Scalar Flux Simulator — is a didactic and user-friendly tool designed to calculate the scalar flux of neutrons "
+                      "and the neutron absorption rate using the Diamond Difference Method for one-dimensional neutron transport problems. "
+                      "The application provides an intuitive graphical interface that allows users to input data, run simulations, and visualize results effectively.</div>"
+
+                      "<p><strong>Key Features:</strong></p>"
                       "<ul>"
-                      "<li><strong>Diamond Difference Method (SN) for neutron scalar flux calculation.</strong></li>"
+                      "<li><strong>Diamond Difference Method (DD) for neutron scalar flux calculations.</strong></li>"
+                      "<li><strong>Calculation of neutron absorption rate by node and by region.</strong></li>"
                       "<li><strong>Interactive and user-friendly graphical interface.</strong></li>"
-                      "<li><strong>Visualization of results through intuitive charts.</strong></li>"
-                      "<li><strong>Parameter customization to meet user-specific needs.</strong></li>"
+                      "<li><strong>Clear and intuitive charts for result visualization.</strong></li>"
+                      "<li><strong>Flexible parameter configuration for various simulation needs.</strong></li>"
                       "</ul>"
+
                       "<p><strong>How to Use:</strong></p>"
                       "<ol>"
-                      "<li><strong>Enter the necessary data for the simulation.</strong></li>"
-                      "<li><strong>Configure simulation options according to your preferences.</strong></li>"
-                      "<li><strong>Run the simulation and wait for the results.</strong></li>"
-                      "<li><strong>Explore generated charts for visual analysis.</strong></li>"
+                      "<li><strong>Enter the required input data for the simulation.</strong></li>"
+                      "<li><strong>Configure the simulation parameters as needed.</strong></li>"
+                      "<li><strong>Run the simulation and wait for the output.</strong></li>"
+                      "<li><strong>Explore the results through detailed charts and data tables.</strong></li>"
                       "</ol>"
-                      "<div align='justify'>Thank you for choosing NeutronFlowPro. If you have any questions or feedback, "
-                      "please contact us at <strong>andreia.vidalino@grad.iprj.uerj.br</strong>.</div>"
-                      "<p>Enjoy your experience with NeutronFlowPro!</p>";
 
+                      "<div align='left'>Thank you for using NeutronFluxPro."
+                      "<p>For questions or feedback, please contact us at <strong>andreia.vidalino@grad.iprj.uerj.br.</strong></p></div>"
+
+                      "<p>Enjoy your experience with NeutronFluxPro!</p>";
 
     return str;
-
 }
 
 const char *getIAEAAdress()
