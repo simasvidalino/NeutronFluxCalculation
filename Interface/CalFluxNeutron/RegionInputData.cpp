@@ -50,6 +50,8 @@ void RegionInputData::setEnableGUI(bool enable)
 
 void RegionInputData::setGeneralProjectData(std::shared_ptr<ProjectData> proj)
 {
+    clearRegions();
+
     this->proj = proj;
 
     loadGUI();
