@@ -48,7 +48,7 @@ BuildMatrices::BuildMatrices(dados_entrada *newDatricesDD_Data,
 std::unique_ptr<dados_entrada> BuildMatrices::copyProjectDataToRawPointers(ProjectData &proj, CrossSectionDataFilerParameters& fileParameter)
 {
     auto data = std::make_unique<dados_entrada>();
-    fileName  = proj.scatteringFilePath;
+    fileName  = proj.NeutronMacroscopicCrossSectionsFilePath;
     std::filesystem::directory_entry entry{fileName};
 
     if (   ( true == fileName.empty() )

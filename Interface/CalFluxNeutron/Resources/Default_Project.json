@@ -2,21 +2,21 @@
     "DataPerRegion": [
         {
             "MaterialColor": 9419737,
-            "NodePerRegion": 20,
+            "NodePerRegion": 80,
             "Quota": 40,
             "ZoneNumber": 1,
             "ZoneStr": "água"
         },
         {
             "MaterialColor": 10080149,
-            "NodePerRegion": 20,
+            "NodePerRegion": 200,
             "Quota": 100,
             "ZoneNumber": 2,
             "ZoneStr": "Combustível"
         },
         {
             "MaterialColor": 9419737,
-            "NodePerRegion": 20,
+            "NodePerRegion": 120,
             "Quota": 60,
             "ZoneNumber": 1,
             "ZoneStr": "água"
@@ -34,7 +34,7 @@
         "QuadratureOrder": "4",
         "RegionDataKey": "3",
         "RightBoundaryConditionsType": "0",
-        "ScatteringCrossSectionFileType": ":/Default_Project/Resources/Default_Projet.txt",
+        "NeutronMacroscopicCrossSections": ":/Default_Project/Resources/Default_Projet.txt",
         "StopOrder": "7",
         "ZoneNumber": 2
     }

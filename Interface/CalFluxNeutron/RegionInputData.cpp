@@ -135,7 +135,6 @@ void RegionInputData::onCreateCrossSectionFile()
         return;
 
     scatteringPath = dlg.getPathCrossSection();
-    emit onCalculateCrossSectionMatrices();
 }
 
 void RegionInputData::onNJOYClicked()
@@ -292,7 +291,6 @@ void RegionInputData::setConnections()
 
     //all operations are done in the MainWindow so as not to overload this window.
     connect(ui->pushButtonCalculateFlux, &QPushButton::clicked, this, [this](){
-        emit onCalculateCrossSectionMatrices();
         emit onCalculateScalarNeutronFlux();
     });
 
@@ -450,7 +448,7 @@ void RegionInputData::loadGUI()
     ui->spinBoxGroup->setValue(proj->energyGroup);
     ui->spinBoxQuadratureOrder->setValue(proj->quadratureOrder);
 
-    scatteringPath = QString::fromStdString(proj->scatteringFilePath);
+    scatteringPath = QString::fromStdString(proj->NeutronMacroscopicCrossSectionsFilePath);
 
     QAbstractButton *bcLeftButton = ui->buttonGroupLeftBoundaryConditions->button(
                 proj->leftBoundaryConditionsType);
@@ -532,7 +530,7 @@ void RegionInputData::saveGUI()
 
     proj->leftBoundaryConditionsType = eBoundaryConditionsType(leftBC);
     proj->rightBoundaryConditionsType = eBoundaryConditionsType(rightBC);
-    proj->scatteringFilePath = scatteringPath.toStdString();
+    proj->NeutronMacroscopicCrossSectionsFilePath = scatteringPath.toStdString();
     proj->zoneNumber = allZonasStr.size();
     proj->legendreOrder = ui->spinBoxLegendreOrder->value();
     proj->quadratureOrder = ui->spinBoxQuadratureOrder->value();

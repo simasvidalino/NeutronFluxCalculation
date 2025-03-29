@@ -172,7 +172,7 @@ void Worker::parseCrossSectionDataFileValues()
                                              proj->legendreOrder,
                                              proj->zoneNumber);
 
-    if (ParseFile::ParseErrors::eOk != ParseFile::getInstance()->parseFile(proj->scatteringFilePath))
+    if (ParseFile::ParseErrors::eOk != ParseFile::getInstance()->parseFile(proj->NeutronMacroscopicCrossSectionsFilePath))
         throw std::logic_error(ParseFile::getInstance()->makeInstruction());
 }
 

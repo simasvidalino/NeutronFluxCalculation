@@ -164,7 +164,7 @@ void FileViewerDlg::setConnection()
 {
     connect(ui->commandLinkButtonOpen, &QCommandLinkButton::clicked, this, &FileViewerDlg::openFile);
     connect(ui->commandLinkButtonClear, &QCommandLinkButton::clicked, this, &FileViewerDlg::clearText);
-    connect(ui->commandLinkButtonSave, &QCommandLinkButton::clicked, this, &FileViewerDlg::saveText);
+    connect(ui->commandLinkButtonSave, &QCommandLinkButton::clicked, this, &FileViewerDlg::saveTextDlg);
     connect(ui->commandLinkButtonParse, &QCommandLinkButton::clicked, this, &FileViewerDlg::parseFile);
 
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &FileViewerDlg::accept);

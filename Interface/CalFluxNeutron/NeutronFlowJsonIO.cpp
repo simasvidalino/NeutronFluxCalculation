@@ -129,7 +129,7 @@ QJsonObject NeutronFlowJsonIO::saveGeneralProjectData() const
         obj[MaximumIterationsNumberKey]     = QString::number(generalProjectData->maximumIterationsNumber);
         obj[LeftBoundaryConditionsTypeKey]  = QString::number(((int)generalProjectData->leftBoundaryConditionsType));
         obj[RightBoundaryConditionsTypeKey] = QString::number(((int)generalProjectData->rightBoundaryConditionsType));
-        obj[ScatteringCrossSectionFileKey]  = generalProjectData->scatteringFilePath.c_str();
+        obj[ScatteringCrossSectionFileKey]  = generalProjectData->NeutronMacroscopicCrossSectionsFilePath.c_str();
         obj[TotalScatteringCrossSectionFilePathKey]  = generalProjectData->totalScatteringCrossSectionFilePath.c_str();
         obj[AbsorptionCrossSectionFilePath]          = generalProjectData->absorptionCrossSectionFilePath.c_str();
         obj[StopOrderKey]                   = QString::number(generalProjectData->stopOrder);
@@ -197,7 +197,7 @@ ProjectData NeutronFlowJsonIO::loadGeneralProjectData(const QJsonObject &obj)
     }
 
     if (obj.contains(ScatteringCrossSectionFileKey))
-        ProjectData.scatteringFilePath = obj[ScatteringCrossSectionFileKey].toString().toStdString();
+        ProjectData.NeutronMacroscopicCrossSectionsFilePath = obj[ScatteringCrossSectionFileKey].toString().toStdString();
 
     if (obj.contains(TotalScatteringCrossSectionFilePathKey))
         ProjectData.totalScatteringCrossSectionFilePath = obj[TotalScatteringCrossSectionFilePathKey].toString().toStdString();

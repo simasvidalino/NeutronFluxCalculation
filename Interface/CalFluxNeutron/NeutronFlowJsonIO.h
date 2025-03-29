@@ -57,7 +57,7 @@ private:
     const char *DataPerRegionKey = "DataPerRegion";
     const char *RightBoundaryConditionsTypeKey = "RightBoundaryConditionsType";
     const char *RightBoundaryValuesKey = "RightBoundaryValues";
-    const char *ScatteringCrossSectionFileKey = "ScatteringCrossSectionFileType";
+    const char *ScatteringCrossSectionFileKey = "NeutronMacroscopicCrossSections";
     const char *StopOrderKey = "StopOrder";
 
     const char *NodeKey = "NodePerRegion";

@@ -40,7 +40,7 @@ struct ProjectData
 
     double periodicity = 10.0;
 
-    std::string scatteringFilePath;
+    std::string NeutronMacroscopicCrossSectionsFilePath;
     std::string totalScatteringCrossSectionFilePath;
     std::string absorptionCrossSectionFilePath;
 

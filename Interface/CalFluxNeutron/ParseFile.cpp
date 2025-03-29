@@ -52,7 +52,8 @@ void ParseFile::setProjectData(int energyGroup,
 
 std::string ParseFile::makeInstruction()
 {
-    std::string instruction = "<p><strong>To create a valid text format, follow the rules below:</strong></p> <ol>"
+    std::string instruction = "<p>Project data and material data do not match.</p>"
+                              "<p><strong>To create a valid text format, follow the rules below:</strong></p> <ol>"
                               "<li><strong>Before the numerical data for material zone,</strong> start the line with <code>///</code>.</li>"
                               "<li><strong>Right after what was done in step 1,</strong> make a line identifying the total cross section starting "
                               "with <code>//</code>.</li><li><strong>Write the total cross section data.</strong></li>"

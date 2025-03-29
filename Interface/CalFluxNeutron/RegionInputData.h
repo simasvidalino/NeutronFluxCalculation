@@ -54,7 +54,6 @@ private slots:
     void onSelectionRegionChange();
 
 signals:
-    void onCalculateCrossSectionMatrices();
     void onCalculateScalarNeutronFlux();
     void onCancelCalc();
 

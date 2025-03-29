@@ -153,9 +153,9 @@ void MainWindow::saveMaterialData()
     try
     {
         std::string newPath = fileName.toStdString();
-        std::string oldPath =  proj->scatteringFilePath;
+        std::string oldPath =  proj->NeutronMacroscopicCrossSectionsFilePath;
 
-        proj->scatteringFilePath = BuildMatrices::getInstance()->saveMaterialData(newPath, oldPath);
+        proj->NeutronMacroscopicCrossSectionsFilePath = BuildMatrices::getInstance()->saveMaterialData(newPath, oldPath);
     }
     catch (const std::filesystem::filesystem_error& e)
     {

@@ -62,7 +62,7 @@
          <bool>false</bool>
         </property>
         <property name="maximum">
-         <number>100</number>
+         <number>256</number>
         </property>
         <property name="singleStep">
          <number>2</number>
