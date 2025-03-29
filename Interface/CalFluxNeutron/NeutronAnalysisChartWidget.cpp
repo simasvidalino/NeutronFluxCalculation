@@ -95,7 +95,7 @@ void NeutronAnalysisChartWidget::addTableItems()
     {
         for (int row = 0; row < rowCount; ++row)
         {
-            QTableWidgetItem *measureItem = new QTableWidgetItem(QString::number( static_cast<long>( tableItem[col][row]) ));
+            QTableWidgetItem *measureItem = new QTableWidgetItem(QString::number( static_cast<double>( tableItem[col][row]) ));
             measureItem->setTextAlignment(Qt::AlignCenter);
             ui->tableWidget->setItem(row, col, measureItem);
         }
