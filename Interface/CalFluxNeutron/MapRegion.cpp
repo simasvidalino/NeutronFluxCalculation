@@ -118,8 +118,6 @@ void MapRegion::onPhysicalSource()
 
 void MapRegion::initDialog()
 {
-    setAcceptDrops(true);
-
     this->setStyleSheet("QDialog {"
                         "  border: 2px solid darkblue;"
                         "  border-radius: 10px;"
@@ -130,8 +128,8 @@ void MapRegion::initDialog()
     auto *comboBox = new CustomComboBox();
     connect(comboBox, &QComboBox::currentTextChanged, this, [this](const QString &newText)
             {
-        if (   (nullptr == regionData)
-            || (newText.isEmpty()))
+                if (   (nullptr == regionData)
+                    || (newText.isEmpty()))
                     return;
 
                 regionData->zoneStr = newText.toStdString();
@@ -256,11 +254,19 @@ void MapRegion::loadData(const QStringList &newAllZonasStr, std::unique_ptr<Regi
 
     for (const auto& zone : allZonasStr)
     {
-        auto item = new QListWidgetItem;
+        if (false == zone.isEmpty())
+        {
+            auto item = new QListWidgetItem;
 
-        item->setText(zone);
-        item->setFlags(item->flags() | Qt::ItemIsEditable);
-        ui->listWidget->addItem(item);
+            item->setText(zone);
+            item->setFlags(item->flags() | Qt::ItemIsEditable);
+            ui->listWidget->addItem(item);
+        }
+    }
+
+    if (true == regionData->zoneStr.empty())
+    {
+        regionData->zoneStr = Interface::getDefaultZoneString();
     }
 
     fillTableInMaterial();
@@ -268,7 +274,15 @@ void MapRegion::loadData(const QStringList &newAllZonasStr, std::unique_ptr<Regi
     QComboBox *comboBox = qobject_cast<QComboBox*>(ui->tableWidgetRegion->cellWidget(eMaterialZone, 0));
     if (comboBox)
     {
-        comboBox->setCurrentText(QString::fromStdString(regionData->zoneStr));
+        QString zoneStr = QString::fromStdString(regionData->zoneStr);
+        int index = comboBox->findText(zoneStr);
+
+        if (index == -1)
+        {
+            comboBox->addItem(zoneStr);
+        }
+
+        comboBox->setCurrentText(zoneStr);
     }
 
     ui->tableWidgetRegion->item(eNodes, 0)->setText(QString::number(regionData->node));
@@ -284,8 +298,14 @@ QList<QString> MapRegion::getAllZonasStr()
 {
     allZonasStr.clear();
 
-    for (int i = 0; i < ui->listWidget->count(); ++i) {
-        allZonasStr << ui->listWidget->item(i)->text();
+    for (int i = 0; i < ui->listWidget->count(); ++i)
+    {
+        QString zoneTexts = ui->listWidget->item(i)->text();
+
+        if (false == zoneTexts.isEmpty())
+        {
+            allZonasStr << zoneTexts;
+        }
     }
 
     return allZonasStr;

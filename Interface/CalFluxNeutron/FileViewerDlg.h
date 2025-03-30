@@ -33,7 +33,7 @@ public:
 protected:
     virtual void accept();
     void readFile(QString &filePath); //read the txt
-    bool saveText();
+    void saveText();
     void writeFile(QString &filePath);
 
 private slots:

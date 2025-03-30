@@ -379,9 +379,10 @@ void RegionInputData::setQuotaLinesGraphicsItem(int regionNumber, int left, int 
 
 void RegionInputData::setSpinBoxQuota(int regionNumber, int left, int top, int width, int height)
 {
-    QDoubleSpinBox *quote = new QDoubleSpinBox;
+    SafeSpinBox *quote = new SafeSpinBox;
 
     quote->setObjectName(QString::number(regionNumber));
+    quote->setFocusPolicy(Qt::ClickFocus);
 
     styleSpinBoxQuota(quote);
 

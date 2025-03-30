@@ -11,10 +11,28 @@
 #include "VariablesUsed.h"
 #include "Worker.h"
 
+#include <QDoubleSpinBox>
+#include <QWheelEvent>
+
 namespace Ui
 {
-    class RegionInputData;
+class RegionInputData;
 }
+
+class SafeSpinBox : public QDoubleSpinBox {
+public:
+    using QDoubleSpinBox::QDoubleSpinBox;
+
+protected:
+    void wheelEvent(QWheelEvent *event) override {
+        // Ignora o evento de roda se não estiver com foco explícito
+        if (!hasFocus()) {
+            event->ignore();
+            return;
+        }
+        QDoubleSpinBox::wheelEvent(event);
+    }
+};
 
 class RegionInputData : public QWidget
 {

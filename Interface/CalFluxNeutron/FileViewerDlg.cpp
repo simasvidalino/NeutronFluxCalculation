@@ -30,10 +30,8 @@ FileViewerDlg::~FileViewerDlg()
 
 void FileViewerDlg::accept()
 {
-    if (saveText())
-    {
-        QDialog::accept();
-    }
+    saveText();
+    QDialog::accept();
 }
 
 void FileViewerDlg::clearText()
@@ -75,19 +73,9 @@ void FileViewerDlg::openFile()
     return eParseError;
 }
 
-bool FileViewerDlg::saveText()
+void FileViewerDlg::saveText()
 {
-    bool isSave = false;
-
-    parseFile();
-
-    if (eParseError == ParseFile::ParseErrors::eOk)
-    {
-        isSave = true;
-        writeFile(pathCrossSection);
-    }
-
-    return isSave;
+    writeFile(pathCrossSection);
 }
 
 void FileViewerDlg::saveTextDlg()

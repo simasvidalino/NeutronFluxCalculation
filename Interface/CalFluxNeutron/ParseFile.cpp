@@ -112,14 +112,14 @@ ParseFile::ParseErrors ParseFile::parseString(std::string &str)
         eError |= ParseErrors::eNumberOfZoneDoesNotMatch;
     }
 
-    crossSectionDataFileInfomation.numberOfEnergyGroup = findNumberBetween(str, beginPattern);
+    crossSectionDataFileInfomation.numberOfEnergyGroup = findNumberInNextLine(str, beginPattern);
 
     if (referenceEnergyGroup > crossSectionDataFileInfomation.numberOfEnergyGroup)
     {
         eError |= ParseErrors::eNumberOfGroupDoesNotMatch;
     }
 
-    crossSectionDataFileInfomation.numberOfLegendre = findLegenderOrder(str, beginPattern);
+    crossSectionDataFileInfomation.numberOfLegendre = findLegenderOrder(str);
 
     if (referencelegendreOrder > crossSectionDataFileInfomation.numberOfLegendre)
     {
@@ -143,51 +143,56 @@ int ParseFile::countOccurrences(std::string &str, std::string key)
     return count;
 }
 
-int ParseFile::findNumberBetween(std::string &input, std::regex beginPattern)
+int ParseFile::findNumberInNextLine(std::string &input, std::regex beginPattern)
 {
-    int qttFound = 0;
-
     std::smatch match;
-    if (std::regex_search(input, match, beginPattern))
-    {
-        std::string::const_iterator searchStart = match.suffix().first;
-        std::regex endPattern(R"(\/\/)");
-
-        if (std::regex_search(searchStart, input.cend(), match, endPattern))
-        {
-            std::string section = std::string(searchStart, match.prefix().second);
-
-            std::regex numberPattern(R"([-+]?\b\d*\.?\d+([eE][-+]?\d+)?)");
-            std::sregex_iterator it(section.begin(), section.end(), numberPattern);
-            std::sregex_iterator it_end;
-
-            qttFound = std::distance(it, it_end);
-        }
-    }
-
-    return qttFound;
-}
-
-int ParseFile::findLegenderOrder(std::string &input, std::regex beginPattern)
-{
-    int legenderOrder = 0;
-    std::smatch match;
+    int count = 0;
 
     if (std::regex_search(input, match, beginPattern))
     {
-        std::string::const_iterator searchStart = match.suffix().first;
-        std::regex doubleSlashPattern(R"(//)");
+        std::string::const_iterator headerEnd = match.suffix().first;
+        std::string::const_iterator nextLineStart = headerEnd;
 
-        std::sregex_iterator it(searchStart, input.cend(), doubleSlashPattern);
+        // Move to start of next line
+        nextLineStart = std::find(nextLineStart, input.cend(), '\n');
+        if (nextLineStart == input.cend())
+            return count;
+
+        ++nextLineStart;
+
+        // Find end of the next line
+        std::string::const_iterator nextLineEnd = std::find(nextLineStart, input.cend(), '\n');
+        std::string line(nextLineStart, nextLineEnd);
+
+        // Count numeric values in the line
+        std::regex numberPattern(R"([-+]?\b\d*\.?\d+(?:[eE][-+]?\d+)?)");
+        std::sregex_iterator it(line.begin(), line.end(), numberPattern);
         std::sregex_iterator end;
 
-        legenderOrder = std::count_if(it, end, [&](const std::smatch& m) {
-            std::string line = m.prefix().str() + m.str() + m.suffix().str();
-            return line.find("///") == std::string::npos;
-        });
+        count = std::distance(it, end);
     }
 
-    return legenderOrder > 0 ? legenderOrder - 2 : 0;
+    return count;
+}
+
+
+int ParseFile::findLegenderOrder(const std::string &input)
+{
+    std::regex pattern(R"(//\s*Sigma\s+Espalhamento\s+(\d+))");
+    std::sregex_iterator it(input.begin(), input.end(), pattern);
+    std::sregex_iterator end;
+
+    int maxOrder = -1;
+
+    while (it != end)
+    {
+        int order = std::stoi((*it)[1].str());
+        if (order > maxOrder)
+            maxOrder = order;
+        ++it;
+    }
+
+    return maxOrder;
 }
 
 

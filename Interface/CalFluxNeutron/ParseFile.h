@@ -41,8 +41,8 @@ public:
 
 protected:
     int countOccurrences(std::string &str, std::string key);
-    int findNumberBetween(std::string &input, std::regex beginPattern);
-    int findLegenderOrder(std::string &input, std::regex beginPattern);
+    int findNumberInNextLine(std::string &input, std::regex beginPattern);
+    int findLegenderOrder(const std::string &input);
 
 private:
     ParseFile();
