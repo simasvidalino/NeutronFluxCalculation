@@ -14,7 +14,7 @@ ActionDeleteTableData::ActionDeleteTableData(QTableView *tableView, const QVaria
     setShortcut(QKeySequence::Delete);
     setShortcutContext(Qt::WidgetShortcut);
 
-    connect(this, &QAction::triggered, this, &ActionDeleteTableData::deleteData);
+    QObject::connect(this, &QAction::triggered, this, &ActionDeleteTableData::deleteData);
 
     tableView->addAction(this);
 }

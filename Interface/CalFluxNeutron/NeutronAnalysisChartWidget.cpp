@@ -123,10 +123,10 @@ void NeutronAnalysisChartWidget::init()
 
 void NeutronAnalysisChartWidget::setConnections()
 {
-    connect(ui->spinBoxPeriodicity, &QSpinBox::valueChanged, this, &NeutronAnalysisChartWidget::updateChartStep);
+    QObject::connect(ui->spinBoxPeriodicity, &QSpinBox::valueChanged, this, &NeutronAnalysisChartWidget::updateChartStep);
 
 
-    connect(ui->comboBoxFilterGroup, &QComboBox::currentIndexChanged, this, [this](int index)
+    QObject::connect(ui->comboBoxFilterGroup, &QComboBox::currentIndexChanged, this, [this](int index)
             {
                 ui->widgetChart->filterChange(index);
 

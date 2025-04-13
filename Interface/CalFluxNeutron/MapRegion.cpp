@@ -126,7 +126,7 @@ void MapRegion::initDialog()
     ui->tableWidgetRegion->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     auto *comboBox = new CustomComboBox();
-    connect(comboBox, &QComboBox::currentTextChanged, this, [this](const QString &newText)
+    QObject::connect(comboBox, &QComboBox::currentTextChanged, this, [this](const QString &newText)
             {
                 if (   (nullptr == regionData)
                     || (newText.isEmpty()))
@@ -184,17 +184,17 @@ void MapRegion::isCellUnique(QListWidgetItem *item)
 
 void MapRegion::setConnections()
 {
-    connect(ui->commandLinkButtonAdd, &QCommandLinkButton::clicked, this, &MapRegion::addZones);
-    connect(ui->commandLinkButtonDelete, &QCommandLinkButton::clicked, this, &MapRegion::deleteZones);
+    QObject::connect(ui->commandLinkButtonAdd, &QCommandLinkButton::clicked, this, &MapRegion::addZones);
+    QObject::connect(ui->commandLinkButtonDelete, &QCommandLinkButton::clicked, this, &MapRegion::deleteZones);
 
     //Save the old text and see if the new one is unique, if not, return to the old text.
-    connect(ui->listWidget, &QListWidget::itemDoubleClicked, this, [this](QListWidgetItem *item){
+    QObject::connect(ui->listWidget, &QListWidget::itemDoubleClicked, this, [this](QListWidgetItem *item){
         currentMatZone = item->text();});
 
-    connect(ui->listWidget, &QListWidget::itemChanged, this,  &MapRegion::isCellUnique);
-    connect(ui->listWidget, &QListWidget::itemChanged, this,  &MapRegion::fillTableInMaterial);
+    QObject::connect(ui->listWidget, &QListWidget::itemChanged, this,  &MapRegion::isCellUnique);
+    QObject::connect(ui->listWidget, &QListWidget::itemChanged, this,  &MapRegion::fillTableInMaterial);
 
-    connect(ui->tableWidgetRegion, &QTableWidget::cellClicked, this, [this](int row, int column)
+    QObject::connect(ui->tableWidgetRegion, &QTableWidget::cellClicked, this, [this](int row, int column)
             {
                 switch(row)
                 {

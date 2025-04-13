@@ -369,67 +369,67 @@ void MainWindow::showDefaultProjectWarning()
 
 void MainWindow::setConnections()
 {
-    connect(ui->actionFont, &QAction::triggered, this, &MainWindow::changeFont);
-    connect(ui->actionOpen_Project, &QAction::triggered, this, &MainWindow::openProjectFileDlg);
-    connect(ui->actionPalette, &QAction::triggered, this, &MainWindow::changePalette);
-    connect(ui->actionSave_Project, &QAction::triggered, this, &MainWindow::saveProjectFileDlg);
-    connect(ui->actionScreenMode, &QAction::triggered, this, &MainWindow::changeViewMode);
-    connect(ui->widgetRegion, &RegionInputData::onCalculateScalarNeutronFlux,
+    QObject::connect(ui->actionFont, &QAction::triggered, this, &MainWindow::changeFont);
+    QObject::connect(ui->actionOpen_Project, &QAction::triggered, this, &MainWindow::openProjectFileDlg);
+    QObject::connect(ui->actionPalette, &QAction::triggered, this, &MainWindow::changePalette);
+    QObject::connect(ui->actionSave_Project, &QAction::triggered, this, &MainWindow::saveProjectFileDlg);
+    QObject::connect(ui->actionScreenMode, &QAction::triggered, this, &MainWindow::changeViewMode);
+    QObject::connect(ui->widgetRegion, &RegionInputData::onCalculateScalarNeutronFlux,
             this, &MainWindow::calculateNeutronFluxUsingDD);
 
-    connect(ui->widgetRegion, &RegionInputData::onCancelCalc, this, [&](){worker->setCancelResult();});
+    QObject::connect(ui->widgetRegion, &RegionInputData::onCancelCalc, this, [&](){worker->setCancelResult();});
 
 
-    connect(ui->actionAbsorption_Cross_Section, &QAction::triggered, this, [this]()
+    QObject::connect(ui->actionAbsorption_Cross_Section, &QAction::triggered, this, [this]()
             {
                 showDataInFile(proj->absorptionCrossSectionFilePath);
             });
 
-    connect(ui->actionScattering_Cross_Section, &QAction::triggered, this, [this]()
+    QObject::connect(ui->actionScattering_Cross_Section, &QAction::triggered, this, [this]()
             {
                 showDataInFile(proj->totalScatteringCrossSectionFilePath);
             });
 
-    connect(ui->actionScalar_Flux, &QAction::triggered, this, [this]()
+    QObject::connect(ui->actionScalar_Flux, &QAction::triggered, this, [this]()
             {
                 showDataInFile(proj->scalarFluxFile);
             });
 
-    connect(ui->actionAbsorption_Rate, &QAction::triggered, this, [this]()
+    QObject::connect(ui->actionAbsorption_Rate, &QAction::triggered, this, [this]()
             {
                 showDataInFile(proj->absorptionRateFile);
             });
 
-    connect(ui->actionAbsorption_Rate_Per_Node, &QAction::triggered, this, [this]()
+    QObject::connect(ui->actionAbsorption_Rate_Per_Node, &QAction::triggered, this, [this]()
             {
                 showDataInFile(proj->absorptionRatePerNodeFile);
             });
 
-    connect(ui->actionAverage_Neutron_Flux_Per_Region, &QAction::triggered, this, [this]()
+    QObject::connect(ui->actionAverage_Neutron_Flux_Per_Region, &QAction::triggered, this, [this]()
             {
                 showDataInFile(proj->averageNeutronFluxPerRegionFile);
             });
 
-    connect(ui->actionThe_app, &QAction::triggered, this, [this](){
+    QObject::connect(ui->actionThe_app, &QAction::triggered, this, [this](){
         QMessageBox::information(this, "About", Interface::getAboutApp());
     });
 
     //Thread
-    connect(worker, &Worker::outputData, this, &MainWindow::onOutputData);
+    QObject::connect(worker, &Worker::outputData, this, &MainWindow::onOutputData);
 
-    connect(worker, &Worker::finished, this, [this]()
+    QObject::connect(worker, &Worker::finished, this, [this]()
             {
                 this->statusBar()->showMessage("Finished");
                 ui->widgetRegion->setPushButtonCalculateFluxEnable(true);
                 QTimer::singleShot(2000, this, [&](){ this->statusBar()->showMessage(""); });
             });
 
-    connect(worker, &Worker::errorOccurred, this, [this](auto errors)
+    QObject::connect(worker, &Worker::errorOccurred, this, [this](auto errors)
             {
                 QMessageBox::information(this, "Information", errors);
             });
 
-    connect(this, &MainWindow::startProcess, worker, &Worker::process);
+    QObject::connect(this, &MainWindow::startProcess, worker, &Worker::process);
 }
 
 void MainWindow::startWork()

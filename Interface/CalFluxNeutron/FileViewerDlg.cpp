@@ -150,13 +150,13 @@ void FileViewerDlg::initDlg()
 
 void FileViewerDlg::setConnection()
 {
-    connect(ui->commandLinkButtonOpen, &QCommandLinkButton::clicked, this, &FileViewerDlg::openFile);
-    connect(ui->commandLinkButtonClear, &QCommandLinkButton::clicked, this, &FileViewerDlg::clearText);
-    connect(ui->commandLinkButtonSave, &QCommandLinkButton::clicked, this, &FileViewerDlg::saveTextDlg);
-    connect(ui->commandLinkButtonParse, &QCommandLinkButton::clicked, this, &FileViewerDlg::parseFile);
+    QObject::connect(ui->commandLinkButtonOpen, &QCommandLinkButton::clicked, this, &FileViewerDlg::openFile);
+    QObject::connect(ui->commandLinkButtonClear, &QCommandLinkButton::clicked, this, &FileViewerDlg::clearText);
+    QObject::connect(ui->commandLinkButtonSave, &QCommandLinkButton::clicked, this, &FileViewerDlg::saveTextDlg);
+    QObject::connect(ui->commandLinkButtonParse, &QCommandLinkButton::clicked, this, &FileViewerDlg::parseFile);
 
-    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &FileViewerDlg::accept);
-    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &FileViewerDlg::reject);
+    QObject::connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &FileViewerDlg::accept);
+    QObject::connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &FileViewerDlg::reject);
 }
 
 void FileViewerDlg::loadCrossSectionFile(std::string &newPathCrossSection)

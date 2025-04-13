@@ -144,6 +144,6 @@ void TableInputDlg::onPasteFromClipboard()
 
 void TableInputDlg::setConnections()
 {
-    connect(ui->toolButtonPasteData->defaultAction(), &QAction::triggered, this,
+    QObject::connect(ui->toolButtonPasteData->defaultAction(), &QAction::triggered, this,
             &TableInputDlg::onPasteFromClipboard);
 }

@@ -79,8 +79,8 @@ void NJOYInputDlg::initDlg()
 
 void NJOYInputDlg::setConnections()
 {
-    connect(ui->pushButtonExecute, &QPushButton::clicked, this, &NJOYInputDlg::onRunNJOY);
-    connect(ui->buttonBox, &QDialogButtonBox::helpRequested, this, &NJOYInputDlg::onHelpRequested);
+    QObject::connect(ui->pushButtonExecute, &QPushButton::clicked, this, &NJOYInputDlg::onRunNJOY);
+    QObject::connect(ui->buttonBox, &QDialogButtonBox::helpRequested, this, &NJOYInputDlg::onHelpRequested);
 }
 
 void NJOYInputDlg::saveInputFile()
