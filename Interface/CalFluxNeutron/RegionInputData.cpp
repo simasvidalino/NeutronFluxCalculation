@@ -240,6 +240,9 @@ void RegionInputData::onSelectionRegionChange()
 
 void RegionInputData::init()
 {
+    ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
     ui->graphicsView->rotate(-90);
 
     ui->buttonGroupLeftBoundaryConditions->setId(ui->radioButtonBCLeftVacuum, 0);
@@ -255,6 +258,8 @@ void RegionInputData::init()
     RegionData dataInitial{50, 50};
 
     std::fill(regionArray.begin(), regionArray.end(), dataInitial);
+
+    setZoomInScene();
 
     setConnections();
 
@@ -414,6 +419,29 @@ void RegionInputData::setSpinBoxQuota(int regionNumber, int left, int top, int w
         setGraphicScene(regionQuant);
     },
     Qt::SingleShotConnection);
+}
+
+void RegionInputData::setZoomInScene()
+{
+    QPushButton* zoomInButton = new QPushButton("+", ui->graphicsView);
+    QPushButton* zoomOutButton = new QPushButton("−", ui->graphicsView);
+
+    const int dim   = 20;
+    const int shift = 2;
+
+    zoomInButton->setGeometry(shift, shift, dim, dim);
+    zoomOutButton->setGeometry(dim + 2*shift, shift, dim, dim);
+
+    zoomInButton->show();
+    zoomOutButton->show();
+
+    QObject::connect(zoomInButton, &QPushButton::clicked, this, [&]() {
+        ui->graphicsView->scale(1.2, 1.2); // increases the zoom by 20%
+    });
+
+    QObject::connect(zoomOutButton, &QPushButton::clicked, this, [&]() {
+        ui->graphicsView->scale(1.0 / 1.2, 1.0 / 1.2); // decreases the zoom by 20%
+    });
 }
 
 void RegionInputData::styleSpinBoxQuota(QDoubleSpinBox *quota)

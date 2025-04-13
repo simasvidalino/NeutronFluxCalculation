@@ -103,6 +103,8 @@ private:
                          int width,
                          int height);
 
+    void setZoomInScene();
+
     void styleSpinBoxQuota(QDoubleSpinBox *quota);
 
     void loadGUI();
