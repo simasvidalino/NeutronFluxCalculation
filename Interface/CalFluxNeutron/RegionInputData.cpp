@@ -80,13 +80,6 @@ std::vector<int> RegionInputData::calculateRegionHeights()
     auto extractValue = [](const RegionData &myStruct)
     { return myStruct.quote; };
 
-    if (regionQuant == 1)
-    {
-        heights.push_back(50);
-
-        return heights;
-    }
-
     // Calculate the sum of all quotas
     int sum = std::accumulate(std::begin(regionArray), std::begin(regionArray) + regionQuant, 0,
                               [&extractValue](int partialSum, const RegionData &myStruct)
@@ -337,8 +330,9 @@ void RegionInputData::setGraphicScene(int region)
         scene->clear();
 
     regionQuant = region;
-    int top = 0;
-    int width = 50;
+    int top     = 0;
+    int left    = 0;
+    int width   = 50;
 
     std::vector<int> heights = calculateRegionHeights();
 
@@ -346,9 +340,9 @@ void RegionInputData::setGraphicScene(int region)
     {
         int height = heights.at(iIndex);
 
-        setRegionGraphicsRectItem(iIndex, 0, top, width, height);
-        setQuotaLinesGraphicsItem(iIndex, 0, top, width, height);
-        setSpinBoxQuota(iIndex, 0, top, width, height);
+        setRegionGraphicsRectItem(iIndex, left, top, width, height);
+        setQuotaLinesGraphicsItem(iIndex, left, top, width, height);
+        setSpinBoxQuota(iIndex, left, top, width, height);
         top += height;
     }
 
@@ -435,12 +429,22 @@ void RegionInputData::setZoomInScene()
     zoomInButton->show();
     zoomOutButton->show();
 
-    QObject::connect(zoomInButton, &QPushButton::clicked, this, [&]() {
+    auto centerOn = [&]()
+    {
+        QRectF sceneRect   = ui->graphicsView->scene()->sceneRect();
+        QPointF centroCena = sceneRect.center();
+        ui->graphicsView->centerOn(centroCena);
+    };
+
+    QObject::connect(zoomInButton, &QPushButton::clicked, this, [=]() {
         ui->graphicsView->scale(1.2, 1.2); // increases the zoom by 20%
+        centerOn();
     });
 
-    QObject::connect(zoomOutButton, &QPushButton::clicked, this, [&]() {
+    QObject::connect(zoomOutButton, &QPushButton::clicked, this, [=]() {
         ui->graphicsView->scale(1.0 / 1.2, 1.0 / 1.2); // decreases the zoom by 20%
+        centerOn();
+
     });
 }
 
