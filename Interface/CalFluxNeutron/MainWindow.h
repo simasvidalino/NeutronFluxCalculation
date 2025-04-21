@@ -48,6 +48,8 @@ private:
 
     void enableGenerateFilesMenu();
 
+    void showInvalidZoneMessage();
+
     void init();
 
     void showDefaultProjectWarning();

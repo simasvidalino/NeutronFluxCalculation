@@ -36,7 +36,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::calculateNeutronFluxUsingDD()
 {
-    if (!saveProject())
+    if (true == ui->widgetRegion->getInvalidZone())
+    {
+        showInvalidZoneMessage();
+        return;
+    }
+
+    if (false == saveProject())
         return;
 
     startWork();
@@ -531,3 +537,7 @@ void MainWindow::enableGenerateFilesMenu()
     ui->menuGenerated_Files->setEnabled(true);
 }
 
+void MainWindow::showInvalidZoneMessage()
+{
+    QMessageBox::information(this, "Invalid Zone", "Please select a valid zone for the gray region before proceeding.");
+}

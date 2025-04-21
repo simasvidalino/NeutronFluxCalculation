@@ -21,7 +21,8 @@
 RegionInputData::RegionInputData(QWidget *parent)
     : QWidget(parent),
       ui(new Ui::RegionInputData),
-      scene(std::make_unique<QGraphicsScene>(this))
+      scene(std::make_unique<QGraphicsScene>(this)),
+      invalidZone(false)
 {
     ui->setupUi(this);
 
@@ -192,8 +193,10 @@ void RegionInputData::onSelectionRegionChange()
             auto regionPtr = std::make_unique<RegionData>(regionArray.at(number));
             dlg.loadData(allZonasStr, std::move(regionPtr));
 
-            if (!dlg.exec())
+            if (false == dlg.exec())
+            {
                 return;
+            }
 
             if (number < regionArray.size())
             {
@@ -209,6 +212,8 @@ void RegionInputData::onSelectionRegionChange()
 
                     // feed all zone data
                     allZonasStr = dlg.getAllZonasStr();
+
+                    updateRegionsIfZonesChanged();
 
                     if (rectItem != nullptr)
                     {
@@ -569,6 +574,36 @@ void RegionInputData::saveGUI()
     proj->quadratureOrder = ui->spinBoxQuadratureOrder->value();
     proj->maximumIterationsNumber = ui->spinBoxMaxNumberIteration->value();
     proj->stopOrder = ui->spinBoxStopOrder->value();
+}
+
+void RegionInputData::updateRegionsIfZonesChanged()
+{
+    invalidZone = false;
+
+    for ( auto iIndex = 0; iIndex < ui->spinBoxRegionQtt->value(); ++iIndex)
+    {
+        auto& otherRegion  = regionArray[iIndex];
+        bool stillValid = std::any_of(
+            allZonasStr.begin(),
+            allZonasStr.end(),
+
+            [&](const QString& z) { return z.toStdString() == otherRegion.zoneStr; });
+
+        if (!stillValid)
+        {
+            invalidZone = true;
+
+            //make it invalid
+            otherRegion.zone = 0;
+            otherRegion.zoneStr = Interface::getDefaultZoneString();
+            otherRegion.materialColor = QColor(Qt::gray).rgb() & 0x00FFFFFF;
+        }
+    }
+}
+
+bool RegionInputData::getInvalidZone() const
+{
+    return invalidZone;
 }
 
 QStringList RegionInputData::getAllZonasStr() const

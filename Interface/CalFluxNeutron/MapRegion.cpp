@@ -95,7 +95,12 @@ void MapRegion::fillTableInMaterial(QListWidgetItem *item)
 
     comboBox->blockSignals(false);
 
-    comboBox->setCurrentText( regionData->zoneStr.c_str() );
+    QString chosenMaterial(regionData->zoneStr.c_str() );
+
+    if (chosenMaterial != Interface::getDefaultZoneString())
+    {
+        comboBox->setCurrentText(chosenMaterial);
+    }
 }
 
 void MapRegion::onPhysicalSource()
@@ -126,14 +131,6 @@ void MapRegion::initDialog()
     ui->tableWidgetRegion->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     auto *comboBox = new CustomComboBox();
-    QObject::connect(comboBox, &QComboBox::currentTextChanged, this, [this](const QString &newText)
-            {
-                if (   (nullptr == regionData)
-                    || (newText.isEmpty()))
-                    return;
-
-                regionData->zoneStr = newText.toStdString();
-            });
 
     ui->tableWidgetRegion->setCellWidget(eMaterialZone, 0, comboBox);
 
@@ -211,11 +208,16 @@ void MapRegion::setConnections()
 std::unique_ptr<RegionData> MapRegion::getRegionData() const
 {
     auto data = std::make_unique<RegionData>();
+    QString chosenMaterial;
+    QComboBox* comboBox = qobject_cast<QComboBox*>(ui->tableWidgetRegion->cellWidget(eMaterialZone, 0));
 
-    auto chosenMaterial = QString::fromStdString(regionData->zoneStr);
+    if ( nullptr != comboBox)
+    {
+        chosenMaterial = comboBox->currentText();
+    }
 
-    if ( (chosenMaterial != Interface::getDefaultZoneString())
-        && !chosenMaterial.isEmpty() )
+    if (    (chosenMaterial != Interface::getDefaultZoneString())
+         && (!chosenMaterial.isEmpty()) )
     {
         bool ok = false;
 
@@ -248,9 +250,18 @@ void MapRegion::loadData(const QStringList &newAllZonasStr, std::unique_ptr<Regi
     regionData = std::move(newRegionData);
     allZonasStr = newAllZonasStr;
 
-    if (!regionData)
+    if (nullptr == regionData)
         regionData = std::make_unique<RegionData>();
 
+    if (true == allZonasStr.isEmpty())
+    {
+        auto item = new QListWidgetItem;
+
+        item->setText(Interface::getDefaultZoneString());
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+
+        ui->listWidget->addItem(item);
+    }
 
     for (const auto& zone : allZonasStr)
     {
@@ -264,34 +275,16 @@ void MapRegion::loadData(const QStringList &newAllZonasStr, std::unique_ptr<Regi
         }
     }
 
-    if (true == regionData->zoneStr.empty())
-    {
-        regionData->zoneStr = Interface::getDefaultZoneString();
-    }
-
     fillTableInMaterial();
-
-    QComboBox *comboBox = qobject_cast<QComboBox*>(ui->tableWidgetRegion->cellWidget(eMaterialZone, 0));
-    if (comboBox)
-    {
-        QString zoneStr = QString::fromStdString(regionData->zoneStr);
-        int index = comboBox->findText(zoneStr);
-
-        if (index == -1)
-        {
-            comboBox->addItem(zoneStr);
-        }
-
-        comboBox->setCurrentText(zoneStr);
-    }
 
     ui->tableWidgetRegion->item(eNodes, 0)->setText(QString::number(regionData->node));
     ui->tableWidgetRegion->item(eRegionSize, 0)->setText(QString::number(regionData->quote));
 
     //Create a string with physical source
     if (regionData->physicalSource.has_value())
+    {
         ui->tableWidgetRegion->item(ePhysicalSource, 0)->setText(vectorToString(regionData->physicalSource.value()));
-
+    }
 }
 
 QList<QString> MapRegion::getAllZonasStr()

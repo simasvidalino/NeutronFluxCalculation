@@ -62,6 +62,8 @@ public:
 
     QStringList getAllZonasStr() const;
 
+    bool getInvalidZone() const;
+
 private slots:
     void clearRegions();
     void onCreateCrossSectionFile();
@@ -111,6 +113,8 @@ private:
 
     void saveGUI();
 
+    void updateRegionsIfZonesChanged();
+
     std::unique_ptr<QGraphicsScene> scene;
     std::array<RegionData, 10> regionArray;
     std::array<QDoubleSpinBox *, 10> quoteSpinBoxes;
@@ -140,4 +144,6 @@ private:
     std::optional<std::vector<double>> bcLeft;
     std::optional<std::vector<double>> bcRight;
     double periodicity;
+
+    bool invalidZone;
 };
