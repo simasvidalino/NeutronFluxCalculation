@@ -17,7 +17,7 @@
    <item row="0" column="2">
     <spacer name="horizontalSpacer">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
@@ -30,15 +30,15 @@
    <item row="2" column="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>
    <item row="1" column="0" colspan="3">
-    <widget class="QTableView" name="tableView">
+    <widget class="CustomTableView" name="tableView">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -46,7 +46,7 @@
       </sizepolicy>
      </property>
      <property name="sizeAdjustPolicy">
-      <enum>QAbstractScrollArea::AdjustToContents</enum>
+      <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
      </property>
     </widget>
    </item>
@@ -62,14 +62,13 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset theme="edit-paste">
-       <normaloff>.</normaloff>.</iconset>
+      <iconset theme="edit-paste"/>
      </property>
      <property name="autoRaise">
       <bool>true</bool>
      </property>
      <property name="arrowType">
-      <enum>Qt::NoArrow</enum>
+      <enum>Qt::ArrowType::NoArrow</enum>
      </property>
     </widget>
    </item>
@@ -79,11 +78,10 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset theme="edit-copy">
-       <normaloff>.</normaloff>.</iconset>
+      <iconset theme="edit-copy"/>
      </property>
      <property name="arrowType">
-      <enum>Qt::NoArrow</enum>
+      <enum>Qt::ArrowType::NoArrow</enum>
      </property>
     </widget>
    </item>
@@ -93,8 +91,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="edit-paste">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="edit-paste"/>
    </property>
    <property name="text">
     <string>Paste</string>
@@ -108,8 +105,7 @@
   </action>
   <action name="actionCopy">
    <property name="icon">
-    <iconset theme="edit-copy">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="edit-copy"/>
    </property>
    <property name="text">
     <string>Copy</string>
@@ -122,6 +118,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomTableView</class>
+   <extends>QTableView</extends>
+   <header>CustomTableView.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

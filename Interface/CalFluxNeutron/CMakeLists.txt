@@ -39,6 +39,8 @@ set(PROJECT_SOURCES
     FileViewerDlg.ui
     CustomComboBox.h
     CustomComboBox.cpp
+    CustomTableView.h
+    CustomTableView.cpp
     CustomTableModel.cpp
     CustomTableModel.h
     InterFaceDefinitions.cpp

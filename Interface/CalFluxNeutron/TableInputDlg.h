@@ -76,5 +76,4 @@ private:
     void setConnections();
 
     std::unique_ptr<CustomTableModel> model;
-
 };
