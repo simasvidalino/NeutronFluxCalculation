@@ -43,8 +43,6 @@ void RegionInputData::setEnableGUI(bool enable)
     ui->groupBoxGeneralParameters->setEnabled(enable);
     ui->groupBoxBoundaryConditions->setEnabled(enable);
     ui->groupBoxIterativeProcess->setEnabled(enable);
-    ui->groupBoxCrosSection->setEnabled(enable);
-    ui->graphicsView->setEnabled(enable);
     ui->spinBoxRegionQtt->setEnabled(enable);
     ui->pushButtonClear->setEnabled(enable);
 }

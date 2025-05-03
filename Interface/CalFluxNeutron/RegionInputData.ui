@@ -87,7 +87,7 @@
     </widget>
    </item>
    <item row="4" column="0">
-    <widget class="QGroupBox" name="groupBoxCrosSection">
+    <widget class="QGroupBox" name="groupBoxCrossSection">
      <property name="title">
       <string>Cross-Section Data</string>
      </property>
@@ -378,7 +378,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroupRightBoundaryConditions"/>
   <buttongroup name="buttonGroupLeftBoundaryConditions"/>
+  <buttongroup name="buttonGroupRightBoundaryConditions"/>
  </buttongroups>
 </ui>
