@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QtCharts/QChartView>
-#include <QtCharts/QLineSeries>
-#include <QtCharts/QValueAxis>
+#include <QChartView>
+#include <QLineSeries>
 #include <QMap>
+#include <QValueAxis>
 
 struct SeriesData
 {
@@ -18,10 +18,6 @@ public:
     explicit ChartView(QWidget *parent = nullptr);
     ~ChartView();
 
-    void clearChart();
-    void clearData();
-    void hideLegend();
-
     void setInputData(const QList<QPointF> &points, int group, QColor color = QColor());
 
     void setXLabel(const QString &label);
@@ -32,9 +28,17 @@ public:
     void setYRange(double min, double max);
     void setXRange(double min, double max);
 
+    void clearChart();
+    void clearData();
+    void hideLegend();
+
 public slots:
     void setChart();
     void filterChange(int option);
+
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 
 private:
     void init();
@@ -44,14 +48,10 @@ private:
     QString yLabel;
     QString projectionTitle;
 
-    int tickNumber = 0;
-    int option = 0;
-
     QValueAxis *axisX;
     QValueAxis *axisY;
+    int tickNumber = 0;
+    int option     = 0;
 
     QMap<int, SeriesData> pointsByGroup;
-
-protected:
-    void mousePressEvent(QMouseEvent *event) override;
 };

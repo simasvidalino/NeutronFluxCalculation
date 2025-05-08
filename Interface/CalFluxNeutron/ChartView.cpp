@@ -3,6 +3,8 @@
 #include <QToolTip>
 #include <QMouseEvent>
 #include <QPen>
+#include <QShortcut>
+#include <QWheelEvent>
 
 ChartView::ChartView(QWidget *parent)
     : QChartView{parent},
@@ -16,6 +18,14 @@ ChartView::~ChartView() = default;
 
 void ChartView::init()
 {
+    setRubberBand(QChartView::RectangleRubberBand);
+    setDragMode(QGraphicsView::ScrollHandDrag);
+
+    QShortcut *resetShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Z), this);
+    QObject::connect(resetShortcut, &QShortcut::activated, this, [this]() {
+        chart()->zoomReset();
+    });
+
     this->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
     this->setRenderHint(QPainter::Antialiasing);
 
@@ -27,6 +37,8 @@ void ChartView::init()
     mChart->addAxis(axisX, Qt::AlignBottom);
     mChart->addAxis(axisY, Qt::AlignLeft);
 
+    mChart->setPlotAreaBackgroundVisible(true);
+
     QChartView::setChart(mChart);
 }
 
@@ -35,10 +47,21 @@ void ChartView::setInputData(const QList<QPointF> &points, int group, QColor col
     SeriesData data;
     data.points = points;
 
-    if (!color.isValid()) {
-        static QList<QColor> defaultColors = {Qt::blue, Qt::red, Qt::green, Qt::magenta, Qt::cyan, Qt::darkYellow};
-        data.color = defaultColors[group % defaultColors.size()];
-    } else {
+    if (!color.isValid())
+    {
+        int hue = (group * 137) % 360; // 137 is prime number for better distribution
+        int saturation = 160 + (group * 73) % 96;
+        int value = 160 + (group * 199) % 96;
+
+        data.color = QColor::fromHsv(hue, saturation, value);
+
+        if (!data.color.isValid())
+        {
+            data.color = Qt::red;
+        }
+    }
+    else
+    {
         data.color = color;
     }
 
@@ -84,6 +107,7 @@ void ChartView::setChart()
     if (pointsByGroup.isEmpty())
         return;
 
+    chart()->zoomReset();
     chart()->removeAllSeries();
 
     if (option == 0)  // All groups
@@ -137,7 +161,6 @@ void ChartView::clearChart()
 void ChartView::clearData()
 {
     clearChart();
-    pointsByGroup.clear();
 }
 
 void ChartView::hideLegend()
@@ -173,4 +196,24 @@ void ChartView::mousePressEvent(QMouseEvent *event)
 
     QToolTip::hideText();
     QChartView::mousePressEvent(event);
+}
+
+void ChartView::wheelEvent(QWheelEvent *event)
+{
+    if (event->modifiers() & Qt::ControlModifier)
+    {
+        if (event->angleDelta().y() > 0)
+        {
+            chart()->zoomIn();
+        }
+        else
+        {
+            chart()->zoomOut();
+        }
+        event->accept();
+    }
+    else
+    {
+        QChartView::wheelEvent(event);
+    }
 }
