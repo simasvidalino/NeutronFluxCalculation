@@ -1,87 +1,66 @@
 #include "ChartView.h"
-#include "qlineedit.h"
-#include "qtimer.h"
-
 #include <QtCharts/QChart>
-#include <QtCharts/QValueAxis>
-#include <QtCharts/QLineSeries>
-#include <QtCharts/QValueAxis>
 #include <QToolTip>
+#include <QMouseEvent>
+#include <QPen>
 
 ChartView::ChartView(QWidget *parent)
     : QChartView{parent},
-      axisX(new QValueAxis()),
-      axisY(new QValueAxis())
+    axisX(new QValueAxis()),
+    axisY(new QValueAxis())
 {
-    //TBD why I needed a QTimer here?
-   // QTimer::singleShot(1000, this, [&](){
-        init();
-   // });
+    init();
 }
 
-ChartView::~ChartView()
-{
+ChartView::~ChartView() = default;
 
+void ChartView::init()
+{
+    this->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+    this->setRenderHint(QPainter::Antialiasing);
+
+    axisX->setLabelFormat("%.2f");
+    axisY->setLabelFormat("%.2f");
+
+    auto *mChart = new QChart();
+    mChart->legend()->setAlignment(Qt::AlignTop);
+    mChart->addAxis(axisX, Qt::AlignBottom);
+    mChart->addAxis(axisY, Qt::AlignLeft);
+
+    QChartView::setChart(mChart);
 }
 
-void ChartView::setInputData(QList<QPointF> &value, int group)
+void ChartView::setInputData(const QList<QPointF> &points, int group, QColor color)
 {
-    auto it = seriesByGroup.find(group);
+    SeriesData data;
+    data.points = points;
 
-    if (it != seriesByGroup.end())
-    {
-        delete it->second;
+    if (!color.isValid()) {
+        static QList<QColor> defaultColors = {Qt::blue, Qt::red, Qt::green, Qt::magenta, Qt::cyan, Qt::darkYellow};
+        data.color = defaultColors[group % defaultColors.size()];
+    } else {
+        data.color = color;
     }
 
-    QLineSeries *serie = new QLineSeries();
-
-    for (const auto &point : value)
-    {
-        serie->append(point);
-    }
-
-    serie->attachAxis(axisY);
-    serie->attachAxis(axisX);
-
-    seriesByGroup[group] = serie;
-
-    serie->setName("Group " + QString::number(group + 1));
+    pointsByGroup[group] = data;
 }
 
-void ChartView::setInputData(QList<QPointF> &value)
+void ChartView::setXLabel(const QString &label)
 {
-    auto it = seriesByGroup.find(0);
-    if (it != seriesByGroup.end())
-    {
-        delete it->second;
-    }
-
-    QLineSeries *serie = new QLineSeries();
-
-    for (const auto &point : value)
-        serie->append(point);
-
-    serie->attachAxis(axisY);
-    serie->attachAxis(axisX);
-
-    seriesByGroup[0] = serie;
+    xLabel = label;
+    axisX->setTitleText(label);
 }
 
-void ChartView::setXLabel(const QString &name)
+void ChartView::setYLabel(const QString &label)
 {
-    xLabel = name;
-    axisX->setTitleText(xLabel);
+    yLabel = label;
+    axisY->setTitleText(label);
 }
 
-void ChartView::setYLabel(const QString &name)
+void ChartView::setProjectionTitle(const QString &title)
 {
-    yLabel = name;
-    axisY->setTitleText(yLabel);
-}
-void ChartView::setProjectionTitle(const QString value)
-{
-    projectionTitle = value;
-    this->chart()->setTitle(projectionTitle);
+    projectionTitle = title;
+    chart()->setTitle(title);
 }
 
 void ChartView::setTickNumber(int newTickNumber)
@@ -90,65 +69,36 @@ void ChartView::setTickNumber(int newTickNumber)
     axisX->setTickCount(tickNumber);
 }
 
-void ChartView::setYRange(int min, int max)
+void ChartView::setYRange(double min, double max)
 {
     axisY->setRange(min, max);
 }
 
-void ChartView::setXRange(int min, int max)
+void ChartView::setXRange(double min, double max)
 {
     axisX->setRange(min, max);
 }
 
 void ChartView::setChart()
 {
-    if (seriesByGroup.empty())
+    if (pointsByGroup.isEmpty())
         return;
 
-    //clear
-    QList<QAbstractSeries *> allSeries = chart()->series();
-    for (QAbstractSeries *series : allSeries)
+    chart()->removeAllSeries();
+
+    if (option == 0)  // All groups
     {
-        chart()->removeSeries(series);
-    }
-
-    auto addSerie = [&](QLineSeries *serie)
-    {
-        if (serie && this->chart())
+        for (auto it = pointsByGroup.begin(); it != pointsByGroup.end(); ++it)
         {
-            this->chart()->addSeries(serie);
-
-            if (!serie->attachAxis(axisX))
-                serie->attachAxis(axisX);
-
-            if (!serie->attachAxis(axisY))
-                serie->attachAxis(axisY);
-        }
-        else
-        {
-            qWarning() << "Serie is Null";
-        }
-    };
-
-    if (option == 0) //all
-    {
-        for (const auto &pair : seriesByGroup)
-        {
-            QLineSeries *serie = pair.second;
-
-            addSerie(serie);
+            addSeries(it.value(), it.key());
         }
     }
     else
     {
-        int iIndex = option - 1;
-
-        if (iIndex < seriesByGroup.size()
-                && iIndex >= 0)
+        int group = option - 1;
+        if (pointsByGroup.contains(group))
         {
-            auto serie = seriesByGroup[iIndex];
-
-            addSerie(serie);
+            addSeries(pointsByGroup.value(group), group);
         }
     }
 }
@@ -159,91 +109,68 @@ void ChartView::filterChange(int option)
     setChart();
 }
 
-void ChartView::init()
+void ChartView::addSeries(const SeriesData &data, int group)
 {
-    this->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-    setRenderHint(QPainter::Antialiasing);
-
-    axisX->setLabelFormat("%.2f");
-    axisY->setLabelFormat("%.2f");
-
-    auto mChart = new QChart();
-    mChart->legend()->setAlignment(Qt::AlignTop);
-    mChart->addAxis(axisX, Qt::AlignBottom);
-    mChart->addAxis(axisY, Qt::AlignLeft);
-
-    QChartView::setChart(mChart);
-
-    this->setRenderHint(QPainter::Antialiasing);
-
-    int widgetLeft = 10;
-
-    setConnection();
-}
-
-void ChartView::setConnection()
-{
-
-}
-
-void ChartView::mousePressEvent(QMouseEvent *event)
-{
-    if (false == this->hasFocus())
+    if (data.points.isEmpty())
         return;
 
-    QPointF cursorPoint = chart()->mapToValue(event->pos());
+    auto *serie = new QLineSeries();
+    serie->append(data.points);
+    serie->setName("Group " + QString::number(group + 1));
 
-    bool pointFound = false;
-    QString tooltipText;
-    const double proximityThreshold = 1.0;
+    QPen pen = serie->pen();
+    pen.setColor(data.color);
+    pen.setWidth(2);
+    serie->setPen(pen);
 
-    for (auto series : chart()->series())
-    {
-        auto lineSeries = dynamic_cast<QLineSeries*>(series);
-        if (lineSeries)
-        {
-            for (const QPointF &point : lineSeries->points())
-            {
-                double distance = QLineF(point, cursorPoint).length();
-                if (distance < proximityThreshold)
-                {
-                    tooltipText = QString("X: %1, Y: %2").arg(point.x()).arg(point.y());
-                    pointFound = true;
-                    break;
-                }
-            }
-        }
-        if (pointFound)
-        {
-            break;
-        }
-    }
-
-    if (pointFound)
-    {
-        QToolTip::showText(event->globalPosition().toPoint(), tooltipText, this, QRect(), 10000);
-    }
-    else
-    {
-        QToolTip::hideText();
-    }
-
-    QChartView::mouseMoveEvent(event);
+    chart()->addSeries(serie);
+    serie->attachAxis(axisX);
+    serie->attachAxis(axisY);
 }
 
 void ChartView::clearChart()
 {
-    if (!this->chart()->axes().isEmpty())
-    {
-        this->chart()->removeAllSeries();
+    chart()->removeAllSeries();
+    pointsByGroup.clear();
+}
 
-        seriesByGroup.clear();
-    }
+void ChartView::clearData()
+{
+    clearChart();
+    pointsByGroup.clear();
 }
 
 void ChartView::hideLegend()
 {
-    this->chart()->legend()->hide();
+    chart()->legend()->hide();
 }
 
+void ChartView::mousePressEvent(QMouseEvent *event)
+{
+    if (!hasFocus())
+        return;
 
+    QPointF cursorPoint = chart()->mapToValue(event->pos());
+    QString tooltipText;
+    const double proximityThreshold = 1.0;
+
+    for (auto *series : chart()->series())
+    {
+        auto *lineSeries = qobject_cast<QLineSeries *>(series);
+        if (lineSeries)
+        {
+            for (const QPointF &point : lineSeries->points())
+            {
+                if (QLineF(point, cursorPoint).length() < proximityThreshold)
+                {
+                    tooltipText = QString("X: %1, Y: %2").arg(point.x()).arg(point.y());
+                    QToolTip::showText(event->globalPosition().toPoint(), tooltipText, this, QRect(), 10000);
+                    return;
+                }
+            }
+        }
+    }
+
+    QToolTip::hideText();
+    QChartView::mousePressEvent(event);
+}

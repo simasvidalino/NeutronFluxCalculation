@@ -40,6 +40,7 @@ public:
                   long double x2 = 0.0, long double y2 = 0.0);
 
     void setTableItems(std::vector<std::vector<long double> > &&item);
+    void setTableItems(std::vector<std::vector<long double> > &item);
 
     void setTableDimension(int rowCount, int columnCount);
 

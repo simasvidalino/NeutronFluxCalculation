@@ -5,11 +5,10 @@
 
 NeutronAnalysisChartWidget::NeutronAnalysisChartWidget(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::NeutronAnalysisChartWidget),
-    totalRegionSize(0.0)
+    , ui(new Ui::NeutronAnalysisChartWidget)
+    , totalRegionSize(0.0)
 {
     ui->setupUi(this);
-
     init();
 }
 
@@ -30,9 +29,9 @@ void NeutronAnalysisChartWidget::clearTable()
 
 void NeutronAnalysisChartWidget::commitChanges()
 {
-    ui->widgetChart->filterChange(0); //Set "All" option in filter
-
-    ui->widgetChart->setChart();
+    ui->widgetChart->blockSignals(true);
+    ui->widgetChart->filterChange(0); // Always reset to 'All'
+    ui->widgetChart->blockSignals(false);
 
     addTableItems();
 }
@@ -57,8 +56,7 @@ void NeutronAnalysisChartWidget::setProjectionTitle(const QString &value)
     ui->widgetChart->setProjectionTitle(value);
 }
 
-void NeutronAnalysisChartWidget::setRange(long double x1, long double y1,
-                                          long double x2, long double y2)
+void NeutronAnalysisChartWidget::setRange(long double x1, long double y1, long double x2, long double y2)
 {
     ui->widgetChart->setXRange(std::floor(x1), std::ceil(x2));
     ui->widgetChart->setYRange(std::floor(y1), std::ceil(y2));
@@ -66,9 +64,14 @@ void NeutronAnalysisChartWidget::setRange(long double x1, long double y1,
     totalRegionSize = x2;
 }
 
-void NeutronAnalysisChartWidget::setTableItems(std::vector<std::vector<long double> > &&item)
+void NeutronAnalysisChartWidget::setTableItems(std::vector<std::vector<long double>> &&item)
 {
-    tableItem = std::move(item); ;
+    tableItem = std::move(item);
+}
+
+void NeutronAnalysisChartWidget::setTableItems(std::vector<std::vector<long double>> &item)
+{
+    tableItem = item;
 }
 
 void NeutronAnalysisChartWidget::setTableDimension(int rowCount, int columnCount)
@@ -88,14 +91,14 @@ void NeutronAnalysisChartWidget::addTableItems()
     if (tableItem.empty())
         return;
 
-    const auto rowCount    = ui->tableWidget->rowCount();
+    const auto rowCount = ui->tableWidget->rowCount();
     const auto columnCount = ui->tableWidget->columnCount();
 
     for (int col = 0; col < columnCount; ++col)
     {
         for (int row = 0; row < rowCount; ++row)
         {
-            QTableWidgetItem *measureItem = new QTableWidgetItem(QString::number( static_cast<double>( tableItem[col][row]) ));
+            QTableWidgetItem *measureItem = new QTableWidgetItem(QString::number(static_cast<double>(tableItem[col][row])));
             measureItem->setTextAlignment(Qt::AlignCenter);
             ui->tableWidget->setItem(row, col, measureItem);
         }
@@ -103,7 +106,6 @@ void NeutronAnalysisChartWidget::addTableItems()
 
     ui->tableWidget->resizeColumnsToContents();
     ui->tableWidget->resizeRowsToContents();
-
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
@@ -112,11 +114,10 @@ void NeutronAnalysisChartWidget::init()
 {
     setConnections();
 
-    QLineEdit *lineEdit = ui->spinBoxPeriodicity->findChild<QLineEdit*>(); //@TBDprotected member, the right way is create a child class
+    QLineEdit *lineEdit = ui->spinBoxPeriodicity->findChild<QLineEdit *>();
     lineEdit->setFrame(false);
 
     ui->comboBoxFilterGroup->setFixedWidth(300);
-
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
@@ -125,24 +126,20 @@ void NeutronAnalysisChartWidget::setConnections()
 {
     QObject::connect(ui->spinBoxPeriodicity, &QSpinBox::valueChanged, this, &NeutronAnalysisChartWidget::updateChartStep);
 
-
     QObject::connect(ui->comboBoxFilterGroup, &QComboBox::currentIndexChanged, this, [this](int index)
-            {
-                ui->widgetChart->filterChange(index);
-
-                if (index != 0) //all
-                {
-                    ui->tableWidget->setCurrentCell(index - 1, 0);
-                }
-            });
+                     {
+                         ui->widgetChart->filterChange(index);
+                         if (index != 0) // Not "All"
+                         {
+                             ui->tableWidget->setCurrentCell(index - 1, 0);
+                         }
+                     });
 }
 
 void NeutronAnalysisChartWidget::updateChartStep(int step)
 {
-    int tickCount = totalRegionSize/step;
-
+    int tickCount = totalRegionSize / step;
     ui->widgetChart->setTickNumber(tickCount + 1);
-    ui->widgetChart->setChart();
 }
 
 void NeutronAnalysisChartWidget::addSeries(QList<QPointF> &value, int group)
@@ -152,20 +149,17 @@ void NeutronAnalysisChartWidget::addSeries(QList<QPointF> &value, int group)
 
 void NeutronAnalysisChartWidget::setFilteredByGroup(int group)
 {
-    //if we have only one group we don't need a filter
-    bool hasOneGroup = ( group == 1 );
+    bool hasOneGroup = (group == 1);
 
     if (hasOneGroup)
     {
         ui->comboBoxFilterGroup->hide();
         ui->labeFilterGroup->hide();
-
         return;
     }
 
     QStringList options;
     options << "All";
-
     for (int ig = 0; ig < group; ++ig)
     {
         options << "Group " + QString::number(ig + 1);
@@ -177,7 +171,6 @@ void NeutronAnalysisChartWidget::setFilteredByGroup(int group)
     ui->comboBoxFilterGroup->clear();
     ui->comboBoxFilterGroup->addItems(options);
     ui->comboBoxFilterGroup->blockSignals(false);
-
 }
 
 void NeutronAnalysisChartWidget::setLabels(const QString &xLabel, const QString &yLabel)
