@@ -60,6 +60,9 @@ std::shared_ptr<ProjectData> RegionInputData::getGeneralProjectData()
 {
     saveGUI();
 
+    if (!proj)
+        proj = std::make_shared<ProjectData>();
+
     return proj;
 }
 
@@ -484,7 +487,7 @@ void RegionInputData::loadGUI()
     ui->spinBoxGroup->setValue(proj->energyGroup);
     ui->spinBoxQuadratureOrder->setValue(proj->quadratureOrder);
 
-    scatteringPath = QString::fromStdString(proj->NeutronMacroscopicCrossSectionsFilePath);
+    scatteringPath = QString::fromStdString(proj->neutronMacroscopicCrossSectionsFilePath);
 
     QAbstractButton *bcLeftButton = ui->buttonGroupLeftBoundaryConditions->button(
                 proj->leftBoundaryConditionsType);
@@ -566,7 +569,7 @@ void RegionInputData::saveGUI()
 
     proj->leftBoundaryConditionsType = eBoundaryConditionsType(leftBC);
     proj->rightBoundaryConditionsType = eBoundaryConditionsType(rightBC);
-    proj->NeutronMacroscopicCrossSectionsFilePath = scatteringPath.toStdString();
+    proj->neutronMacroscopicCrossSectionsFilePath = scatteringPath.toStdString();
     proj->zoneNumber = allZonasStr.size();
     proj->legendreOrder = ui->spinBoxLegendreOrder->value();
     proj->quadratureOrder = ui->spinBoxQuadratureOrder->value();

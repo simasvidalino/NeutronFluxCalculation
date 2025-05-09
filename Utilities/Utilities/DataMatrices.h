@@ -25,7 +25,7 @@ struct CrossSectionDataFilerParameters
 struct CalculatedCrossSectionMatrices
 {
     std::string absorptionCrossSectionFile;
-    std::string scatteringCrossSectionFile;
+    std::string totalScatteringCrossSectionFile;
 
     std::vector<std::vector<long double>> absorptionCrossSection;
     std::vector<std::vector<long double>> scatteringCrossSection;
@@ -86,8 +86,8 @@ public:
     BuildMatrices(dados_entrada *newDatricesDD_Data, ProjectData *newProjectInterfaceData);
 
     void calculateAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult);
-
     void calculateAbsorptionRatePerNode(dados_entrada *data, CalculatedData *DDResult);
+    void calculateLegendreMatrix(dados_entrada* data);
 
     std::vector<std::vector<long double> > calculateAverageNeutronFluxPerRegion(dados_entrada *data);
 
@@ -150,8 +150,6 @@ private:
     void copyResourceToDestination(const std::string &resourcePath, const std::string &destinationPath);
 
     void buildCrossSectionMatrices(dados_entrada* data);
-
-    void calculateLegendreMatrix(dados_entrada *data);
 
     void calculateDataMatrices(dados_entrada *data);
 

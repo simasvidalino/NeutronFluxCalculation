@@ -42,13 +42,11 @@ void MainWindow::calculateNeutronFluxUsingDD()
         return;
     }
 
-    if (false == saveProject())
-        return;
+    //Update proj values before going to the thread
+    proj = ui->widgetRegion->getGeneralProjectData();
+    proj->periodicity = ui->widgetNeutronScalarFlux->getPeriodicityValue();
 
     startWork();
-
-    if (!proj)
-        proj = std::make_shared<ProjectData>();
 
     worker->setProjData(*proj);
 
@@ -106,25 +104,14 @@ void MainWindow::changePalette()
 
 void MainWindow::onOutputData(std::shared_ptr<CalculatedData> data)
 {
-    proj->totalScatteringCrossSectionFilePath =  data->matrices.scatteringCrossSectionFile;
-    proj->absorptionCrossSectionFilePath      =  data->matrices.absorptionCrossSectionFile;
+    calculatedData = data;
 
-    proj->scalarFluxFile = data->scalarFluxFile;
-    proj->absorptionRateFile = data->absorptionRateFile;
-    proj->absorptionRatePerNodeFile = data->absorptionRatePerNodeFile;
-    proj->averageNeutronFluxPerRegionFile = data->averageNeutronFluxPerRegionFile;
-
-    updateFluxChart(data);
-    updateFluxTable(data);
-    updateAbsRateChart(data);
-    updateAbsRateTable(data);
-
-    ui->widgetNeutronAbsorpt->commitChanges();
-    ui->widgetNeutronScalarFlux->commitChanges();
+    updateGUIWithCalculatedData();
 
     if (!fileName.contains("Default"))
     {
         NeutronFlowJsonIO::getInstance()->setGeneralProjectData(proj);
+        NeutronFlowJsonIO::getInstance()->setCalculatedData(data);
         NeutronFlowJsonIO::getInstance()->saveProject(Interface::jsonFormat, fileName);
     }
     else
@@ -159,9 +146,9 @@ void MainWindow::saveMaterialData()
     try
     {
         std::string newPath = fileName.toStdString();
-        std::string oldPath =  proj->NeutronMacroscopicCrossSectionsFilePath;
+        std::string oldPath =  proj->neutronMacroscopicCrossSectionsFilePath;
 
-        proj->NeutronMacroscopicCrossSectionsFilePath = BuildMatrices::getInstance()->saveMaterialData(newPath, oldPath);
+        proj->neutronMacroscopicCrossSectionsFilePath = BuildMatrices::getInstance()->saveMaterialData(newPath, oldPath);
     }
     catch (const std::filesystem::filesystem_error& e)
     {
@@ -178,10 +165,8 @@ void MainWindow::openProject()
     ui->widgetRegion->setPushButtonCalculateFluxEnable(false);
 
     NeutronFlowJsonIO::getInstance()->loadProject(Interface::jsonFormat, fileName);
-    proj = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
-
-    if (!proj)
-        proj = std::make_shared<ProjectData>();
+    proj           = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
+    calculatedData = NeutronFlowJsonIO::getInstance()->getCalculatedData();
 
     ui->widgetNeutronAbsorpt->setPeriodicityValue(proj->periodicity);
     ui->widgetNeutronScalarFlux->setPeriodicityValue(proj->periodicity);
@@ -191,6 +176,7 @@ void MainWindow::openProject()
     QTimer::singleShot(2000, this, [&](){
         this->statusBar()->showMessage("Ready");
         ui->widgetRegion->setPushButtonCalculateFluxEnable(true);
+        updateGUIWithCalculatedData();
     });
 }
 
@@ -251,7 +237,9 @@ bool MainWindow::saveProject(bool saveMaterialDataFile)
 
 void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
 {
-    if (!DDResult)
+    const auto& absorptionRatePerNode = DDResult->absorptionRatePerNode;
+
+    if (!DDResult || absorptionRatePerNode.empty())
         return;
 
     if (!proj)
@@ -264,7 +252,6 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
     long double maxAbpRateValue = 0.0;
     double totalRegionSize = 0.0;
     int nodex = 0;
-    const auto absorptionRatePerNode = std::move(DDResult->absorptionRatePerNode);
 
     for (int rIndex = 0; rIndex < regionNumber; ++rIndex)
     {
@@ -302,6 +289,9 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
 
 void MainWindow::updateAbsRateTable(std::shared_ptr<CalculatedData> DDResult)
 {
+    if (!DDResult || DDResult->absorptionRate.empty())
+        return;
+
     const auto regionNumber = proj->regionNumber;
     const auto energyGroup  = proj->energyGroup;
 
@@ -320,7 +310,7 @@ void MainWindow::updateAbsRateTable(std::shared_ptr<CalculatedData> DDResult)
     ui->widgetNeutronAbsorpt->clearTable();
     ui->widgetNeutronAbsorpt->setTableDimension(energyGroup, regions.size());
     ui->widgetNeutronAbsorpt->setTableHeaders(regions, groups);
-    ui->widgetNeutronAbsorpt->setTableItems(std::move(DDResult->absorptionRate));
+    ui->widgetNeutronAbsorpt->setTableItems(DDResult->absorptionRate);
 }
 
 void MainWindow::init()
@@ -385,35 +375,34 @@ void MainWindow::setConnections()
 
     QObject::connect(ui->widgetRegion, &RegionInputData::onCancelCalc, this, [&](){worker->setCancelResult();});
 
-
     QObject::connect(ui->actionAbsorption_Cross_Section, &QAction::triggered, this, [this]()
             {
-                showDataInFile(proj->absorptionCrossSectionFilePath);
+                showDataInFile(calculatedData->matrices.absorptionCrossSectionFile);
             });
 
     QObject::connect(ui->actionScattering_Cross_Section, &QAction::triggered, this, [this]()
             {
-                showDataInFile(proj->totalScatteringCrossSectionFilePath);
+                showDataInFile(calculatedData->matrices.totalScatteringCrossSectionFile);
             });
 
     QObject::connect(ui->actionScalar_Flux, &QAction::triggered, this, [this]()
             {
-                showDataInFile(proj->scalarFluxFile);
+                showDataInFile(calculatedData->scalarFluxFile);
             });
 
     QObject::connect(ui->actionAbsorption_Rate, &QAction::triggered, this, [this]()
             {
-                showDataInFile(proj->absorptionRateFile);
+                showDataInFile(calculatedData->absorptionRateFile);
             });
 
     QObject::connect(ui->actionAbsorption_Rate_Per_Node, &QAction::triggered, this, [this]()
             {
-                showDataInFile(proj->absorptionRatePerNodeFile);
+                showDataInFile(calculatedData->absorptionRatePerNodeFile);
             });
 
     QObject::connect(ui->actionAverage_Neutron_Flux_Per_Region, &QAction::triggered, this, [this]()
             {
-                showDataInFile(proj->averageNeutronFluxPerRegionFile);
+                showDataInFile(calculatedData->averageNeutronFluxPerRegionFile);
             });
 
     QObject::connect(ui->actionThe_app, &QAction::triggered, this, [this](){
@@ -421,7 +410,7 @@ void MainWindow::setConnections()
     });
 
     //Thread
-    QObject::connect(worker, &Worker::outputData, this, &MainWindow::onOutputData);
+    QObject::connect(worker, &Worker::outputData, this, &MainWindow::onOutputData, Qt::QueuedConnection);
 
     QObject::connect(worker, &Worker::finished, this, [this]()
             {
@@ -456,6 +445,20 @@ void MainWindow::stopWork()
     }
 }
 
+void MainWindow::updateGUIWithCalculatedData()
+{
+    if (!calculatedData)
+        return;
+
+    updateFluxChart(calculatedData);
+    updateFluxTable(calculatedData);
+    updateAbsRateChart(calculatedData);
+    updateAbsRateTable(calculatedData);
+
+    ui->widgetNeutronAbsorpt->commitChanges();
+    ui->widgetNeutronScalarFlux->commitChanges();
+}
+
 void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
 {
     if (!DDResult || DDResult->scalarFlux.empty())
@@ -471,13 +474,15 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
     long double maxY = 0.0;
     double totalRegionSize = 0.0;
     int nodex = 0;
-    const auto scalarFlux = std::move(DDResult->scalarFlux);
+    const auto scalarFlux = DDResult->scalarFlux;
 
     for (int rIndex = 0; rIndex < regionNumber; ++rIndex)
     {
         totalRegionSize += regionArray[rIndex].quote;
         nodex += proj->regionArray[rIndex].node;
     }
+
+    double stepSize = totalRegionSize / static_cast<double>(nodex);
 
     ui->widgetNeutronScalarFlux->clearChart();
 
@@ -486,7 +491,6 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
         QList<QPointF> points;
 
         double positionX = 0.0;
-        double stepSize = totalRegionSize / static_cast<double>(nodex);
 
         for (int nod = 0; nod < nodex; ++nod)
         {
@@ -511,6 +515,9 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
 
 void MainWindow::updateFluxTable(std::shared_ptr<CalculatedData> DDResult)
 {
+    if (DDResult->averageNeutronFluxPerRegion.empty())
+        return;
+
     const auto regionNumber = proj->regionNumber;
     const auto energyGroup = proj->energyGroup;
 
@@ -529,7 +536,7 @@ void MainWindow::updateFluxTable(std::shared_ptr<CalculatedData> DDResult)
     ui->widgetNeutronScalarFlux->clearTable();
     ui->widgetNeutronScalarFlux->setTableDimension(energyGroup, regions.size());
     ui->widgetNeutronScalarFlux->setTableHeaders(regions, groups);
-    ui->widgetNeutronScalarFlux->setTableItems(std::move(DDResult->averageNeutronFluxPerRegion));
+    ui->widgetNeutronScalarFlux->setTableItems(DDResult->averageNeutronFluxPerRegion);
 }
 
 void MainWindow::enableGenerateFilesMenu()

@@ -43,12 +43,12 @@ BuildMatrices::BuildMatrices(dados_entrada *newDatricesDD_Data,
     : matricesDD_Data(newDatricesDD_Data),
     projectInterfaceData(newProjectInterfaceData)
 {
-};
+}
 
 std::unique_ptr<dados_entrada> BuildMatrices::copyProjectDataToRawPointers(ProjectData &proj, CrossSectionDataFilerParameters& fileParameter)
 {
     auto data = std::make_unique<dados_entrada>();
-    fileName  = proj.NeutronMacroscopicCrossSectionsFilePath;
+    fileName  = proj.neutronMacroscopicCrossSectionsFilePath;
     std::filesystem::directory_entry entry{fileName};
 
     if (   ( true == fileName.empty() )
@@ -467,11 +467,12 @@ void BuildMatrices::allocateMatrices(dados_entrada &valor)
     // valor.TAM_TOTAL = 0;  //comprimento total de x
     valor.NODOSX = 0;  // numero total de nodos por regiao
 
-    for (int j = 0; j<valor.n_R; j++){
-        valor.CONTX[j] = valor.NODOSX+valor.n_nodos[j];
-        // valor.PASSO[j] = valor.TAM[j]/valor.n_nodos[j];
-        valor.NODOSX = valor.CONTX[j];
+    for (int j = 0; j < valor.n_R; j++)
+    {
+        valor.CONTX[j] = valor.NODOSX + valor.n_nodos[j];
+        valor.NODOSX   = valor.CONTX[j];
     }
+
     valor.w = new double [valor.n];
     valor.mi = new double [valor.n];
 
@@ -883,8 +884,8 @@ void BuildMatrices::buildCrossSectionMatrices(dados_entrada *data)
 
     auto vector = saveFileDataInVector();
 
-    for (auto v:vector)
-        std::cout<<v<< std::endl;
+    // for (auto v:vector)
+    //     std::cout<<v<< std::endl;
 
     int i = 0;
 
@@ -906,7 +907,7 @@ void BuildMatrices::buildCrossSectionMatrices(dados_entrada *data)
     //Total and Scattering cross section
     for (int h = 0; h < data->n_Z; h++)
     {
-        std::cout<<"\nZona "<<h<<std::endl;
+        //std::cout<<"\nZona "<<h<<std::endl;
 
         for (int j = 0; j < data->G; j++)
         {
@@ -916,13 +917,13 @@ void BuildMatrices::buildCrossSectionMatrices(dados_entrada *data)
 
         for (int k = 0; k < data->L + 1; k++)
         {
-            std::cout<<"\nLegendre "<<k<<std::endl;
+            //std::cout<<"\nLegendre "<<k<<std::endl;
             for (int m = 0; m < data->G; m++)
             {
                 for (int n = 0; n<data->G; n ++)
                 {
                     data->s_s[m][n][h][k] = vector[i];
-                    std::cout<<data->s_s[m][n][h][k] <<" "<<std::endl;
+                    //std::cout<<data->s_s[m][n][h][k] <<" "<<std::endl;
 
                     i++;
                 }
@@ -1299,6 +1300,8 @@ void BuildMatrices::writeNeutronFluxFile(dados_entrada *DDValues, CalculatedData
     int colWidth = 25;
     int precision = 2;
 
+    const int precisionScalar = 30;
+
     //Write compile information
     output << std::string(colWidth * 3, '-') << std::endl;
     output << "Iteration Number: "
@@ -1328,13 +1331,13 @@ void BuildMatrices::writeNeutronFluxFile(dados_entrada *DDValues, CalculatedData
             {
                 output << std::left << std::setw(colWidth) << std::fixed << std::setprecision(precision) << t
                          << std::setw(colWidth) << g + 1
-                         << std::fixed << std::setprecision(15) << DDValues->FLUXO_ESCALAR[g][nod] << std::endl;
+                         << std::fixed << std::setprecision(precisionScalar) << DDValues->FLUXO_ESCALAR[g][nod] << std::endl;
             }
             else
             {
                 output << std::left << std::setw(colWidth) << ""
                          << std::setw(colWidth) << g + 1
-                         << std::fixed << std::setprecision(15) << DDValues->FLUXO_ESCALAR[g][nod] << std::endl;
+                         << std::fixed << std::setprecision(precisionScalar) << DDValues->FLUXO_ESCALAR[g][nod] << std::endl;
             }
         }
 
@@ -1364,7 +1367,7 @@ void BuildMatrices::writeScatteringCrossSectionFile(dados_entrada *DDValues, Cal
         throw std::runtime_error( "Error opening file: " + titleStr);
     }
 
-    DDResult->scatteringCrossSectionFile = titleStr;
+    DDResult->totalScatteringCrossSectionFile = titleStr;
 
     // Iterate over zones
     for (size_t zoneIndex = 0; zoneIndex < zoneNumber; ++zoneIndex)

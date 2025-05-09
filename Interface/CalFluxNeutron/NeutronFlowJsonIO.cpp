@@ -71,6 +71,9 @@ ProjectData *NeutronFlowJsonIO::getGeneralProjectDataPtr()
 
 std::shared_ptr<ProjectData> NeutronFlowJsonIO::getGeneralProjectData()
 {
+    if (!generalProjectData)
+        generalProjectData = std::make_shared<ProjectData>();
+
     return generalProjectData;
 }
 
@@ -81,6 +84,9 @@ void NeutronFlowJsonIO::setGeneralProjectData(std::shared_ptr<ProjectData> newGe
 
 void NeutronFlowJsonIO::read(const QJsonObject &json)
 {
+    calculatedData.reset();
+    generalProjectData.reset();
+
     if (json.contains(GeneralProjectDataKey))
     {
         generalProjectData = std::make_shared<ProjectData>(
@@ -92,6 +98,12 @@ void NeutronFlowJsonIO::read(const QJsonObject &json)
         QJsonArray regionObjArray = json[DataPerRegionKey].toArray();
         generalProjectData->regionArray = loadRegionArray(regionObjArray);;
     }
+
+    if (json.contains(CalculationResultsKey))
+    {
+        calculatedData = std::make_shared<CalculatedData>(
+            loadCalculatedData(json[CalculationResultsKey].toObject()));
+    }
 }
 
 void NeutronFlowJsonIO::write(QJsonObject &json) const
@@ -99,6 +111,7 @@ void NeutronFlowJsonIO::write(QJsonObject &json) const
     if (generalProjectData)
     {
         json[GeneralProjectDataKey] = saveGeneralProjectData();
+        json[CalculationResultsKey] = saveCalculatedData();
 
         if (!generalProjectData->regionArray.empty())
             json[DataPerRegionKey] = saveDataPerRegion();
@@ -129,24 +142,18 @@ QJsonObject NeutronFlowJsonIO::saveGeneralProjectData() const
         obj[MaximumIterationsNumberKey]     = QString::number(generalProjectData->maximumIterationsNumber);
         obj[LeftBoundaryConditionsTypeKey]  = QString::number(((int)generalProjectData->leftBoundaryConditionsType));
         obj[RightBoundaryConditionsTypeKey] = QString::number(((int)generalProjectData->rightBoundaryConditionsType));
-        obj[ScatteringCrossSectionFileKey]  = generalProjectData->NeutronMacroscopicCrossSectionsFilePath.c_str();
-        obj[TotalScatteringCrossSectionFilePathKey]  = generalProjectData->totalScatteringCrossSectionFilePath.c_str();
-        obj[AbsorptionCrossSectionFilePath]          = generalProjectData->absorptionCrossSectionFilePath.c_str();
+        obj[ScatteringCrossSectionFileKey]  = generalProjectData->neutronMacroscopicCrossSectionsFilePath.c_str();
         obj[StopOrderKey]                   = QString::number(generalProjectData->stopOrder);
         obj[RegionDataKey]                  = QString::number(generalProjectData->regionNumber);
         obj[PeriodicityKey]                 = generalProjectData->periodicity;
         obj[ZoneNumberKey]                  = generalProjectData->zoneNumber;
 
-        obj[ScalarFluxFileKey]              = generalProjectData->scalarFluxFile.c_str();
-        obj[AbsorptionRateFileKey]          = generalProjectData->absorptionRateFile.c_str();
-        obj[AbsorptionRatePerNodeFileKey]   = generalProjectData->absorptionRatePerNodeFile.c_str();
-        obj[AverageNeutronFluxPerRegionFileKey] = generalProjectData->averageNeutronFluxPerRegionFile.c_str();
-
         if (generalProjectData->bcLeft.has_value())
             obj[LeftBoundaryValuesKey] = saveObjArray(generalProjectData->bcLeft.value());
 
         if (generalProjectData->bcRight.has_value())
-            obj[RightBoundaryValuesKey] = saveObjArray(generalProjectData->bcRight.value());    }
+            obj[RightBoundaryValuesKey] = saveObjArray(generalProjectData->bcRight.value());
+    }
 
     return obj;
 }
@@ -197,25 +204,7 @@ ProjectData NeutronFlowJsonIO::loadGeneralProjectData(const QJsonObject &obj)
     }
 
     if (obj.contains(ScatteringCrossSectionFileKey))
-        ProjectData.NeutronMacroscopicCrossSectionsFilePath = obj[ScatteringCrossSectionFileKey].toString().toStdString();
-
-    if (obj.contains(TotalScatteringCrossSectionFilePathKey))
-        ProjectData.totalScatteringCrossSectionFilePath = obj[TotalScatteringCrossSectionFilePathKey].toString().toStdString();
-
-    if (obj.contains(AbsorptionCrossSectionFilePath))
-        ProjectData.absorptionCrossSectionFilePath = obj[AbsorptionCrossSectionFilePath].toString().toStdString();
-
-    if (obj.contains(ScalarFluxFileKey))
-        ProjectData.scalarFluxFile = obj[ScalarFluxFileKey].toString().toStdString();
-
-    if (obj.contains(AbsorptionRateFileKey))
-        ProjectData.absorptionRateFile = obj[AbsorptionRateFileKey].toString().toStdString();
-
-    if (obj.contains(AbsorptionRatePerNodeFileKey))
-        ProjectData.absorptionRatePerNodeFile = obj[AbsorptionRatePerNodeFileKey].toString().toStdString();
-
-    if (obj.contains(AverageNeutronFluxPerRegionFileKey))
-        ProjectData.averageNeutronFluxPerRegionFile = obj[AverageNeutronFluxPerRegionFileKey].toString().toStdString();
+        ProjectData.neutronMacroscopicCrossSectionsFilePath = obj[ScatteringCrossSectionFileKey].toString().toStdString();
 
     if (obj.contains(QuadratureOrderKey))
     {
@@ -249,7 +238,6 @@ ProjectData NeutronFlowJsonIO::loadGeneralProjectData(const QJsonObject &obj)
         ProjectData.periodicity = obj[PeriodicityKey].toDouble(10);
 
     }
-
 
     if (obj.contains(ZoneNumberKey))
     {
@@ -292,6 +280,92 @@ ProjectData NeutronFlowJsonIO::loadGeneralProjectData(const QJsonObject &obj)
     return ProjectData;
 }
 
+QJsonObject NeutronFlowJsonIO::saveCalculatedData() const
+{
+    QJsonObject obj;
+
+    if (calculatedData && generalProjectData)
+    {
+        const auto& regionArray                      = generalProjectData->regionArray;
+        int nodex                                    = 0;
+        double totalRegionSize                       = 0;
+
+        obj[TotalScatteringCrossSectionFilePathKey]  = calculatedData->matrices.totalScatteringCrossSectionFile.c_str();
+        obj[AbsorptionCrossSectionFilePath]          = calculatedData->matrices.absorptionCrossSectionFile.c_str();
+        obj[ScalarFluxFileKey]                       = calculatedData->scalarFluxFile.c_str();
+        obj[AbsorptionRateFileKey]                   = calculatedData->absorptionRateFile.c_str();
+        obj[AbsorptionRatePerNodeFileKey]            = calculatedData->absorptionRatePerNodeFile.c_str();
+        obj[AverageNeutronFluxPerRegionFileKey]      = calculatedData->averageNeutronFluxPerRegionFile.c_str();
+
+        for (int rIndex = 0; rIndex < generalProjectData->regionNumber; ++rIndex)
+        {
+            totalRegionSize += regionArray[rIndex].quote;
+            nodex += regionArray[rIndex].node;
+        }
+
+        obj[NeutronFluxPointsPerNodeKey]             = saveArrayPerNode(generalProjectData->energyGroup,
+                                                            nodex,
+                                                            totalRegionSize,
+                                                            NeutronFluxPointsPerNodeKey,
+                                                            calculatedData->scalarFlux);
+
+        obj[AbsorptionRateDataPointsPerNodeKey]      = saveArrayPerNode(generalProjectData->energyGroup,
+                                                                   nodex,
+                                                                   totalRegionSize,
+                                                                   AbsorptionRateDataPointsPerNodeKey,
+                                                                   calculatedData->absorptionRatePerNode);
+
+        obj[NeutronFluxPointsPerRegion]              = saveArrayPerRegion(generalProjectData->regionNumber,
+                                                             generalProjectData->energyGroup,
+                                                             NeutronFluxPointsPerRegion,
+                                                             calculatedData->averageNeutronFluxPerRegion);
+
+        obj[AbsorptionRateDataPointsPerRegionKey]    = saveArrayPerRegion(generalProjectData->regionNumber,
+                                                                       generalProjectData->energyGroup,
+                                                                       AbsorptionRateDataPointsPerRegionKey,
+                                                                       calculatedData->absorptionRate);
+    }
+
+    return obj;
+}
+
+CalculatedData NeutronFlowJsonIO::loadCalculatedData(const QJsonObject& obj)
+{
+    CalculatedData calculatedData;
+
+    if (obj.contains(TotalScatteringCrossSectionFilePathKey))
+        calculatedData.matrices.totalScatteringCrossSectionFile = obj[TotalScatteringCrossSectionFilePathKey].toString().toStdString();
+
+    if (obj.contains(AbsorptionCrossSectionFilePath))
+        calculatedData.matrices.absorptionCrossSectionFile = obj[AbsorptionCrossSectionFilePath].toString().toStdString();
+
+    if (obj.contains(ScalarFluxFileKey))
+        calculatedData.scalarFluxFile = obj[ScalarFluxFileKey].toString().toStdString();
+
+    if (obj.contains(AbsorptionRateFileKey))
+        calculatedData.absorptionRateFile = obj[AbsorptionRateFileKey].toString().toStdString();
+
+    if (obj.contains(AbsorptionRatePerNodeFileKey))
+        calculatedData.absorptionRatePerNodeFile = obj[AbsorptionRatePerNodeFileKey].toString().toStdString();
+
+    if (obj.contains(AverageNeutronFluxPerRegionFileKey))
+        calculatedData.averageNeutronFluxPerRegionFile = obj[AverageNeutronFluxPerRegionFileKey].toString().toStdString();
+
+    if (obj.contains(NeutronFluxPointsPerNodeKey))
+        calculatedData.scalarFlux = loadArrayPerNode(obj[NeutronFluxPointsPerNodeKey].toArray());
+
+    if (obj.contains(AbsorptionRateDataPointsPerNodeKey))
+        calculatedData.absorptionRatePerNode = loadArrayPerNode(obj[AbsorptionRateDataPointsPerNodeKey].toArray());
+
+    if (obj.contains(NeutronFluxPointsPerRegion))
+        calculatedData.averageNeutronFluxPerRegion = loadArrayPerRegion(obj[NeutronFluxPointsPerRegion].toArray());
+
+    if (obj.contains(AbsorptionRateDataPointsPerRegionKey))
+        calculatedData.absorptionRate = loadArrayPerRegion(obj[AbsorptionRateDataPointsPerRegionKey].toArray());
+
+    return calculatedData;
+}
+
 QJsonArray NeutronFlowJsonIO::saveDataPerRegion() const
 {
     QJsonArray regionJsonArray;
@@ -303,7 +377,6 @@ QJsonArray NeutronFlowJsonIO::saveDataPerRegion() const
         auto region = regionArray[iIndex];
         QJsonObject regionObj;
         QJsonArray physicalFontJsonArray;
-
 
         regionObj[NodeKey]          = region.node;
         regionObj[MaterialColorKey] = region.materialColor;
@@ -342,8 +415,6 @@ std::array<RegionData, 10> NeutronFlowJsonIO::loadRegionArray(const QJsonArray &
             auto obj = value.toObject();
             RegionData regionData;
             bool ok = false;
-
-            qInfo()<<"load "<<obj;
 
             if (obj.contains(NodeKey))
             {
@@ -394,6 +465,172 @@ std::array<RegionData, 10> NeutronFlowJsonIO::loadRegionArray(const QJsonArray &
     }
 
     return region;
+}
+
+QJsonArray NeutronFlowJsonIO::saveArrayPerNode(int group,
+                                               int nodex,
+                                               int totalRegionSize,
+                                               const char *key,
+                                               std::vector<std::vector<long double>>& vectorData) const
+{
+    QJsonArray finalJsonArray;
+
+    if (vectorData.size() == 0)
+    {
+        return finalJsonArray;
+    }
+
+    double stepSize = totalRegionSize / static_cast<double>(nodex);
+
+    for (int gIndex = 0; gIndex < group; ++gIndex)
+    {
+        QJsonObject byEnergyObj;
+        QJsonArray valuesArray;
+        double positionX = 0.0;
+
+        byEnergyObj[EnergyGroupKey] = gIndex + 1;
+
+        for (int nod = 0; nod < nodex; ++nod)
+        {
+            QJsonObject byPositionObj;
+
+            long double value = vectorData[gIndex][nod];
+
+            byPositionObj[PositionKey] = positionX;
+            byPositionObj[key] = static_cast<double>(value);
+
+            valuesArray.append(byPositionObj);
+
+            positionX += stepSize;
+        }
+
+        byEnergyObj[ValuesKey] = valuesArray;
+        finalJsonArray.append(byEnergyObj);
+    }
+
+    return finalJsonArray;
+}
+
+std::vector<std::vector<long double>> NeutronFlowJsonIO::loadArrayPerNode(const QJsonArray& objArray)
+{
+    std::vector<std::vector<long double>> result;
+
+    for (const QJsonValue& groupVal : objArray)
+    {
+        if (!groupVal.isObject())
+        {
+            continue;
+        }
+
+        QJsonObject groupObj = groupVal.toObject();
+
+        if (!groupObj.contains(ValuesKey))
+        {
+            continue;
+        }
+
+        QJsonArray valuesArray = groupObj[ValuesKey].toArray();
+
+        std::vector<long double> groupData;
+
+        for (const QJsonValue& posVal : valuesArray)
+        {
+            if (!posVal.isObject())
+            {
+                continue;
+            }
+
+            QJsonObject posObj = posVal.toObject();
+
+            if (posObj.contains(PositionKey))
+            {
+                for (auto it = posObj.begin(); it != posObj.end(); ++it)
+                {
+                    if (it.key() != PositionKey)
+                    {
+                        groupData.push_back(it.value().toDouble());
+                        break;
+                    }
+                }
+            }
+        }
+
+        result.push_back(groupData);
+    }
+
+    return result;
+}
+
+QJsonArray NeutronFlowJsonIO::saveArrayPerRegion(int regionNumber,
+                                                 int group,
+                                                 const char * /*key*/,
+                                                 std::vector<std::vector<long double>>& vectorData) const
+{
+    QJsonArray finalJsonArray;
+
+    if (vectorData.empty())
+    {
+        return finalJsonArray;
+    }
+
+    for (int rIndex = 0; rIndex < regionNumber; ++rIndex)
+    {
+        QJsonObject byRegionObj;
+        QJsonArray valuesArray;
+
+        byRegionObj[RegionKey] = rIndex + 1;  // Ex: RegionFlux
+
+        for (int gIndex = 0; gIndex < group; ++gIndex)
+        {
+            long double value = vectorData[rIndex][gIndex];
+            valuesArray.append(static_cast<double>(value));
+        }
+
+        byRegionObj[ValuesKey] = valuesArray;  // Ex: "Values": [30.9, 25.3, ...]
+        finalJsonArray.append(byRegionObj);
+    }
+
+    return finalJsonArray;
+}
+
+
+std::vector<std::vector<long double>> NeutronFlowJsonIO::loadArrayPerRegion(const QJsonArray& objArray)
+{
+    std::vector<std::vector<long double>> result;
+
+    for (const QJsonValue& regionVal : objArray)
+    {
+        if (!regionVal.isObject())
+            continue;
+
+        QJsonObject regionObj = regionVal.toObject();
+
+        if (!regionObj.contains(ValuesKey))
+            continue;
+
+        QJsonArray valuesArray = regionObj[ValuesKey].toArray();
+
+        std::vector<long double> regionData;
+
+        for (const QJsonValue& val : valuesArray)
+        {
+            regionData.push_back(val.toDouble());
+        }
+
+        result.push_back(regionData);
+    }
+
+    return result;
+}
+
+std::shared_ptr<CalculatedData> NeutronFlowJsonIO::getCalculatedData()
+{
+    return calculatedData;
+}
+
+void NeutronFlowJsonIO::setCalculatedData(const std::shared_ptr<CalculatedData>& newCalculatedData)
+{
+    calculatedData = newCalculatedData;
 }
 
 std::array<RegionData, 10> NeutronFlowJsonIO::getRegionArray() const

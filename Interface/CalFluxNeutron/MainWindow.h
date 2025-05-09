@@ -59,6 +59,8 @@ private:
     void startWork();
     void stopWork();
 
+    void updateGUIWithCalculatedData();
+
     ProjectData projectData;
 
     double periodicityValue = 10.0;
@@ -66,6 +68,7 @@ private:
     QString fileName;
 
     std::shared_ptr<ProjectData> proj;
+    std::shared_ptr<CalculatedData> calculatedData;
 
     QThread* calculationThread;
     Worker* worker;
