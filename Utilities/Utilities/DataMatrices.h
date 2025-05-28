@@ -118,6 +118,11 @@ public:
     int getIterationNumber() const;
     void setIterationNumber(int newIterationNumber);
 
+    std::tuple<std::vector<double>, std::vector<double>> getQuadratureValues(int NWanted);
+    void saveQuadratureValueInCSV(const std::tuple<std::vector<double>, std::vector<double>> &value,
+                                  int NNew,
+                                  std::string filePath);
+
     dados_entrada *getMatricesDDData() const;
     void setMatricesDDData(dados_entrada *newMatricesDDData);
 

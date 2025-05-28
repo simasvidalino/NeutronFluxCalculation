@@ -1,6 +1,7 @@
 #include "DataMatrices.h"
 #include "GausLegendreQuadrature.h"
 #include "LegendrePolynomial.h"
+#include "get_GQ.h"
 
 #include <algorithm>
 #include <filesystem>
@@ -137,8 +138,8 @@ void BuildMatrices::calculateAbsorptionRatePerRegion(dados_entrada *data,
     {
         std::vector<long double> absorptionByGroup;
 
-        for (int gIndex = 0; gIndex < data->G; ++gIndex)
-        {
+    for (int gIndex = 0; gIndex < data->G; ++gIndex)
+    {
             auto zIndex = data->Map_R[rIndex] - 1;
 
             if (zIndex < DDResult->matrices.absorptionCrossSection.size())
@@ -147,8 +148,8 @@ void BuildMatrices::calculateAbsorptionRatePerRegion(dados_entrada *data,
                                   DDResult->averageNeutronFluxPerRegion[rIndex][gIndex];
 
                 absorptionByGroup.push_back(sigmaAbsor);
-            }
         }
+    }
 
         absorptionRate.push_back(absorptionByGroup);
     }
@@ -183,11 +184,11 @@ void BuildMatrices::calculateAbsorptionRatePerNode(dados_entrada *data, Calculat
             }
 
             absorptionRatePerRegion.push_back(absorptionByGroup);
+            }
         }
-    }
 
     DDResult->absorptionRatePerNode.swap( absorptionRatePerRegion );
-}
+    }
 
 
 std::vector<std::vector<long double>> BuildMatrices::calculateAverageNeutronFluxPerRegion(dados_entrada *data)
@@ -276,8 +277,8 @@ std::vector<std::vector<long double>> BuildMatrices::calculateScatteringCrossSec
                 for (int lIndex = 0; lIndex < data->L + 1; ++lIndex) // Loop over Legendre moments
                 {
                     double value = data->s_s[gLineIndex][gIndex][zIndex][lIndex];
-                   // std::cout << "g" << gIndex << " g'" << gLineIndex
-                              //<< " legendre = " << lIndex << " value = " << value << std::endl;
+                    // std::cout << "g" << gIndex << " g'" << gLineIndex
+                    //<< " legendre = " << lIndex << " value = " << value << std::endl;
 
                     sum += value; // Add the current value to the total sum
                 }
@@ -356,14 +357,14 @@ void BuildMatrices::allocateMatrices(dados_entrada &valor)
 
     valor.n_Z = vector[i]; i++;
 
-    std::cout<<"Main data ordem da quadratura "<< valor.n
-              << "\nordem de parada " << valor.ordem_parada
-              <<"\nOrdem de iteracao " << valor.iteracao
-              << "\nGropu de energia "<<valor.G
-              << "\n valor.L "<<valor.L
-              <<"\nNumero de zonas"<<valor.n_Z
-              <<"\nNumero de Região"<<valor.n_R
-              <<std::endl;
+    // std::cout<<"Main data ordem da quadratura "<< valor.n
+    //           << "\nordem de parada " << valor.ordem_parada
+    //           <<"\nOrdem de iteracao " << valor.iteracao
+    //           << "\nGropu de energia "<<valor.G
+    //           << "\n valor.L "<<valor.L
+    //           <<"\nNumero de zonas"<<valor.n_Z
+    //           <<"\nNumero de Região"<<valor.n_R
+    //           <<std::endl;
 
 
     //Tamanho de cada Regiao
@@ -553,7 +554,14 @@ std::vector<double> BuildMatrices::saveFileDataInVector()
         }
     }
 
-    std::cout << "Vector size " << vector.size() << std::endl;
+    for (auto &v : vector)
+    {
+        if (v < 0.0)
+        {
+            std::cout << "Negative cross section value detected. It will be replaced with zero." << std::endl;
+            //v = 0.0;
+        }
+    }
 
     file.close(); // Close the file
 
@@ -939,8 +947,14 @@ void BuildMatrices::calculateLegendreMatrix(dados_entrada* data)
     data->w  = new double [data->n];
     data->mi = new double [data->n];
 
-    //Matriz com os polinômios de Legendre
-    legendre_set ( data->n, data->mi, data->w);
+    // legendre_set ( data->n, data->mi, data->w);
+    auto [miVec, wVec] = getQuadratureValues(data->n);
+
+    for (int i = 0; i < data->n ; ++i)
+    {
+        data->mi[i] = miVec[i];
+        data->w[i]  = wVec[i];
+    }
 
     data->Mat_Legendre   = new double *[data->n];
     double* legendre_n   = new double [data->L + 1];
@@ -1017,6 +1031,115 @@ int BuildMatrices::getIterationNumber() const
 void BuildMatrices::setIterationNumber(int newIterationNumber)
 {
     iterationNumber = newIterationNumber;
+}
+
+std::tuple<std::vector<double>, std::vector<double>> BuildMatrices::getQuadratureValues(int NWanted)
+{
+    std::vector<double> mu_values;
+    std::vector<double> w_values;
+
+    std::filesystem::path jsonPath(fileName);
+    std::filesystem::path parentDir = jsonPath.parent_path();
+    std::filesystem::path csvPath = parentDir / "Quadrature.csv";
+
+    std::ifstream file(csvPath);
+    bool quadratureFound = false;
+
+    if (!file.is_open())
+    {
+        auto quad = get_GQ(NWanted);
+
+        saveQuadratureValueInCSV(quad, NWanted, csvPath);
+
+        return quad;
+    }
+
+    std::string line;
+
+    while (std::getline(file, line))
+    {
+        line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
+
+        if (line.rfind("N=", 0) == 0)
+        {
+            int NRead = std::stoi(line.substr(2));
+
+            if (NRead == NWanted)
+            {
+                std::cout <<"Recovering Data from File of Quadrature order = " << NWanted << std::endl;;
+
+                for (int i = 0; i < NRead; ++i)
+                {
+                    if (std::getline(file, line))
+                    {
+                        std::istringstream iss(line);
+                        double mu, w;
+                        char comma;
+
+                        if (iss >> mu >> comma >> w)
+                        {                            
+                            mu_values.push_back(mu);
+                            w_values.push_back(w);
+                        }
+                    }
+                }
+                quadratureFound = true;
+                break;
+            }
+            else
+            {
+                for (int i = 0; i < NRead; ++i)
+                {
+                    std::getline(file, line);
+                }
+            }
+        }
+    }
+
+    if (false == quadratureFound)
+    {
+        std::tie(mu_values, w_values) = get_GQ(NWanted);
+        saveQuadratureValueInCSV(std::make_tuple(mu_values, w_values), NWanted, csvPath);
+    }
+
+    file.close();
+
+    return std::make_tuple(mu_values, w_values);
+}
+
+void BuildMatrices::saveQuadratureValueInCSV(const std::tuple<std::vector<double>, std::vector<double>> &value,
+                                             int NNew,
+                                             std::string filePath)
+{
+    std::ofstream file(filePath, std::ios::app);
+
+    if (!file.is_open())
+    {
+        std::cerr << "Error opening file: " << filePath << std::endl;
+        return;
+    }
+
+    file << "N=" << NNew << std::endl;
+
+    const auto &mu_values = std::get<0>(value);
+    const auto &w_values  = std::get<1>(value);
+
+    if ((mu_values.size() != static_cast<size_t>(NNew)) || (w_values.size() != static_cast<size_t>(NNew)))
+    {
+        std::cerr << "Size of mu or w does not match NNew" << std::endl;
+        file.close();
+        return;
+    }
+
+    std::cout <<"Quadrature order = " << NNew << std::endl;;
+
+    for (int i = 0; i < NNew; ++i)
+    {
+        std::cout << std::fixed << std::setprecision(30) << "Saving quadrature data: " << mu_values[i] << std::endl;
+        file << std::setprecision(30) << mu_values[i] << "," << std::setprecision(30) << w_values[i] << std::endl;
+    }
+
+    file.close();
 }
 
 std::string BuildMatrices::saveMaterialData(std::string &finalPath, std::string &oldPath)
