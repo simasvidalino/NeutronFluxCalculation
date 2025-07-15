@@ -54,7 +54,7 @@ std::unique_ptr<dados_entrada> BuildMatrices::copyProjectDataToRawPointers(Proje
 
     if (   ( true == fileName.empty() )
         || (    ( false == entry.exists() )
-             && ( fileName != ":/Default_Project/Resources/Default_Projet.txt") ) )
+             && ( fileName != ":/Default_Project/Resources/Default_Project.txt") ) )
     {
         throw std::invalid_argument("Error: Material Data File issue. \nYou need to set a Cross Section File.");
     }
@@ -994,24 +994,16 @@ void BuildMatrices::calculateDataMatrices(dados_entrada *data)
     data->smgi          = new long double**[data->G];
     data->FLUXO_ESCALAR = new long double*[data->G];
 
-    data->FLUXO_ANGULAR_DIREITA  = new long double**[data->G];
-    data->FLUXO_ANGULAR_ESQUERDA = new long double**[data->G];
-
     for (int g = 0; g < data->G; g++)
     {
         data->FLUXO_ANGULAR[g] = new long double*[(data->NODOSX) + 1];
         data->smgi[g]          = new long double*[data->NODOSX      ];
         data->FLUXO_ESCALAR[g] = new long double[(data->NODOSX)  + 1];
 
-        data->FLUXO_ANGULAR_DIREITA[g]  = new long double*[(data->NODOSX) + 1];
-        data->FLUXO_ANGULAR_ESQUERDA[g] = new long double*[(data->NODOSX) + 1];
 
         for (int o = 0; o <= data->NODOSX; o++)
         {
             data->FLUXO_ANGULAR[g][o] = new long double[data->n];
-
-            data->FLUXO_ANGULAR_DIREITA[g][o]   = new long double[data->n];
-            data->FLUXO_ANGULAR_ESQUERDA[g][o]  = new long double[data->n];
         }
 
         for (int o = 0; o < data->NODOSX; o++)

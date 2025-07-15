@@ -46,7 +46,7 @@ private:
 
     Ui::MainWindow *ui;
 
-    void enableGenerateFilesMenu();
+    QString getDefaultName(const QString& name, const QString& extension);
 
     void showInvalidZoneMessage();
 

@@ -108,7 +108,7 @@ void MainWindow::onOutputData(std::shared_ptr<CalculatedData> data)
 
     updateGUIWithCalculatedData();
 
-    if (!fileName.contains("Default"))
+    if (!fileName.contains(":/Default"))
     {
         NeutronFlowJsonIO::getInstance()->setGeneralProjectData(proj);
         NeutronFlowJsonIO::getInstance()->setCalculatedData(data);
@@ -118,6 +118,8 @@ void MainWindow::onOutputData(std::shared_ptr<CalculatedData> data)
     {
         showDefaultProjectWarning();
     }
+
+    ui->menuGenerated_Files->setEnabled(true);
 }
 
 void MainWindow::openProjectFileDlg()
@@ -183,7 +185,9 @@ void MainWindow::openProject()
 void MainWindow::saveProjectFileDlg()
 {
     QString filter = "JSON Files (*.json);;Text Files (*.txt)";
-    auto fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::homePath(), filter);
+    QString defaultName = getDefaultName("Project", ".json");
+
+    auto fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::homePath() + "/" + defaultName, filter);
     const bool saveMaterialData = true;
 
     if (fileName.isEmpty())
@@ -334,8 +338,6 @@ void MainWindow::init()
 
     ui->widgetNeutronAbsorpt->setProjectionTitle(Interface::getAbsorptionChartTitle());
     ui->widgetNeutronAbsorpt->setLabels("Position x (cm)", "neutrons/c³.s");
-
-    enableGenerateFilesMenu();
 
     ui->widgetRegion->setEnableGUI(false);
 
@@ -539,9 +541,17 @@ void MainWindow::updateFluxTable(std::shared_ptr<CalculatedData> DDResult)
     ui->widgetNeutronScalarFlux->setTableItems(DDResult->averageNeutronFluxPerRegion);
 }
 
-void MainWindow::enableGenerateFilesMenu()
+QString MainWindow::getDefaultName(const QString& name, const QString& extension)
 {
-    ui->menuGenerated_Files->setEnabled(true);
+    QString formattedExt = extension.startsWith('.') ? extension : "." + extension;
+
+    return QString("%1_R%2_G%3_L%4_N%5%6")
+        .arg(name)
+        .arg(proj->regionNumber)
+        .arg(proj->energyGroup)
+        .arg(proj->legendreOrder)
+        .arg(proj->quadratureOrder)
+        .arg(formattedExt);
 }
 
 void MainWindow::showInvalidZoneMessage()

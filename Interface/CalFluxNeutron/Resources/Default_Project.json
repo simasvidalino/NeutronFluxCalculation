@@ -1,4 +1,3288 @@
 {
+    "CalculationResults": {
+        "AbsorptionCrossSectionFilePath": "/home/andreia-simas/Desktop/NeutronFluxCalculation/build/bin/Absorption_Cross_Section_R3_G1_L1_N4_Nod400.txt",
+        "AbsorptionRatePerNode": [
+            {
+                "EnergyGroup": 1,
+                "Values": [
+                    {
+                        "AbsorptionRatePerNode": 0.523771508534254,
+                        "Position": 0
+                    },
+                    {
+                        "AbsorptionRatePerNode": 0.1274720617854724,
+                        "Position": 0.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 0.06622575096275014,
+                        "Position": 1
+                    },
+                    {
+                        "AbsorptionRatePerNode": 0.029862207212961393,
+                        "Position": 1.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 0.01374011366682578,
+                        "Position": 2
+                    },
+                    {
+                        "AbsorptionRatePerNode": 0.006302917013780204,
+                        "Position": 2.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 0.002892605169850649,
+                        "Position": 3
+                    },
+                    {
+                        "AbsorptionRatePerNode": 0.0013274171920332335,
+                        "Position": 3.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 0.0006091581896899476,
+                        "Position": 4
+                    },
+                    {
+                        "AbsorptionRatePerNode": 0.0002795452291690406,
+                        "Position": 4.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 0.00012828449813199599,
+                        "Position": 5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.8870301454375944e-05,
+                        "Position": 5.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.7015831694890154e-05,
+                        "Position": 6
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.2397680045680719e-05,
+                        "Position": 6.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.6893480929252694e-06,
+                        "Position": 7
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.610866033215144e-06,
+                        "Position": 7.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.1981375250865565e-06,
+                        "Position": 8
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.498304052208402e-07,
+                        "Position": 8.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.523195110540337e-07,
+                        "Position": 9
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.1579049658589709e-07,
+                        "Position": 9.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.313675127064386e-08,
+                        "Position": 10
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.438468111675899e-08,
+                        "Position": 10.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.1190233857870882e-08,
+                        "Position": 11
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.135245902714647e-09,
+                        "Position": 11.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.3565861818695737e-09,
+                        "Position": 12
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0814474200043405e-09,
+                        "Position": 12.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.962808197857678e-10,
+                        "Position": 13
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.277453785836811e-10,
+                        "Position": 13.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0451332269623951e-10,
+                        "Position": 14
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.796160821763859e-11,
+                        "Position": 14.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.2009785962962454e-11,
+                        "Position": 15
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0100384372792207e-11,
+                        "Position": 15.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.635109339537335e-12,
+                        "Position": 16
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.1270713862473547e-12,
+                        "Position": 16.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 9.76122104304849e-13,
+                        "Position": 17
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.4794658452601865e-13,
+                        "Position": 17.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.0556459248653532e-13,
+                        "Position": 18
+                    },
+                    {
+                        "AbsorptionRatePerNode": 9.43344656347098e-14,
+                        "Position": 18.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.329048742754244e-14,
+                        "Position": 19
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.986618876891861e-14,
+                        "Position": 19.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 9.116678505015223e-15,
+                        "Position": 20
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.183682533704767e-15,
+                        "Position": 20.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.919909705403954e-15,
+                        "Position": 21
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.81054728031717e-16,
+                        "Position": 21.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.0431976128987596e-16,
+                        "Position": 22
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.8554405778481605e-16,
+                        "Position": 22.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.514695712479188e-17,
+                        "Position": 23
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.90743007033904e-17,
+                        "Position": 23.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.7931362752297615e-17,
+                        "Position": 24
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.2287786183359e-18,
+                        "Position": 24.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.77622150000316e-18,
+                        "Position": 25
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.7329241043514518e-18,
+                        "Position": 25.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.95246240571367e-19,
+                        "Position": 26
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.6494188150240706e-19,
+                        "Position": 26.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.6747338129989545e-19,
+                        "Position": 27
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.685424684213773e-20,
+                        "Position": 27.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.526874069076866e-20,
+                        "Position": 28
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.6184975079746442e-20,
+                        "Position": 28.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.42735388906522e-21,
+                        "Position": 29
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.40844428376324e-21,
+                        "Position": 29.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.5641495758835383e-21,
+                        "Position": 30
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.177948917608309e-22,
+                        "Position": 30.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.2939912817922887e-22,
+                        "Position": 31
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.5116266065793438e-22,
+                        "Position": 31.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.936918777987179e-23,
+                        "Position": 32
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.183381525768147e-23,
+                        "Position": 32.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.4608673191924042e-23,
+                        "Position": 33
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.703982249884666e-24,
+                        "Position": 33.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.076485962926351e-24,
+                        "Position": 34
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.411812491808109e-24,
+                        "Position": 34.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.478867582069525e-25,
+                        "Position": 35
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.973179930476868e-25,
+                        "Position": 35.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.3644050142138203e-25,
+                        "Position": 36
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.26131483043549e-26,
+                        "Position": 36.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.873348795882383e-26,
+                        "Position": 37
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.318602429227112e-26,
+                        "Position": 37.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.0513502573535404e-27,
+                        "Position": 38
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.77748698261987e-27,
+                        "Position": 38.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.2756744223721829e-27,
+                        "Position": 39
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.878743041250335e-28,
+                        "Position": 39.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.640173578489181e-28,
+                        "Position": 40
+                    },
+                    {
+                        "AbsorptionRatePerNode": 9.996744755315788e-29,
+                        "Position": 40.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.263559727076543e-29,
+                        "Position": 41
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.9657884761131284e-29,
+                        "Position": 41.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.5206706481958315e-29,
+                        "Position": 42
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.6044131203421159e-29,
+                        "Position": 42.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0217386044965061e-29,
+                        "Position": 43
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.507957494387858e-30,
+                        "Position": 43.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.145521556467692e-30,
+                        "Position": 44
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.6407324147585925e-30,
+                        "Position": 44.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.682184095301995e-30,
+                        "Position": 45
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0715786916091189e-30,
+                        "Position": 45.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.826139070143633e-31,
+                        "Position": 46
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.34836891680292e-31,
+                        "Position": 46.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.769986812934786e-31,
+                        "Position": 47
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.764529994784458e-31,
+                        "Position": 47.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.124036458442137e-31,
+                        "Position": 48
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.160308825456028e-32,
+                        "Position": 48.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.5612419625284077e-32,
+                        "Position": 49
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.905590913553486e-32,
+                        "Position": 49.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.8509122360406216e-32,
+                        "Position": 50
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.1790634703584875e-32,
+                        "Position": 50.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.510840547330534e-33,
+                        "Position": 51
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.784536807951067e-33,
+                        "Position": 51.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.047833637597276e-33,
+                        "Position": 52
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.9415233397418205e-33,
+                        "Position": 52.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.2367843284704471e-33,
+                        "Position": 53
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.878532510219361e-34,
+                        "Position": 53.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.018763020012946e-34,
+                        "Position": 54
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.1970398317680067e-34,
+                        "Position": 54.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.036570295340422e-34,
+                        "Position": 55
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.2973309017452267e-34,
+                        "Position": 55.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.264224772765597e-35,
+                        "Position": 56
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.264455737770213e-35,
+                        "Position": 56.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.3535503906275236e-35,
+                        "Position": 57
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.1362702590109426e-35,
+                        "Position": 57.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.3608415225514832e-35,
+                        "Position": 58
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.668798536556104e-36,
+                        "Position": 58.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.522176302094299e-36,
+                        "Position": 59
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.5177228981406846e-36,
+                        "Position": 59.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.2408510179963447e-36,
+                        "Position": 60
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.427461295348009e-36,
+                        "Position": 60.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 9.09317814237635e-37,
+                        "Position": 61
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.792513534234394e-37,
+                        "Position": 61.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.6899324437429377e-37,
+                        "Position": 62
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.350551510828075e-37,
+                        "Position": 62.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.4973424281588435e-37,
+                        "Position": 63
+                    },
+                    {
+                        "AbsorptionRatePerNode": 9.53833318196365e-38,
+                        "Position": 63.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.076085081087232e-38,
+                        "Position": 64
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.8705724793113585e-38,
+                        "Position": 64.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.4656223732340777e-38,
+                        "Position": 65
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.5706445803267987e-38,
+                        "Position": 65.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0005280713259265e-38,
+                        "Position": 66
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.373538826351739e-39,
+                        "Position": 66.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.06005571809492e-39,
+                        "Position": 67
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.5863265107731134e-39,
+                        "Position": 67.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.647535227291539e-39,
+                        "Position": 68
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0495087584108606e-39,
+                        "Position": 68.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.685554370766702e-40,
+                        "Position": 69
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.258815077651783e-40,
+                        "Position": 69.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.7129396995023083e-40,
+                        "Position": 70
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.728190043225319e-40,
+                        "Position": 70.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.1008872869717792e-40,
+                        "Position": 71
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.012844584813244e-41,
+                        "Position": 71.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.467304668947926e-41,
+                        "Position": 72
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.845751216050284e-41,
+                        "Position": 72.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.8127933024005865e-41,
+                        "Position": 73
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.1547810429435507e-41,
+                        "Position": 73.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.356157237429582e-42,
+                        "Position": 74
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.68600083387694e-42,
+                        "Position": 74.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.985064498535412e-42,
+                        "Position": 75
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.9015383002064732e-42,
+                        "Position": 75.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.2113131588701677e-42,
+                        "Position": 76
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.716276704459246e-43,
+                        "Position": 76.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.915403233571429e-43,
+                        "Position": 77
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.131197839839216e-43,
+                        "Position": 77.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.9946277947760764e-43,
+                        "Position": 78
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.2706127952290512e-43,
+                        "Position": 78.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.094025760736114e-44,
+                        "Position": 79
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.156035989992519e-44,
+                        "Position": 79.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.284485114818856e-44,
+                        "Position": 80
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.0922744702335344e-44,
+                        "Position": 80.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.3328154355275403e-44,
+                        "Position": 81
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.49026745990066e-45,
+                        "Position": 81.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.408448883405695e-45,
+                        "Position": 82
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.4452765431201814e-45,
+                        "Position": 82.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.1947014226192822e-45,
+                        "Position": 83
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.3980631958457797e-45,
+                        "Position": 83.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.9059071062423e-46,
+                        "Position": 84
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.673218608478866e-46,
+                        "Position": 84.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.613939489334172e-46,
+                        "Position": 85
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.3021426696037024e-46,
+                        "Position": 85.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.466505149533232e-46,
+                        "Position": 86
+                    },
+                    {
+                        "AbsorptionRatePerNode": 9.341894323072965e-47,
+                        "Position": 86.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.950950091872506e-47,
+                        "Position": 87
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.7908593023249067e-47,
+                        "Position": 87.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.4148436851537213e-47,
+                        "Position": 88
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.5382976678006506e-47,
+                        "Position": 88.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 9.799225222357552e-48,
+                        "Position": 89
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.24227787433221e-48,
+                        "Position": 89.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.9764401956466915e-48,
+                        "Position": 90
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.5330619603739206e-48,
+                        "Position": 90.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.613604776985679e-48,
+                        "Position": 91
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0278944680558275e-48,
+                        "Position": 91.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.54786756044135e-49,
+                        "Position": 92
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.171106171061866e-49,
+                        "Position": 92.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.6570675918035334e-49,
+                        "Position": 93
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.692598533308328e-49,
+                        "Position": 93.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0782148725892616e-49,
+                        "Position": 94
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.868417339346146e-50,
+                        "Position": 94.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.3753019872692705e-50,
+                        "Position": 95
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.787143898513426e-50,
+                        "Position": 95.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.7754594159725456e-50,
+                        "Position": 96
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.130998704245908e-50,
+                        "Position": 96.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.204659579927579e-51,
+                        "Position": 97
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.589494176056661e-51,
+                        "Position": 97.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.923588069412953e-51,
+                        "Position": 98
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.862376739512009e-51,
+                        "Position": 98.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.1863665596952016e-51,
+                        "Position": 99
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.557362504064676e-52,
+                        "Position": 99.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.814172108198686e-52,
+                        "Position": 100
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.066711842245624e-52,
+                        "Position": 100.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.9535490863222384e-52,
+                        "Position": 101
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.2444449393966853e-52,
+                        "Position": 101.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.927331941812138e-53,
+                        "Position": 102
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.049849111535741e-53,
+                        "Position": 102.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.2168422158248804e-53,
+                        "Position": 103
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.049184760367248e-53,
+                        "Position": 103.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.3053665366190813e-53,
+                        "Position": 104
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.315413172502383e-54,
+                        "Position": 104.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.29706364378817e-54,
+                        "Position": 105
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.374322197137266e-54,
+                        "Position": 105.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.1495022630973314e-54,
+                        "Position": 106
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.369270540608246e-54,
+                        "Position": 106.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.72249285597845e-55,
+                        "Position": 107
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.556380522785411e-55,
+                        "Position": 107.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.5395115850199054e-55,
+                        "Position": 108
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.2547307926653248e-55,
+                        "Position": 108.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.436302954596662e-55,
+                        "Position": 109
+                    },
+                    {
+                        "AbsorptionRatePerNode": 9.149501058370084e-56,
+                        "Position": 109.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.8283922169207965e-56,
+                        "Position": 110
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.7127877922027856e-56,
+                        "Position": 110.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.3651107675819206e-56,
+                        "Position": 111
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.5066169293810318e-56,
+                        "Position": 111.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 9.597413377041362e-57,
+                        "Position": 112
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.113720198780355e-57,
+                        "Position": 112.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.894546707593984e-57,
+                        "Position": 113
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.4808943760064372e-57,
+                        "Position": 113.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.5803731132301077e-57,
+                        "Position": 114
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0067253169564774e-57,
+                        "Position": 114.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.413016365038295e-58,
+                        "Position": 115
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.085203600777924e-58,
+                        "Position": 115.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.6023461519280342e-58,
+                        "Position": 116
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.657740018922203e-58,
+                        "Position": 116.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0560093891814367e-58,
+                        "Position": 117
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.726964525863237e-59,
+                        "Position": 117.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.285194070793199e-59,
+                        "Position": 118
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.7297435795537776e-59,
+                        "Position": 118.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.7388944087509622e-59,
+                        "Position": 119
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.1077061550519857e-59,
+                        "Position": 119.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.056281967238078e-60,
+                        "Position": 120
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.4949750413576554e-60,
+                        "Position": 120.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.8633777272844276e-60,
+                        "Position": 121
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.824021698379028e-60,
+                        "Position": 121.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.1619337275885109e-60,
+                        "Position": 122
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.401721089762967e-61,
+                        "Position": 122.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.715025804814548e-61,
+                        "Position": 123
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.003553912726397e-61,
+                        "Position": 123.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.9133163804622815e-61,
+                        "Position": 124
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.2188160020148555e-61,
+                        "Position": 124.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.764071127685294e-62,
+                        "Position": 125
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.945849117184415e-62,
+                        "Position": 125.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.1505924002584796e-62,
+                        "Position": 126
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.0069824690113135e-62,
+                        "Position": 126.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.2784829388231876e-62,
+                        "Position": 127
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.144159952054242e-63,
+                        "Position": 127.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.187972346777523e-63,
+                        "Position": 128
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.3048291326732543e-63,
+                        "Position": 128.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.1052339653894496e-63,
+                        "Position": 129
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.3410708605124654e-63,
+                        "Position": 129.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.542855959263141e-64,
+                        "Position": 130
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.441948674506997e-64,
+                        "Position": 130.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.466616491525484e-64,
+                        "Position": 131
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.2082953359616293e-64,
+                        "Position": 131.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.4067227453313889e-64,
+                        "Position": 132
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.96106977697741e-65,
+                        "Position": 132.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.7083579211575704e-65,
+                        "Position": 133
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.6363234168483356e-65,
+                        "Position": 133.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.3164009490198404e-65,
+                        "Position": 134
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.4755868649526417e-65,
+                        "Position": 134.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 9.399729830712625e-66,
+                        "Position": 135
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.987766250539782e-66,
+                        "Position": 135.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.8142709138067195e-66,
+                        "Position": 136
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.4296930526783477e-66,
+                        "Position": 136.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.547656162728435e-66,
+                        "Position": 137
+                    },
+                    {
+                        "AbsorptionRatePerNode": 9.857259235348373e-67,
+                        "Position": 137.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.276770026354519e-67,
+                        "Position": 138
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.994549309124755e-67,
+                        "Position": 138.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.538640279097648e-67,
+                        "Position": 139
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.6082667632837694e-67,
+                        "Position": 139.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.6875423854502774e-67,
+                        "Position": 140
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.389262523344768e-68,
+                        "Position": 140.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.805708067371155e-68,
+                        "Position": 141
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.749478784170139e-68,
+                        "Position": 141.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.02636289956812e-69,
+                        "Position": 142
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.683473751432225e-69,
+                        "Position": 142.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.6903520684601967e-69,
+                        "Position": 143
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.757104162989433e-70,
+                        "Position": 143.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.55976763210648e-70,
+                        "Position": 144
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.6335925350463512e-70,
+                        "Position": 144.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.496625588892958e-71,
+                        "Position": 145
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.4402333628436145e-71,
+                        "Position": 145.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.5787377193535151e-71,
+                        "Position": 146
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.244894528406417e-72,
+                        "Position": 146.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.324712907262258e-72,
+                        "Position": 147
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.525724891148347e-72,
+                        "Position": 147.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.001616405387422e-73,
+                        "Position": 148
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.213071542097923e-73,
+                        "Position": 148.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.4744921939304983e-73,
+                        "Position": 149
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.766507379236303e-74,
+                        "Position": 149.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.1051790102198042e-74,
+                        "Position": 150
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.4249798522495513e-74,
+                        "Position": 150.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.539293137800182e-75,
+                        "Position": 151
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.0009094286191873e-75,
+                        "Position": 151.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.3771300978571783e-75,
+                        "Position": 152
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.319708580131172e-76,
+                        "Position": 152.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.900141141343756e-76,
+                        "Position": 153
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.3308871023195329e-76,
+                        "Position": 153.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.107497507172302e-77,
+                        "Position": 154
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.802756577556806e-77,
+                        "Position": 154.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.2861969118796935e-77,
+                        "Position": 155
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.90241232283873e-78,
+                        "Position": 155.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.7086421143621257e-78,
+                        "Position": 156
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.2430073845074186e-78,
+                        "Position": 156.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.704213745136393e-79,
+                        "Position": 157
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.617687944235117e-79,
+                        "Position": 157.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.201268129062725e-79,
+                        "Position": 158
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.5126705269810695e-80,
+                        "Position": 158.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.529787946905477e-80,
+                        "Position": 159
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.1609304465023048e-80,
+                        "Position": 159.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.327559186392148e-81,
+                        "Position": 160
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.444839565541967e-81,
+                        "Position": 160.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.1219472730601902e-81,
+                        "Position": 161
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.148663745746261e-82,
+                        "Position": 161.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.362743687094802e-82,
+                        "Position": 162
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0842731253363659e-82,
+                        "Position": 162.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.9757754797866034e-83,
+                        "Position": 163
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.2834045266560498e-83,
+                        "Position": 163.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0478640472292671e-83,
+                        "Position": 164
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.808692672093905e-84,
+                        "Position": 164.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.2067295157031295e-84,
+                        "Position": 165
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0126775586502427e-84,
+                        "Position": 165.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.647220379734922e-85,
+                        "Position": 166
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.1326291940950003e-85,
+                        "Position": 166.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 9.786726059601489e-86,
+                        "Position": 167
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.49117020581386e-86,
+                        "Position": 167.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.061017105695042e-86,
+                        "Position": 168
+                    },
+                    {
+                        "AbsorptionRatePerNode": 9.458095140702447e-87,
+                        "Position": 168.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.340360079661341e-87,
+                        "Position": 169
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.9918096974988402e-87,
+                        "Position": 169.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 9.140499401515022e-88,
+                        "Position": 170
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.194614044404463e-88,
+                        "Position": 170.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.924926222149178e-88,
+                        "Position": 171
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.833568288983237e-89,
+                        "Position": 171.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.053762051670086e-89,
+                        "Position": 172
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.8602886437245018e-89,
+                        "Position": 172.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.536943692944636e-90,
+                        "Position": 173
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.9176397631818053e-90,
+                        "Position": 173.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.7978215466909188e-90,
+                        "Position": 174
+                    },
+                    {
+                        "AbsorptionRatePerNode": 8.250279528307106e-91,
+                        "Position": 174.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.786088359019088e-91,
+                        "Position": 175
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.7374520479114877e-91,
+                        "Position": 175.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.973241331255668e-92,
+                        "Position": 176
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.658954352314797e-92,
+                        "Position": 176.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.6791097116100867e-92,
+                        "Position": 177
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.705505869017838e-93,
+                        "Position": 177.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.536089410174723e-93,
+                        "Position": 178
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.6227264671905454e-93,
+                        "Position": 178.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.446760762731643e-94,
+                        "Position": 179
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.417350180609822e-94,
+                        "Position": 179.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.5682365298149375e-94,
+                        "Position": 180
+                    },
+                    {
+                        "AbsorptionRatePerNode": 7.196704122974974e-95,
+                        "Position": 180.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.3025981252784545e-95,
+                        "Position": 181
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.515576323647908e-95,
+                        "Position": 181.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.955044197528319e-96,
+                        "Position": 182
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.191699357841889e-96,
+                        "Position": 182.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.4646844076765468e-96,
+                        "Position": 183
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.721499030954411e-97,
+                        "Position": 183.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 3.0845244877412576e-97,
+                        "Position": 184
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.4155014040173925e-97,
+                        "Position": 184.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.495796135586813e-98,
+                        "Position": 185
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.980948469207458e-98,
+                        "Position": 185.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.3679699286233204e-98,
+                        "Position": 186
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.277672173522864e-99,
+                        "Position": 186.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.8808504553159673e-99,
+                        "Position": 187
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.3220345243026924e-99,
+                        "Position": 187.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 6.066872649211367e-100,
+                        "Position": 188
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.784113656894365e-100,
+                        "Position": 188.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.277641595960203e-100,
+                        "Position": 189
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.863151612206237e-101,
+                        "Position": 189.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.6906252060784954e-101,
+                        "Position": 190
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.234739347961721e-101,
+                        "Position": 190.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.6662713696154746e-102,
+                        "Position": 191
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.6002760242891497e-102,
+                        "Position": 191.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.193277723512106e-102,
+                        "Position": 192
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.476002207708165e-103,
+                        "Position": 192.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.512960694382557e-103,
+                        "Position": 193
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.1532083459654654e-103,
+                        "Position": 193.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.292122123201805e-104,
+                        "Position": 194
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.4285773392552594e-104,
+                        "Position": 194.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.1144844676143791e-104,
+                        "Position": 195
+                    },
+                    {
+                        "AbsorptionRatePerNode": 5.1144166880258276e-105,
+                        "Position": 195.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.347027778164939e-105,
+                        "Position": 196
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0770615178363151e-105,
+                        "Position": 196.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.942691948859762e-106,
+                        "Position": 197
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.2682460805936796e-106,
+                        "Position": 197.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.0409594618973927e-106,
+                        "Position": 198
+                    },
+                    {
+                        "AbsorptionRatePerNode": 4.778143835007565e-107,
+                        "Position": 198.5
+                    },
+                    {
+                        "AbsorptionRatePerNode": 2.19504271108587e-107,
+                        "Position": 199
+                    },
+                    {
+                        "AbsorptionRatePerNode": 1.01451109200379e-107,
+                        "Position": 199.5
+                    }
+                ]
+            }
+        ],
+        "AbsorptionRatePerNodeFile": "/home/andreia-simas/Desktop/NeutronFluxCalculation/build/bin/Absorption_Rate_Per_Node_R3_G1_L1_N4_Nod400.txt",
+        "AverageAbsorptionRatePerRegion": [
+            {
+                "RegionFlux": 1,
+                "Values": [
+                    0.009659004597028762
+                ]
+            },
+            {
+                "RegionFlux": 2,
+                "Values": [
+                    2.178375273670575e-30
+                ]
+            },
+            {
+                "RegionFlux": 3,
+                "Values": [
+                    2.691937605961304e-69
+                ]
+            }
+        ],
+        "AverageAbsorptionRatePerRegionFile": "/home/andreia-simas/Desktop/NeutronFluxCalculation/build/bin/Integrated_Absorption_Rate_Per_Region_R3_G1_L1_N4_Nod400.txt",
+        "AverageNeutronFluxPerRegionFile": "/home/andreia-simas/Desktop/NeutronFluxCalculation/build/bin/Average_Neutron_Flux_Per_Region_R3_G1_L1_N4_Nod400.txt",
+        "IntegratedAbsorptionRatePerRegion": [
+            {
+                "RegionFlux": 1,
+                "Values": [
+                    0.3863601838811505
+                ]
+            },
+            {
+                "RegionFlux": 2,
+                "Values": [
+                    2.178375273670575e-28
+                ]
+            },
+            {
+                "RegionFlux": 3,
+                "Values": [
+                    1.6151625635767828e-67
+                ]
+            }
+        ],
+        "IntegratedAbsorptionRatePerRegionFile": "",
+        "IntegratedNeutronFluxPerRegionFile": "/home/andreia-simas/Desktop/NeutronFluxCalculation/build/bin/Integrated_Neutron_Flux_Per_Region_R3_G1_L1_N4_Nod400.txt",
+        "NeutronFluxPointsPerNode": [
+            {
+                "EnergyGroup": 1,
+                "Values": [
+                    {
+                        "NeutronFluxPointsPerNode": 0.523771508534254,
+                        "Position": 0
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 0.1274720617854724,
+                        "Position": 0.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 0.06622575096275014,
+                        "Position": 1
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 0.029862207212961397,
+                        "Position": 1.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 0.013740113666825782,
+                        "Position": 2
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 0.006302917013780205,
+                        "Position": 2.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 0.0028926051698506495,
+                        "Position": 3
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 0.0013274171920332335,
+                        "Position": 3.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 0.0006091581896899477,
+                        "Position": 4
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 0.0002795452291690406,
+                        "Position": 4.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 0.00012828449813199599,
+                        "Position": 5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.887030145437595e-05,
+                        "Position": 5.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.7015831694890154e-05,
+                        "Position": 6
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.239768004568072e-05,
+                        "Position": 6.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.68934809292527e-06,
+                        "Position": 7
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.6108660332151445e-06,
+                        "Position": 7.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.1981375250865567e-06,
+                        "Position": 8
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.498304052208403e-07,
+                        "Position": 8.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.523195110540337e-07,
+                        "Position": 9
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.157904965858971e-07,
+                        "Position": 9.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.3136751270643866e-08,
+                        "Position": 10
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.4384681116758992e-08,
+                        "Position": 10.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.1190233857870882e-08,
+                        "Position": 11
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.135245902714648e-09,
+                        "Position": 11.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.356586181869574e-09,
+                        "Position": 12
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.0814474200043407e-09,
+                        "Position": 12.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.962808197857679e-10,
+                        "Position": 13
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.2774537858368113e-10,
+                        "Position": 13.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.0451332269623951e-10,
+                        "Position": 14
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.79616082176386e-11,
+                        "Position": 14.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.2009785962962458e-11,
+                        "Position": 15
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.0100384372792209e-11,
+                        "Position": 15.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.635109339537336e-12,
+                        "Position": 16
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.1270713862473547e-12,
+                        "Position": 16.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.76122104304849e-13,
+                        "Position": 17
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.479465845260187e-13,
+                        "Position": 17.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.0556459248653534e-13,
+                        "Position": 18
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.43344656347098e-14,
+                        "Position": 18.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.3290487427542446e-14,
+                        "Position": 19
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.9866188768918612e-14,
+                        "Position": 19.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.116678505015223e-15,
+                        "Position": 20
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.1836825337047674e-15,
+                        "Position": 20.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.9199097054039545e-15,
+                        "Position": 21
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.810547280317171e-16,
+                        "Position": 21.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.04319761289876e-16,
+                        "Position": 22
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.8554405778481605e-16,
+                        "Position": 22.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.514695712479189e-17,
+                        "Position": 23
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.90743007033904e-17,
+                        "Position": 23.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.7931362752297618e-17,
+                        "Position": 24
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.228778618335902e-18,
+                        "Position": 24.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.776221500003161e-18,
+                        "Position": 25
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.732924104351452e-18,
+                        "Position": 25.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.952462405713671e-19,
+                        "Position": 26
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.649418815024071e-19,
+                        "Position": 26.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.6747338129989548e-19,
+                        "Position": 27
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.685424684213774e-20,
+                        "Position": 27.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.526874069076866e-20,
+                        "Position": 28
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.6184975079746445e-20,
+                        "Position": 28.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.427353889065221e-21,
+                        "Position": 29
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.40844428376324e-21,
+                        "Position": 29.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.5641495758835385e-21,
+                        "Position": 30
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.17794891760831e-22,
+                        "Position": 30.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.293991281792289e-22,
+                        "Position": 31
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.5116266065793438e-22,
+                        "Position": 31.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.93691877798718e-23,
+                        "Position": 32
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.183381525768147e-23,
+                        "Position": 32.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.4608673191924042e-23,
+                        "Position": 33
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.703982249884668e-24,
+                        "Position": 33.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.0764859629263513e-24,
+                        "Position": 34
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.4118124918081092e-24,
+                        "Position": 34.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.478867582069526e-25,
+                        "Position": 35
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.9731799304768683e-25,
+                        "Position": 35.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.3644050142138206e-25,
+                        "Position": 36
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.261314830435491e-26,
+                        "Position": 36.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.8733487958823835e-26,
+                        "Position": 37
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.3186024292271122e-26,
+                        "Position": 37.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.051350257353541e-27,
+                        "Position": 38
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.77748698261987e-27,
+                        "Position": 38.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.275674422372183e-27,
+                        "Position": 39
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.878743041250336e-28,
+                        "Position": 39.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.733622630815302e-28,
+                        "Position": 40
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.6661241258859648e-28,
+                        "Position": 40.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.043926621179424e-28,
+                        "Position": 41
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.609647460188547e-29,
+                        "Position": 41.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.201117746993053e-29,
+                        "Position": 42
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.6740218672368596e-29,
+                        "Position": 42.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.7028976741608434e-29,
+                        "Position": 43
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.0846595823979763e-29,
+                        "Position": 43.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.909202594112821e-30,
+                        "Position": 44
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.401220691264321e-30,
+                        "Position": 44.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.8036401588366583e-30,
+                        "Position": 45
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.7859644860151984e-30,
+                        "Position": 45.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.1376898450239388e-30,
+                        "Position": 46
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.247281528004866e-31,
+                        "Position": 46.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.616644688224643e-31,
+                        "Position": 47
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.940883324640764e-31,
+                        "Position": 47.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.8733940974035618e-31,
+                        "Position": 48
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.1933848042426713e-31,
+                        "Position": 48.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.602069937547346e-32,
+                        "Position": 49
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.8426515225891435e-32,
+                        "Position": 49.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.084853726734369e-32,
+                        "Position": 50
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.9651057839308125e-32,
+                        "Position": 50.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.2518067578884223e-32,
+                        "Position": 51
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.974228013251778e-33,
+                        "Position": 51.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.079722729328793e-33,
+                        "Position": 52
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.235872232903035e-33,
+                        "Position": 52.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.0613072141174122e-33,
+                        "Position": 53
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.3130887517032269e-33,
+                        "Position": 53.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.36460503335491e-34,
+                        "Position": 54
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.328399719613345e-34,
+                        "Position": 54.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.3942838255673703e-34,
+                        "Position": 55
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.162218169575378e-34,
+                        "Position": 55.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.3773707954609329e-34,
+                        "Position": 56
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.774092896283688e-35,
+                        "Position": 56.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.589250651045873e-35,
+                        "Position": 57
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.5604504316849043e-35,
+                        "Position": 57.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.268069204252472e-35,
+                        "Position": 58
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.444799756092684e-35,
+                        "Position": 58.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.203627170157165e-36,
+                        "Position": 59
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.8628714969011416e-36,
+                        "Position": 59.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.734751696660574e-36,
+                        "Position": 60
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.379102158913348e-36,
+                        "Position": 60.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.5155296903960586e-36,
+                        "Position": 61
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.65418922372399e-37,
+                        "Position": 61.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.14988740623823e-37,
+                        "Position": 62
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.917585851380125e-37,
+                        "Position": 62.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.495570713598073e-37,
+                        "Position": 63
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.5897221969939417e-37,
+                        "Position": 63.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.0126808468478722e-37,
+                        "Position": 64
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.450954132185598e-38,
+                        "Position": 64.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.109370622056796e-38,
+                        "Position": 65
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.617740967211331e-38,
+                        "Position": 65.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.667546785543211e-38,
+                        "Position": 66
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.0622564710586231e-38,
+                        "Position": 66.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.7667595301582e-39,
+                        "Position": 67
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.310544184621855e-39,
+                        "Position": 67.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.7458920454858986e-39,
+                        "Position": 68
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.749181264018101e-39,
+                        "Position": 68.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.1142590617944503e-39,
+                        "Position": 69
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.098025129419638e-40,
+                        "Position": 69.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.521566165837181e-40,
+                        "Position": 70
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.8803167387088653e-40,
+                        "Position": 70.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.8348121449529653e-40,
+                        "Position": 71
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.1688074308022074e-40,
+                        "Position": 71.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.445507781579877e-41,
+                        "Position": 72
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.74291869341714e-41,
+                        "Position": 72.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.0213221706676445e-41,
+                        "Position": 73
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.9246350715725846e-41,
+                        "Position": 73.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.2260262062382637e-41,
+                        "Position": 74
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.810001389794901e-42,
+                        "Position": 74.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.975107497559021e-42,
+                        "Position": 75
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.169230500344122e-42,
+                        "Position": 75.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.018855264783613e-42,
+                        "Position": 76
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.2860461174098743e-42,
+                        "Position": 76.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.192338722619048e-43,
+                        "Position": 77
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.218663066398694e-43,
+                        "Position": 77.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.3243796579601277e-43,
+                        "Position": 78
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.1176879920484188e-43,
+                        "Position": 78.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.3490042934560192e-43,
+                        "Position": 79
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.593393316654199e-44,
+                        "Position": 79.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.474141858031427e-44,
+                        "Position": 80
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.4871241170558907e-44,
+                        "Position": 80.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.2213590592125671e-44,
+                        "Position": 81
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.41504457665011e-44,
+                        "Position": 81.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.014081472342826e-45,
+                        "Position": 82
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.742127571866969e-45,
+                        "Position": 82.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.6578357043654703e-45,
+                        "Position": 83
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.330105326409633e-45,
+                        "Position": 83.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.4843178510403834e-45,
+                        "Position": 84
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.455364347464777e-46,
+                        "Position": 84.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.023232482223621e-46,
+                        "Position": 85
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.8369044493395044e-46,
+                        "Position": 85.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.4441752492220536e-46,
+                        "Position": 86
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.5569823871788277e-46,
+                        "Position": 86.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.918250153120844e-47,
+                        "Position": 87
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.3180988372081785e-47,
+                        "Position": 87.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.0247394752562026e-47,
+                        "Position": 88
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.5638294463344177e-47,
+                        "Position": 88.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.6332042037262586e-47,
+                        "Position": 89
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.040379645722035e-47,
+                        "Position": 89.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.627400326077819e-48,
+                        "Position": 90
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.221769933956534e-48,
+                        "Position": 90.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.6893412949761316e-48,
+                        "Position": 91
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.7131574467597126e-48,
+                        "Position": 91.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.0913112600735584e-48,
+                        "Position": 92
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.951843618436443e-49,
+                        "Position": 92.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.428445986339223e-49,
+                        "Position": 93
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.8209975555138802e-49,
+                        "Position": 93.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.7970247876487693e-49,
+                        "Position": 94
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.1447362232243578e-49,
+                        "Position": 94.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.292169978782118e-50,
+                        "Position": 95
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.64523983085571e-50,
+                        "Position": 95.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.959099026620909e-50,
+                        "Position": 96
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.8849978404098463e-50,
+                        "Position": 96.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.2007765966545966e-50,
+                        "Position": 97
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.649156960094435e-51,
+                        "Position": 97.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.872646782354922e-51,
+                        "Position": 98
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.103961232520015e-51,
+                        "Position": 98.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.977277599492003e-51,
+                        "Position": 99
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.2595604173441127e-51,
+                        "Position": 99.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.023620180331144e-52,
+                        "Position": 100
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.111186403742706e-52,
+                        "Position": 100.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.2559151438703975e-52,
+                        "Position": 101
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.0740748989944755e-52,
+                        "Position": 101.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.321221990302023e-52,
+                        "Position": 102
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.416415185892901e-53,
+                        "Position": 102.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.361403693041468e-53,
+                        "Position": 103
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.4153079339454135e-53,
+                        "Position": 103.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.1756108943651357e-53,
+                        "Position": 104
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.3859021954170638e-53,
+                        "Position": 104.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.828439406313618e-54,
+                        "Position": 105
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.62387032856211e-54,
+                        "Position": 105.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.582503771828886e-54,
+                        "Position": 106
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.2821175676804102e-54,
+                        "Position": 106.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.4537488093297416e-54,
+                        "Position": 107
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.260634204642353e-55,
+                        "Position": 107.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.899185975033176e-55,
+                        "Position": 108
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.757884654442208e-55,
+                        "Position": 108.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.3938382576611032e-55,
+                        "Position": 109
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.5249168430616806e-55,
+                        "Position": 109.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.713987028201328e-56,
+                        "Position": 110
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.18797965367131e-56,
+                        "Position": 110.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.941851279303201e-56,
+                        "Position": 111
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.511028215635053e-56,
+                        "Position": 111.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.5995688961735603e-56,
+                        "Position": 112
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.0189533664633924e-56,
+                        "Position": 112.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.490911179323307e-57,
+                        "Position": 113
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.134823960010729e-57,
+                        "Position": 113.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.633955188716846e-57,
+                        "Position": 114
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.6778755282607957e-57,
+                        "Position": 114.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.0688360608397158e-57,
+                        "Position": 115
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.808672667963207e-58,
+                        "Position": 115.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.337243586546724e-58,
+                        "Position": 116
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.762900031537005e-58,
+                        "Position": 116.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.760015648635728e-58,
+                        "Position": 117
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.1211607543105396e-58,
+                        "Position": 117.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.141990117988666e-59,
+                        "Position": 118
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.549572632589629e-59,
+                        "Position": 118.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.8981573479182706e-59,
+                        "Position": 119
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.8461769250866428e-59,
+                        "Position": 119.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.1760469945396798e-59,
+                        "Position": 120
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.491625068929426e-60,
+                        "Position": 120.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.7722962121407123e-60,
+                        "Position": 121
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.040036163965047e-60,
+                        "Position": 121.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.9365562126475183e-60,
+                        "Position": 122
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.2336201816271612e-60,
+                        "Position": 122.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.858376341357581e-61,
+                        "Position": 123
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.0059231878773286e-61,
+                        "Position": 123.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.188860634103803e-61,
+                        "Position": 124
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.0313600033580924e-61,
+                        "Position": 124.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.2940118546142157e-61,
+                        "Position": 125
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.243081861974025e-62,
+                        "Position": 125.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.250987333764133e-62,
+                        "Position": 126
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.3449707816855222e-62,
+                        "Position": 126.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.130804898038646e-62,
+                        "Position": 127
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.3573599920090404e-62,
+                        "Position": 127.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.646620577962538e-63,
+                        "Position": 128
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.508048554455424e-63,
+                        "Position": 128.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.508723275649083e-63,
+                        "Position": 129
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.235118100854109e-63,
+                        "Position": 129.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.423809326543857e-63,
+                        "Position": 130
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.069914457511661e-64,
+                        "Position": 130.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.777694152542474e-64,
+                        "Position": 131
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.680492226602716e-64,
+                        "Position": 131.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.3445379088856483e-64,
+                        "Position": 132
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.493511629496235e-64,
+                        "Position": 132.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.51392986859595e-65,
+                        "Position": 133
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.060539028080559e-65,
+                        "Position": 133.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.8606682483664e-65,
+                        "Position": 134
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.459311441587736e-65,
+                        "Position": 134.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.566621638452104e-65,
+                        "Position": 135
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.979610417566304e-66,
+                        "Position": 135.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.357118189677866e-66,
+                        "Position": 136
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.0494884211305793e-66,
+                        "Position": 136.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.5794269378807255e-66,
+                        "Position": 137
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.6428765392247286e-66,
+                        "Position": 137.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.0461283377257532e-66,
+                        "Position": 138
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.657582181874593e-67,
+                        "Position": 138.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.231067131829413e-67,
+                        "Position": 139
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.680444605472949e-67,
+                        "Position": 139.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.6875423854502777e-67,
+                        "Position": 140
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.389262523344768e-68,
+                        "Position": 140.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.805708067371155e-68,
+                        "Position": 141
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.7494787841701392e-68,
+                        "Position": 141.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.026362899568121e-69,
+                        "Position": 142
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.6834737514322255e-69,
+                        "Position": 142.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.690352068460197e-69,
+                        "Position": 143
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.757104162989434e-70,
+                        "Position": 143.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.559767632106481e-70,
+                        "Position": 144
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.6335925350463515e-70,
+                        "Position": 144.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.49662558889296e-71,
+                        "Position": 145
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.440233362843615e-71,
+                        "Position": 145.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.5787377193535153e-71,
+                        "Position": 146
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.244894528406418e-72,
+                        "Position": 146.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.3247129072622585e-72,
+                        "Position": 147
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.5257248911483473e-72,
+                        "Position": 147.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.001616405387423e-73,
+                        "Position": 148
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.213071542097924e-73,
+                        "Position": 148.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.4744921939304986e-73,
+                        "Position": 149
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.7665073792363034e-74,
+                        "Position": 149.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.1051790102198046e-74,
+                        "Position": 150
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.4249798522495513e-74,
+                        "Position": 150.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.539293137800183e-75,
+                        "Position": 151
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.000909428619188e-75,
+                        "Position": 151.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.3771300978571783e-75,
+                        "Position": 152
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.319708580131173e-76,
+                        "Position": 152.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.9001411413437566e-76,
+                        "Position": 153
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.330887102319533e-76,
+                        "Position": 153.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.107497507172303e-77,
+                        "Position": 154
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.8027565775568065e-77,
+                        "Position": 154.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.2861969118796935e-77,
+                        "Position": 155
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.902412322838731e-78,
+                        "Position": 155.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.708642114362126e-78,
+                        "Position": 156
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.2430073845074188e-78,
+                        "Position": 156.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.704213745136393e-79,
+                        "Position": 157
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.6176879442351173e-79,
+                        "Position": 157.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.2012681290627251e-79,
+                        "Position": 158
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.51267052698107e-80,
+                        "Position": 158.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.5297879469054773e-80,
+                        "Position": 159
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.1609304465023048e-80,
+                        "Position": 159.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.327559186392149e-81,
+                        "Position": 160
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.4448395655419676e-81,
+                        "Position": 160.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.1219472730601902e-81,
+                        "Position": 161
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.1486637457462616e-82,
+                        "Position": 161.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.3627436870948022e-82,
+                        "Position": 162
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.084273125336366e-82,
+                        "Position": 162.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.975775479786604e-83,
+                        "Position": 163
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.28340452665605e-83,
+                        "Position": 163.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.0478640472292673e-83,
+                        "Position": 164
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.808692672093905e-84,
+                        "Position": 164.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.2067295157031295e-84,
+                        "Position": 165
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.0126775586502429e-84,
+                        "Position": 165.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.647220379734923e-85,
+                        "Position": 166
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.1326291940950003e-85,
+                        "Position": 166.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.78672605960149e-86,
+                        "Position": 167
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.491170205813861e-86,
+                        "Position": 167.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.0610171056950425e-86,
+                        "Position": 168
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.458095140702447e-87,
+                        "Position": 168.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.340360079661341e-87,
+                        "Position": 169
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.9918096974988404e-87,
+                        "Position": 169.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 9.140499401515024e-88,
+                        "Position": 170
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.194614044404463e-88,
+                        "Position": 170.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.924926222149178e-88,
+                        "Position": 171
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.833568288983239e-89,
+                        "Position": 171.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.0537620516700864e-89,
+                        "Position": 172
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.8602886437245018e-89,
+                        "Position": 172.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.536943692944637e-90,
+                        "Position": 173
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.9176397631818057e-90,
+                        "Position": 173.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.797821546690919e-90,
+                        "Position": 174
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 8.250279528307107e-91,
+                        "Position": 174.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.7860883590190883e-91,
+                        "Position": 175
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.737452047911488e-91,
+                        "Position": 175.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.973241331255669e-92,
+                        "Position": 176
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.658954352314797e-92,
+                        "Position": 176.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.679109711610087e-92,
+                        "Position": 177
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.70550586901784e-93,
+                        "Position": 177.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.5360894101747236e-93,
+                        "Position": 178
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.6227264671905456e-93,
+                        "Position": 178.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.446760762731644e-94,
+                        "Position": 179
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.4173501806098223e-94,
+                        "Position": 179.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.5682365298149375e-94,
+                        "Position": 180
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 7.196704122974974e-95,
+                        "Position": 180.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.302598125278455e-95,
+                        "Position": 181
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.515576323647908e-95,
+                        "Position": 181.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.95504419752832e-96,
+                        "Position": 182
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.1916993578418895e-96,
+                        "Position": 182.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.464684407676547e-96,
+                        "Position": 183
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.721499030954412e-97,
+                        "Position": 183.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 3.084524487741258e-97,
+                        "Position": 184
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.4155014040173925e-97,
+                        "Position": 184.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.495796135586813e-98,
+                        "Position": 185
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.980948469207459e-98,
+                        "Position": 185.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.3679699286233205e-98,
+                        "Position": 186
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.277672173522865e-99,
+                        "Position": 186.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.8808504553159677e-99,
+                        "Position": 187
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.3220345243026926e-99,
+                        "Position": 187.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 6.066872649211368e-100,
+                        "Position": 188
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.784113656894365e-100,
+                        "Position": 188.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.277641595960203e-100,
+                        "Position": 189
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.863151612206237e-101,
+                        "Position": 189.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.6906252060784958e-101,
+                        "Position": 190
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.2347393479617212e-101,
+                        "Position": 190.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.666271369615475e-102,
+                        "Position": 191
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.60027602428915e-102,
+                        "Position": 191.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.1932777235121062e-102,
+                        "Position": 192
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.476002207708165e-103,
+                        "Position": 192.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.5129606943825575e-103,
+                        "Position": 193
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.1532083459654657e-103,
+                        "Position": 193.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.2921221232018056e-104,
+                        "Position": 194
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.4285773392552597e-104,
+                        "Position": 194.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.1144844676143791e-104,
+                        "Position": 195
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 5.114416688025828e-105,
+                        "Position": 195.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.3470277781649395e-105,
+                        "Position": 196
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.0770615178363153e-105,
+                        "Position": 196.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.942691948859762e-106,
+                        "Position": 197
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.26824608059368e-106,
+                        "Position": 197.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.0409594618973928e-106,
+                        "Position": 198
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 4.7781438350075655e-107,
+                        "Position": 198.5
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 2.19504271108587e-107,
+                        "Position": 199
+                    },
+                    {
+                        "NeutronFluxPointsPerNode": 1.0145110920037901e-107,
+                        "Position": 199.5
+                    }
+                ]
+            }
+        ],
+        "NeutronFluxPointsPerRegion": [
+            {
+                "RegionFlux": 1,
+                "Values": [
+                    0.009659004597028764
+                ]
+            },
+            {
+                "RegionFlux": 2,
+                "Values": [
+                    3.6306254561176254e-30
+                ]
+            },
+            {
+                "RegionFlux": 3,
+                "Values": [
+                    2.6919376059613047e-69
+                ]
+            }
+        ],
+        "ScalarFluxFile": "/home/andreia-simas/Desktop/NeutronFluxCalculation/build/bin/Scalar_Flux_R3_G1_L1_N4_Nod400.txt",
+        "TotalScatteringCrossSectionFilePath": "/home/andreia-simas/Desktop/NeutronFluxCalculation/build/bin/Scattering_Cross_Section_R3_G1_L1_N4_Nod400.txt"
+    },
     "DataPerRegion": [
         {
             "MaterialColor": 9419737,
@@ -30,11 +3314,11 @@
         ],
         "LegendreOrder": "1",
         "MaximumIterationsNumber": "4050",
+        "NeutronMacroscopicCrossSections": ":/Default_Project/Resources/Default_Project.txt",
         "Periodicity": 10,
         "QuadratureOrder": "4",
         "RegionDataKey": "3",
-        "RightBoundaryConditionsType": "0",
-        "NeutronMacroscopicCrossSections": ":/Default_Project/Resources/Default_Projet.txt",
+        "RightBoundaryConditionsType": "1",
         "StopOrder": "7",
         "ZoneNumber": 2
     }

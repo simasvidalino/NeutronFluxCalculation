@@ -1,0 +1,7 @@
+Zone 1
+Energy Group   Absorption Cross-Section
+1              1
+
+Zone 2
+Energy Group   Absorption Cross-Section
+1              0.6

@@ -1,0 +1,14 @@
+///Zona 1
+//Sigma Total g 
+1.9
+//Sigma Espalhamento 0 g'g (g linha; g' coluna)
+0.9 
+//Sigma Espalhamento 1 g'g (g linha; g' coluna)
+0.8
+///Zona 2
+//Sigma Total g (g=1..42)
+1.0
+//Sigma Espalhamento 0 g'g (g linha; g' coluna)
+0.4 
+//Sigma Espalhamento 1 g'g (g linha; g' coluna)
+0.3
