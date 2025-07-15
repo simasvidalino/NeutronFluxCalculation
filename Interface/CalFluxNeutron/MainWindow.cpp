@@ -174,6 +174,7 @@ void MainWindow::openProject()
     ui->widgetNeutronScalarFlux->setPeriodicityValue(proj->periodicity);
 
     ui->widgetRegion->setGeneralProjectData(proj);
+    ui->widgetRegion->setFileName(fileName);
 
     QTimer::singleShot(2000, this, [&](){
         this->statusBar()->showMessage("Ready");
@@ -197,6 +198,8 @@ void MainWindow::saveProjectFileDlg()
     this->fileName = fileName;
 
     (void)saveProject(saveMaterialData);
+
+    ui->widgetRegion->setFileName(this->fileName);
 }
 
 void MainWindow::showDataInFile(std::string& file)

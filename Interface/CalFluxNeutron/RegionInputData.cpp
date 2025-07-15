@@ -47,6 +47,11 @@ void RegionInputData::setEnableGUI(bool enable)
     ui->pushButtonClear->setEnabled(enable);
 }
 
+void RegionInputData::setFileName(QString &name)
+{
+    projectFileName = name;
+}
+
 void RegionInputData::setGeneralProjectData(std::shared_ptr<ProjectData> proj)
 {
     clearRegions();
@@ -125,6 +130,7 @@ void RegionInputData::onCreateCrossSectionFile()
     auto pathStr = scatteringPath.toStdString();
 
     dlg.loadCrossSectionFile(pathStr);
+    dlg.setDefaultFileName(projectFileName);
 
     if (!dlg.exec())
         return;

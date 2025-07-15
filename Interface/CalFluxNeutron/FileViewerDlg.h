@@ -28,6 +28,8 @@ public:
 
     void makeReadOnly();
 
+    void setDefaultFileName(const QString& name);
+
     ParseFile::ParseErrors parseFile();
 
 protected:
@@ -60,5 +62,7 @@ private:
     ParseFile::ParseErrors eParseError;
 
     QString pathCrossSection;
+    QString defaultFileName;
+
 };
 

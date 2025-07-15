@@ -80,7 +80,7 @@ void FileViewerDlg::saveText()
 
 void FileViewerDlg::saveTextDlg()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, "Save File", "", "Text Files (*.txt)");
+    QString fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::homePath() + "/" + defaultFileName, "Text Files (*.txt)");
 
     if (fileName.isEmpty())
         return;
@@ -171,6 +171,15 @@ void FileViewerDlg::makeReadOnly()
     ui->buttonBox->setVisible(false);
     setWindowTitle(pathCrossSection);
     ui->textEdit->setReadOnly(true);
+}
+
+void FileViewerDlg::setDefaultFileName(const QString &name)
+{
+    QString baseName = QFileInfo(name).completeBaseName();
+
+    baseName.append("_Material");
+
+    defaultFileName = baseName;
 }
 
 QString FileViewerDlg::getPathCrossSection() const

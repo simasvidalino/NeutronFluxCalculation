@@ -43,6 +43,7 @@ public:
     ~RegionInputData();
 
     void setEnableGUI(bool enable);
+    void setFileName(QString &name);
 
     void setGeneralProjectData(std::shared_ptr<ProjectData> proj);
     std::shared_ptr<ProjectData> getGeneralProjectData();
@@ -144,6 +145,8 @@ private:
     std::optional<std::vector<double>> bcLeft;
     std::optional<std::vector<double>> bcRight;
     double periodicity;
+
+    QString projectFileName;
 
     bool invalidZone;
 };
