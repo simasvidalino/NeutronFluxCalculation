@@ -118,4 +118,18 @@ const char *getAbsorptionChartTitle()
     return "Neutron Absorption Rate";
 }
 
+const char *getAbsorptionChartUnit()
+{
+    return "Absorption/s";
+}
+
+const char *getScalarFluxChartUnit()
+{
+    return "Scalar Flux ( neutrons/c².s )";
+}
+
+const char *getXChart()
+{
+    return "Position x (cm)";
+}
 }

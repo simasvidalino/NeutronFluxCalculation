@@ -123,10 +123,9 @@ CalculatedCrossSectionMatrices BuildMatrices::calculateCrossSectionMatrices(dado
     return out;
 }
 
-void BuildMatrices::calculateAbsorptionRatePerRegion(dados_entrada *data,
-                                                     CalculatedData *DDResult)
+void BuildMatrices::calculateAverageAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult)
 {
-    std::vector<std::vector<long double>> absorptionRate;
+    std::vector<std::vector<long double>> averageAbsorptionRatePerRegion;
 
     if (DDResult->matrices.absorptionCrossSection.empty())
         throw std::invalid_argument("Error: Absorption Cross Section Matrix is empty");
@@ -134,27 +133,94 @@ void BuildMatrices::calculateAbsorptionRatePerRegion(dados_entrada *data,
     if (DDResult->averageNeutronFluxPerRegion.empty())
         throw std::invalid_argument("Error: Average Neutron Flux Per Region Matrix is empty");
 
-    for (int rIndex = 0; rIndex < data->n_R; ++rIndex)
-    {
-        std::vector<long double> absorptionByGroup;
+    long double sumTotal = 0.0;
+
+    std::vector<std::vector<long double>> absorptionRate(data->n_R, std::vector<long double>(data->G, 0.0));
+    std::vector<long double> absorptionRateSummedPerRegion(data->n_R, 0.0);
 
     for (int gIndex = 0; gIndex < data->G; ++gIndex)
     {
-            auto zIndex = data->Map_R[rIndex] - 1;
+        int nodeIndex = 0;
 
-            if (zIndex < DDResult->matrices.absorptionCrossSection.size())
+        for (int rIndex = 0; rIndex < data->n_R; ++rIndex)
+        {
+            int zIndex                 = data->Map_R[rIndex] - 1;
+            int nodesInRegion          = data->n_nodos[rIndex];
+            long double sigmaAbs       = DDResult->matrices.absorptionCrossSection[zIndex][gIndex];
+
+            long double regionGroupSum = 0.0;
+
+            for (int n = 0; n < nodesInRegion; ++n, ++nodeIndex)
             {
-                auto sigmaAbsor = DDResult->matrices.absorptionCrossSection[zIndex][gIndex] *
-                                  DDResult->averageNeutronFluxPerRegion[rIndex][gIndex];
+                long double flux = data->FLUXO_ESCALAR[gIndex][nodeIndex];
+                regionGroupSum += flux;
+            }
 
-                absorptionByGroup.push_back(sigmaAbsor);
+            long double average = (sigmaAbs*regionGroupSum)/nodesInRegion;
+
+            absorptionRate[rIndex][gIndex] = average;
+            absorptionRateSummedPerRegion[rIndex]  += average;
+
+            sumTotal += average;
         }
     }
 
-        absorptionRate.push_back(absorptionByGroup);
+    std::cout << std::setprecision(20) << std::fixed;
+    std::cout<<"total "<<sumTotal<<" Doente "<<absorptionRateSummedPerRegion[1]<<" Sadio "<< absorptionRateSummedPerRegion[0] + absorptionRateSummedPerRegion[2]<<std::endl;
+
+    DDResult->averageAbsorptionRatePerRegion.swap(absorptionRate);
+}
+
+void BuildMatrices::calculateIntegratedAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult)
+{
+    std::vector<std::vector<long double>> averageAbsorptionRatePerRegion;
+
+    if (DDResult->matrices.absorptionCrossSection.empty())
+        throw std::invalid_argument("Error: Absorption Cross Section Matrix is empty");
+
+    if (DDResult->averageNeutronFluxPerRegion.empty())
+        throw std::invalid_argument("Error: Average Neutron Flux Per Region Matrix is empty");
+
+    long double sumTotal = 0.0;
+
+    std::vector<std::vector<long double>> absorptionRate(data->n_R, std::vector<long double>(data->G, 0.0));
+    std::vector<long double> absorptionRateSummedPerRegion(data->n_R, 0.0);
+
+    for (int gIndex = 0; gIndex < data->G; ++gIndex)
+    {
+        int nodeIndex = 0;
+
+        for (int rIndex = 0; rIndex < data->n_R; ++rIndex)
+        {
+            long double step           = data->PASSO[rIndex];
+            int zIndex                 = data->Map_R[rIndex] - 1;
+            int nodesInRegion          = data->n_nodos[rIndex];
+            long double sigmaAbs       = DDResult->matrices.absorptionCrossSection[zIndex][gIndex];
+
+            long double regionGroupSum = 0.0;
+
+            for (int n = 0; n < nodesInRegion; ++n, ++nodeIndex)
+            {
+                long double fluxa = data->FLUXO_ESCALAR[gIndex][nodeIndex];
+                long double fluxb = data->FLUXO_ESCALAR[gIndex][nodeIndex];
+
+                regionGroupSum += fluxa + fluxb;
+            }
+
+            long double trapezeMethod = sigmaAbs*regionGroupSum*step*0.5;
+
+            absorptionRate[rIndex][gIndex] = trapezeMethod;
+            absorptionRateSummedPerRegion[rIndex]  += trapezeMethod;
+
+            sumTotal += trapezeMethod;
+        }
     }
 
-    DDResult->absorptionRate.swap(absorptionRate);
+    std::cout << std::setprecision(20) << std::fixed;
+    std::cout<<"total "<<sumTotal<<" Doente "<<absorptionRateSummedPerRegion[1]<<" Sadio "<< absorptionRateSummedPerRegion[0] + absorptionRateSummedPerRegion[2]<<std::endl;
+
+    DDResult->totalAbsorptionRate.swap(absorptionRateSummedPerRegion);
+    DDResult->integratedAbsorptionRatePerRegion.swap(absorptionRate);
 }
 
 void BuildMatrices::calculateAbsorptionRatePerNode(dados_entrada *data, CalculatedData *DDResult)
@@ -165,65 +231,93 @@ void BuildMatrices::calculateAbsorptionRatePerNode(dados_entrada *data, Calculat
     if (data->FLUXO_ESCALAR == nullptr)
         throw std::invalid_argument("Error: Scalar Flux Matrix is not initialized");
 
-    std::vector<std::vector<long double>> absorptionRatePerRegion;
+    std::vector<std::vector<long double>> absorptionRatePerNode(data->G, std::vector<long double>(data->NODOSX));
 
-    for (int rIndex = 0; rIndex < data->n_R; ++rIndex)
+    int nodeIndex = 0;
+    for (int r = 0; r < data->n_R; ++r)
     {
-        auto zIndex = data->Map_R[rIndex] - 1;
+        const int z     = data->Map_R[r] - 1;
+        const int nodes = data->n_nodos[r];
 
-        for (int gIndex = 0; gIndex < data->G; ++gIndex)
+        for (int n = 0; n < nodes; ++n)
         {
-            std::vector<long double> absorptionByGroup;
-
-            for (int nIndex = 0; nIndex <= data->NODOSX; ++nIndex)
+            for (int g = 0; g < data->G; ++g)
             {
-                long double sigmaAbsor = DDResult->matrices.absorptionCrossSection[zIndex][gIndex]  *
-                                         data->FLUXO_ESCALAR[gIndex][nIndex];
-
-                absorptionByGroup.push_back(sigmaAbsor);
+                absorptionRatePerNode[g][nodeIndex] = DDResult->matrices.absorptionCrossSection[z][g]
+                                                      * data->FLUXO_ESCALAR[g][nodeIndex];
             }
-
-            absorptionRatePerRegion.push_back(absorptionByGroup);
-            }
+            nodeIndex++;
         }
-
-    DDResult->absorptionRatePerNode.swap( absorptionRatePerRegion );
     }
 
+    DDResult->absorptionRatePerNode.swap(absorptionRatePerNode);
+}
 
 std::vector<std::vector<long double>> BuildMatrices::calculateAverageNeutronFluxPerRegion(dados_entrada *data)
 {
-    std::vector<std::vector<long double>> averageNeutronFlux;
-    long double sum = 0.0;
-    int nodeLeft = 0;
-    int numberOfGroups = data->G;
+    std::vector<std::vector<long double>> averageFlux;
+    averageFlux.reserve(data->n_R);
 
-    for (int regionIndex = 0; regionIndex < data->n_R; ++regionIndex)
+    int nodeIndex = 0;
+
+    for (int r = 0; r < data->n_R; ++r)
     {
-        std::vector<long double> averageNeutronFluxByGroup;
-        int nodeQttPerRegion  = data->n_nodos[regionIndex];
-        double regionSize = data->TAM[regionIndex];
-        int nodeRight = nodeQttPerRegion + nodeLeft;
+        const int nodesInRegion = data->n_nodos[r];
+        std::vector<long double> regionAvgFlux(data->G, 0.0L);
 
-        for (int gIndex = 0; gIndex < numberOfGroups; ++gIndex)
+        for (int n = 0; n < nodesInRegion; ++n)
         {
-            sum = 0.0;
-
-            for (int nodeIndex = nodeLeft; nodeIndex < nodeRight; ++nodeIndex)
+            for (int g = 0; g < data->G; ++g)
             {
-                auto value = data->FLUXO_ESCALAR[gIndex][nodeIndex];
-                sum += value;
+                regionAvgFlux[g] += data->FLUXO_ESCALAR[g][nodeIndex];
             }
-
-            auto average = (sum * regionSize );
-            averageNeutronFluxByGroup.push_back(average);
+            nodeIndex++;
         }
 
-        nodeLeft = nodeRight;
-        averageNeutronFlux.push_back(averageNeutronFluxByGroup);
+        for (int g = 0; g < data->G; ++g)
+        {
+            regionAvgFlux[g] /= nodesInRegion;
+        }
+
+        averageFlux.push_back(std::move(regionAvgFlux));
     }
 
-    return averageNeutronFlux;
+    return averageFlux;
+}
+
+std::vector<std::vector<long double>> BuildMatrices::calculateIntegratedNeutronFluxPerRegion(dados_entrada *data)
+{
+    std::vector<std::vector<long double>> integratedFlux;
+
+    integratedFlux.reserve(data->n_R);
+
+    int nodeIndex = 0;
+
+    for (int r = 0; r < data->n_R; ++r)
+    {
+        const int nodesInRegion = data->n_nodos[r];
+        const double dx         = data->PASSO[r];
+        std::vector<long double> regionFlux(data->G, 0.0L);
+
+        for (int g = 0; g < data->G; ++g)
+        {
+            long double sum = 0.0;
+
+            for (int n = 0; n < nodesInRegion - 1; ++n)
+            {
+                const double phi1 = data->FLUXO_ESCALAR[g][nodeIndex + n];
+                const double phi2 = data->FLUXO_ESCALAR[g][nodeIndex + n + 1];
+                sum += (phi1 + phi2) * dx * 0.5;
+            }
+
+            regionFlux[g] = sum;
+        }
+
+        integratedFlux.push_back(std::move(regionFlux));
+        nodeIndex += nodesInRegion;
+    }
+
+    return integratedFlux;
 }
 
 void BuildMatrices::copyResourceToDestination(const std::string &resourcePath, const std::string &destinationPath)
@@ -274,9 +368,10 @@ std::vector<std::vector<long double>> BuildMatrices::calculateScatteringCrossSec
             // Accumulate scattering contributions directly
             for (int gLineIndex = 0; gLineIndex < data->G; ++gLineIndex) // Loop over source groups (g')
             {
-                for (int lIndex = 0; lIndex < data->L + 1; ++lIndex) // Loop over Legendre moments
+                long double value = data->s_s[gLineIndex][gIndex][zIndex][0]; //only l = 0 metters!
+
+                if (value > 0.0L)
                 {
-                    double value = data->s_s[gLineIndex][gIndex][zIndex][lIndex];
                     // std::cout << "g" << gIndex << " g'" << gLineIndex
                     //<< " legendre = " << lIndex << " value = " << value << std::endl;
 
@@ -295,26 +390,6 @@ std::vector<std::vector<long double>> BuildMatrices::calculateScatteringCrossSec
     }
 
     return sigmaScattering;
-}
-
-
-void BuildMatrices::run(int buildType, std::string file, dados_entrada &valor)
-{
-    fileName = file;
-
-    switch (buildType)
-    {
-    case DataOriginType::eUserInterfaceDataAndTextFile:
-        allocateMatricesWithUserInterfaceData(valor);
-        break;
-
-    case DataOriginType::eTextFileData:
-        allocateMatrices(valor);
-        break;
-
-    default:
-        break;
-    }
 }
 
 void BuildMatrices::allocateMatrices(dados_entrada &valor)
@@ -628,170 +703,6 @@ void BuildMatrices::setEnergyGroupQtt(int newEnergyGroupQtt)
     energyGroupQtt = newEnergyGroupQtt;
 }
 
-
-void BuildMatrices::allocateMatricesWithUserInterfaceData(dados_entrada &valor)
-{
-    int i = 0;
-
-    auto vector = saveFileDataInVector();
-
-    std::cout<<"Main data ordem da quadratura "<< valor.n
-              << "\nordem de parada " << valor.ordem_parada
-              <<"\nOrdem de iteracao " << valor.iteracao
-              << "\nGropu de energia "<<valor.G
-              << "\n valor.L "<<valor.L
-              <<"\nNumero de zonas"<<valor.n_Z<<std::endl;
-
-    //Tamanho de cada Regiao
-    // valor.TAM = new double [valor.n_R];
-
-    //    for (int j = 0; j<valor.n_R; j++){
-    //        valor.TAM[j] = vector[i];
-    //        i++;
-    //    }
-
-    //Nodos por Regiao
-    valor.n_nodos = new short int [valor.n_R];
-    for (int j = 0; j<valor.n_R; j++){
-        valor.n_nodos[j] = vector[i];
-        i++;
-    }
-
-    //Periodicidade
-    valor.periodicidade = vector[i];
-    i++;
-
-    //Mapeamento
-    valor.Map_R = new short int [valor.n_R];
-    for (int j = 0; j<valor.n_R; j++){
-        valor.Map_R[j] = vector[i];
-        i++;
-    }
-
-    vector.erase(vector.begin(),vector.begin()+i);
-    vector.shrink_to_fit() ;
-    i = 0;
-
-    /*********************************************************************************************************
-
-                                    Matrizes
-
-*********************************************************************************************************/
-
-    valor.fonte_g = new double*[valor.G];        //Fonte Fisica
-    valor.s_t = new long double*[valor.G];      //Sigma total
-    valor.s_s = new long double***[valor.G];    //Sigma Espalhamento
-
-    for (int j = 0; j<valor.G; j++){
-        valor.fonte_g[j] = new double [valor.n_R];
-        valor.s_s[j] = new long double**[valor.G];
-        valor.s_t[j] = new long double[valor.n_Z];
-
-        for (int k = 0; k<valor.G; k++){
-            valor.s_s[j][k] = new long double *[valor.n_Z];
-
-            for (int l = 0; l<valor.n_Z;l++){
-                valor.s_s[j][k][l] = new long double [valor.L+1];}
-        }
-    }
-    /**********************************************************************************************************/
-
-    //Sigma total e Sigma de espalhamento
-    for (int h = 0; h<valor.n_Z; h++){
-        for (int j = 0; j<valor.G; j++){
-            valor.s_t[j][h] = vector[i];
-            i++;
-        }
-        for (int k = 0; k<valor.L+1; k++){
-            for (int m = 0; m<valor.G;m++){
-                for (int n = 0; n<valor.G; n ++){
-                    valor.s_s[m][n][h][k] = vector[i];
-                    i++;
-                }
-            }}}
-
-    //Tipo de Condicoes de Contorno (Esq. Dir) (1-Prescrita. 2-Reflexiva)
-    valor.tipo_ce = vector[i];i++;                valor.tipo_cd = vector[i]; i++;
-
-    //Valor da condicao de contorno prescrita (Esq. Dir)
-    valor.cceg = new double [valor.G];
-    valor.ccdg = new double [valor.G];
-
-    for (int j = 0; j<valor.G; j++){
-        valor.cceg[j] = vector[i];
-        i++;
-        valor.ccdg[j] = vector[i];
-        i++;
-    }
-
-    //Fonte Fisica
-    for (int j = 0; j<valor.G; j++){
-        for (int k = 0; k<valor.n_R; k++){
-            valor.fonte_g[j][k] = vector[i];
-            i++;
-        }
-    }
-    vector.clear();
-    vector.shrink_to_fit() ;
-
-    /*********************************************************************************************************
-
-                                           Dados calculados
-
-*********************************************************************************************************/
-    valor.CONTX = new int[valor.n_R]; //nodos por regiao acumulados
-    valor.PASSO = new long double [valor.n_R]; //modulo entre nodos
-    valor.TAM_TOTAL = 0;  //comprimento total de x
-    valor.NODOSX = 0;  // numero total de nodos por regiao
-
-    for (int j = 0; j<valor.n_R; j++){
-        valor.CONTX[j] = valor.NODOSX+valor.n_nodos[j];
-        //valor.PASSO[j] = valor.TAM[j]/valor.n_nodos[j];
-        valor.NODOSX = valor.CONTX[j];
-    }
-    valor.w = new double [valor.n];
-    valor.mi = new double [valor.n];
-
-    //fluxo angular e fluxo escalar
-
-    valor.FLUXO_ANGULAR = new long double**[valor.G];
-    valor.smgi = new long double**[valor.G];
-    valor.FLUXO_ESCALAR = new long double*[valor.G];
-
-    for (int g = 0; g<valor.G;g++){
-        valor.FLUXO_ANGULAR[g] = new long double*[(valor.NODOSX)+1];
-        valor.smgi[g] = new long double*[valor.NODOSX];
-        valor.FLUXO_ESCALAR[g] = new long double[(valor.NODOSX)+1];
-
-        for (int o = 0; o <= valor.NODOSX;o++){
-            valor.FLUXO_ANGULAR[g][o] = new long double[valor.n];
-        }
-        for (int o = 0; o<valor.NODOSX;o++){
-            valor.smgi[g][o] = new long double[valor.n];
-        }
-    }
-
-
-    //Matriz com os polinômios de Legendre
-    legendre_set ( valor.n,valor.mi,valor.w);
-    valor.Mat_Legendre = new double *[valor.n];
-    double* legendre_n = new double [valor.L+1];
-    for (int n = 0; n<valor.n; n ++){
-        valor.Mat_Legendre[n] = new double [valor.L + 1];
-    }
-
-    setlocale(LC_ALL,"portuguese");
-
-    for (int n = 0; n<valor.n; n ++){
-        Legendre::Pn(valor.L,valor.mi[n],legendre_n);
-        for (int l = 0; l<valor.L+1;l++){
-            valor.Mat_Legendre[n][l] = legendre_n[l];
-        }
-    }
-
-    delete [] legendre_n;
-}
-
 std::vector<std::vector<long double>> BuildMatrices::calculateAbsorptionCrossSectionMatrix(dados_entrada *data,
                                                                                            std::vector<std::vector<long double>>& sigmaScattering)
 {
@@ -1000,12 +911,6 @@ void BuildMatrices::calculateDataMatrices(dados_entrada *data)
         data->smgi[g]          = new long double*[data->NODOSX      ];
         data->FLUXO_ESCALAR[g] = new long double[(data->NODOSX)  + 1];
 
-
-        for (int o = 0; o <= data->NODOSX; o++)
-        {
-            data->FLUXO_ANGULAR[g][o] = new long double[data->n];
-        }
-
         for (int o = 0; o < data->NODOSX; o++)
         {
             data->smgi[g][o] = new long double[data->n];
@@ -1072,6 +977,8 @@ std::tuple<std::vector<double>, std::vector<double>> BuildMatrices::getQuadratur
                         {                            
                             mu_values.push_back(mu);
                             w_values.push_back(w);
+
+                            std::cout << "mi "<<mu<<" w "<<w<<std::endl;
                         }
                     }
                 }
@@ -1157,7 +1064,6 @@ std::string BuildMatrices::saveMaterialData(std::string &finalPath, std::string 
     }
     else
     {
-        //The path is a r
         copyResourceToDestination(oldPath, destinationPath);
     }
 
@@ -1237,7 +1143,7 @@ std::string BuildMatrices::computerFileName(dados_entrada* DDValues, std::string
 
     std::filesystem::path filePath(fileName);
 
-    if (QString(fileName.c_str()).contains("Default"))
+    if (QString(fileName.c_str()).contains(":/Default"))
     {
         std::string binaryDir = QCoreApplication::applicationDirPath().toStdString();
 
@@ -1302,14 +1208,9 @@ void BuildMatrices::writeAverageNeutronFluxPerRegion(dados_entrada *DDValues, Ca
     outFile.close();
 }
 
-void BuildMatrices::writeAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult)
+void BuildMatrices::writeIntegratedNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult)
 {
-    if (DDResult->absorptionRate.empty())
-    {
-        throw std::runtime_error("Absorption Matrix is empty.");
-    }
-
-    std::string titleStr = computerFileName(DDValues, "Absorption_Rate");
+    std::string titleStr = computerFileName(DDValues, "Integrated_Neutron_Flux_Per_Region");
     std::ofstream outFile(titleStr);
 
     if (!outFile.is_open())
@@ -1317,7 +1218,53 @@ void BuildMatrices::writeAbsorptionRateFile(dados_entrada *DDValues, CalculatedD
         throw std::runtime_error("Error opening file: " + titleStr);
     }
 
-    DDResult->absorptionRateFile = titleStr;
+    DDResult->integratedNeutronFluxPerRegionFile = titleStr;
+
+    // Iterate over zones
+    for (size_t rIndex = 0; rIndex < DDValues->n_R; ++rIndex)
+    {
+        // Write zoneIndex as table title
+        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
+        outFile << "Region " << rIndex + 1 << std::endl;
+
+        // Write table headers
+        outFile << std::left << std::setw(15) << "Group" << "Average Neutron Flux" << std::endl;
+
+        for (size_t group = 0; group < DDValues->G; ++group)
+        {
+            outFile << std::left << std::setw(15) << group + 1
+                    << DDResult->integratedNeutronFluxPerRegion[rIndex][group] << std::endl;
+        }
+
+        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
+
+        // Add a newline for separation between Region if there are multiple Regions
+        if (rIndex < DDResult->integratedNeutronFluxPerRegion.size() - 1)
+        {
+            outFile << std::endl;
+        }
+    }
+
+    outFile.close();
+}
+
+void BuildMatrices::writeIntegratedAbsorptionRatePerRegionFile(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+
+    if (DDResult->averageAbsorptionRatePerRegion.empty())
+    {
+        throw std::runtime_error("Absorption Matrix is empty.");
+    }
+
+    std::string titleStr = computerFileName(DDValues, "Integrated_Absorption_Rate_Per_Region");
+    std::ofstream outFile(titleStr);
+
+    if (!outFile.is_open())
+    {
+        throw std::runtime_error("Error opening file: " + titleStr);
+    }
+
+    DDResult->averageAbsorptionRatePerRegionFile = titleStr;
 
     // Iterate over zones
     for (size_t rIndex = 0; rIndex < DDValues->n_R; ++rIndex)
@@ -1332,13 +1279,58 @@ void BuildMatrices::writeAbsorptionRateFile(dados_entrada *DDValues, CalculatedD
         for (size_t group = 0; group < DDValues->G; ++group)
         {
             outFile << std::left << std::setw(15) << group + 1
-                    << DDResult->absorptionRate[rIndex][group] << std::endl;
+                    << DDResult->averageAbsorptionRatePerRegion[rIndex][group] << std::endl;
         }
 
         outFile << "-----------------------------------------------------------------------------------------" << std::endl;
 
         // Add a newline for separation between Region if there are multiple Regions
-        if (rIndex < DDResult->absorptionRate.size() - 1)
+        if (rIndex < DDResult->averageAbsorptionRatePerRegion.size() - 1)
+        {
+            outFile << std::endl;
+        }
+    }
+
+    outFile.close();
+}
+
+void BuildMatrices::writeAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    if (DDResult->averageAbsorptionRatePerRegion.empty())
+    {
+        throw std::runtime_error("Absorption Matrix is empty.");
+    }
+
+    std::string titleStr = computerFileName(DDValues, "Absorption_Rate");
+    std::ofstream outFile(titleStr);
+
+    if (!outFile.is_open())
+    {
+        throw std::runtime_error("Error opening file: " + titleStr);
+    }
+
+    DDResult->averageAbsorptionRatePerRegionFile = titleStr;
+
+    // Iterate over zones
+    for (size_t rIndex = 0; rIndex < DDValues->n_R; ++rIndex)
+    {
+        // Write zoneIndex as table title
+        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
+        outFile << "Region " << rIndex + 1 << std::endl;
+
+        // Write table headers
+        outFile << std::left << std::setw(15) << "Group" << "Absorption Rate" << std::endl;
+
+        for (size_t group = 0; group < DDValues->G; ++group)
+        {
+            outFile << std::left << std::setw(15) << group + 1
+                    << DDResult->averageAbsorptionRatePerRegion[rIndex][group] << std::endl;
+        }
+
+        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
+
+        // Add a newline for separation between Region if there are multiple Regions
+        if (rIndex < DDResult->averageAbsorptionRatePerRegion.size() - 1)
         {
             outFile << std::endl;
         }

@@ -96,10 +96,15 @@
      </property>
      <addaction name="actionAbsorption_Cross_Section"/>
      <addaction name="actionScattering_Cross_Section"/>
+     <addaction name="separator"/>
      <addaction name="actionScalar_Flux"/>
-     <addaction name="actionAbsorption_Rate"/>
+     <addaction name="actionAbsorption_Rate_Per_Region"/>
+     <addaction name="actionIntegrated_Absorption_Rate_Per_Region"/>
      <addaction name="actionAbsorption_Rate_Per_Node"/>
+     <addaction name="separator"/>
      <addaction name="actionAverage_Neutron_Flux_Per_Region"/>
+     <addaction name="actionIntegrated_Neutron_Flux_Per_Region"/>
+     <addaction name="separator"/>
     </widget>
     <addaction name="menuOpen"/>
    </widget>
@@ -163,9 +168,9 @@
     <string>Scalar_Flux</string>
    </property>
   </action>
-  <action name="actionAbsorption_Rate">
+  <action name="actionAbsorption_Rate_Per_Region">
    <property name="text">
-    <string>Absorption_Rate</string>
+    <string>Average_Absorption_Rate_Per_Region</string>
    </property>
   </action>
   <action name="actionAbsorption_Rate_Per_Node">
@@ -176,6 +181,16 @@
   <action name="actionAverage_Neutron_Flux_Per_Region">
    <property name="text">
     <string>Average_Neutron_Flux_Per_Region</string>
+   </property>
+  </action>
+  <action name="actionIntegrated_Neutron_Flux_Per_Region">
+   <property name="text">
+    <string>Integrated_Neutron_Flux_Per_Region</string>
+   </property>
+  </action>
+  <action name="actionIntegrated_Absorption_Rate_Per_Region">
+   <property name="text">
+    <string>Integrated_Absorption_Rate_Per_Region</string>
    </property>
   </action>
  </widget>

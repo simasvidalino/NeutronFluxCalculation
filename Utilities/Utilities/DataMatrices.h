@@ -53,14 +53,20 @@ struct CalculatedData
     *******************************************************************************************/
 
     std::vector<std::vector<long double>> scalarFlux;
-    std::vector<std::vector<long double>> absorptionRate;
+    std::vector<std::vector<long double>> averageAbsorptionRatePerRegion;
+    std::vector<std::vector<long double>> integratedAbsorptionRatePerRegion;
     std::vector<std::vector<long double>> absorptionRatePerNode;
     std::vector<std::vector<long double>> averageNeutronFluxPerRegion;
+    std::vector<std::vector<long double>> integratedNeutronFluxPerRegion;
+
+    std::vector<long double> totalAbsorptionRate;
 
     std::string scalarFluxFile;
-    std::string absorptionRateFile;
+    std::string averageAbsorptionRatePerRegionFile;
+    std::string integratedAbsorptionRatePerRegionFile;
     std::string absorptionRatePerNodeFile;
     std::string averageNeutronFluxPerRegionFile;
+    std::string integratedNeutronFluxPerRegionFile;
 
     CalculatedCrossSectionMatrices matrices;
 
@@ -85,17 +91,18 @@ public:
 
     BuildMatrices(dados_entrada *newDatricesDD_Data, ProjectData *newProjectInterfaceData);
 
-    void calculateAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult);
+    void calculateAverageAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult);
+    void calculateIntegratedAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult);
     void calculateAbsorptionRatePerNode(dados_entrada *data, CalculatedData *DDResult);
+
     void calculateLegendreMatrix(dados_entrada* data);
 
     std::vector<std::vector<long double> > calculateAverageNeutronFluxPerRegion(dados_entrada *data);
+    std::vector<std::vector<long double> > calculateIntegratedNeutronFluxPerRegion(dados_entrada *data);
 
     std::unique_ptr<dados_entrada> copyProjectDataToRawPointers(ProjectData &proj,  CrossSectionDataFilerParameters& fileParameter);
 
     CalculatedCrossSectionMatrices calculateCrossSectionMatrices(dados_entrada *data);
-
-    void run(int buildType, std::string file, dados_entrada &valor);
 
     int getEnergyGroupQtt() const;
     void setEnergyGroupQtt(int newEnergyGroupQtt);
@@ -130,20 +137,20 @@ public:
 
     void writeAbsRatePerNode(dados_entrada *DDValues, CalculatedData *DDResult);
     void writeAverageNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult);
+    void writeIntegratedNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult);
+    void writeIntegratedAbsorptionRatePerRegionFile(dados_entrada *DDValues, CalculatedData *DDResult);
     void writeAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult);
     void writeNeutronFluxFile(dados_entrada *DDValues, CalculatedData *DDResult);
 
     void writeAbsorptionCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);
     void writeScatteringCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);
 
-protected:
-    virtual std::string computerFileName(dados_entrada *DDValues, std::string name);
+     std::string computerFileName(dados_entrada *DDValues, std::string name);
 
 private:
     BuildMatrices();
 
     void allocateMatrices(dados_entrada &valor);
-    void allocateMatricesWithUserInterfaceData(dados_entrada &valor);
 
     std::vector<std::vector<long double> > calculateAbsorptionCrossSectionMatrix(dados_entrada *data,
                                                                                  std::vector<std::vector<long double>>& sigmaScattering);

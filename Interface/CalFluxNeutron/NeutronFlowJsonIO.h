@@ -85,19 +85,22 @@ private:
     const char *TotalScatteringCrossSectionFilePathKey = "TotalScatteringCrossSectionFilePath";
     const char *AbsorptionCrossSectionFilePath         = "AbsorptionCrossSectionFilePath";
 
-    const char *ScalarFluxFileKey                      = "ScalarFluxFile";
-    const char *AbsorptionRateFileKey                  = "AbsorptionRateFile";
-    const char *AbsorptionRatePerNodeFileKey           = "AbsorptionRatePerNodeFile";
-    const char *AverageNeutronFluxPerRegionFileKey     = "AverageNeutronFluxPerRegionFile";
+    const char *ScalarFluxFileKey                        = "ScalarFluxFile";
+    const char *AverageAbsorptionRatePerRegionFileKey    = "AverageAbsorptionRatePerRegionFile";
+    const char *IntegratedAbsorptionRatePerRegionFileKey = "IntegratedAbsorptionRatePerRegionFile";
+    const char *AbsorptionRatePerNodeFileKey             = "AbsorptionRatePerNodeFile";
+    const char *AverageNeutronFluxPerRegionFileKey       = "AverageNeutronFluxPerRegionFile";
+    const char *IntegratedNeutronFluxPerRegionFileKey    = "IntegratedNeutronFluxPerRegionFile";
 
     //Results
     const char *CalculationResultsKey                = "CalculationResults";
 
     const char *NeutronFluxPointsPerNodeKey          = "NeutronFluxPointsPerNode";
-    const char *AbsorptionRateDataPointsPerNodeKey   = "AbsorptionRateDataPointsPerNode";
+    const char *AbsorptionRatePerNodeKey             = "AbsorptionRatePerNode";
 
     const char *NeutronFluxPointsPerRegion           = "NeutronFluxPointsPerRegion";
-    const char *AbsorptionRateDataPointsPerRegionKey = "AbsorptionRateDataPointsPerRegion";
+    const char *AverageAbsorptionRatePerRegionKey    = "AverageAbsorptionRatePerRegion";
+    const char *IntegratedAbsorptionRatePerRegionKey = "IntegratedAbsorptionRatePerRegion";
     const char *PositionKey                          = "Position";
     const char *FluxKey                              = "ScalarNeutronFlux";
     const char *ValuesKey                            = "Values";

@@ -19,6 +19,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+option(ENABLE_SANITIZER "Enable ThreadSanitizer for debugging" OFF)
+
 find_package(Qt6 REQUIRED COMPONENTS Widgets Charts Core)
 
 include_directories(${Qt6Widgets_INCLUDE_DIRS} ${Qt6Core_INCLUDE_DIRS} ${Qt6Charts_INCLUDE_DIRS})
@@ -72,6 +74,20 @@ set(PROJECT_SOURCES
 )
 
 qt_add_resources(PROJECT_SOURCES Resources.qrc)
+
+if(ENABLE_SANITIZER)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        message(STATUS "ThreadSanitizer enabled")
+        add_compile_options(-fsanitize=thread -g -fno-omit-frame-pointer)
+        add_link_options(-fsanitize=thread)
+
+        add_compile_options(-O1)
+
+        add_compile_options(-ggdb3)
+    else()
+        message(WARNING "ThreadSanitizer only supported with GCC/Clang")
+    endif()
+endif()
 
 if(Qt${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(CalFluxNeutron

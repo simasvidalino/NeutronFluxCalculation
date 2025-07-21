@@ -5,6 +5,8 @@
 #include "VariablesUsed.h"
 #include "Worker.h"
 
+#include <mutex>
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -72,4 +74,7 @@ private:
 
     QThread* calculationThread;
     Worker* worker;
+
+    std::mutex m_dataMutex;
+    std::mutex m_projMutex;
 };

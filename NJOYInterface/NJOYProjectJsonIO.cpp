@@ -431,8 +431,6 @@ bool NJOYProjectJsonIO::loadProject(SaveFormat saveFormat)
                         << " using "
                         << (saveFormat != jsonFormat ? "CBOR" : "JSON") << "...\n";
 
-    qInfo()<<"Projet loaded";
-
     return true;
 }
 

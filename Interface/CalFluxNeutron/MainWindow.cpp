@@ -28,8 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    calculationThread->quit();
-    calculationThread->wait();
+    stopWork();
 
     delete ui;
 }
@@ -42,6 +41,8 @@ void MainWindow::calculateNeutronFluxUsingDD()
         return;
     }
 
+    std::lock_guard<std::mutex> lock(m_projMutex);
+
     //Update proj values before going to the thread
     proj = ui->widgetRegion->getGeneralProjectData();
     proj->periodicity = ui->widgetNeutronScalarFlux->getPeriodicityValue();
@@ -53,6 +54,8 @@ void MainWindow::calculateNeutronFluxUsingDD()
     this->statusBar()->showMessage("Calculating...");
 
     ui->widgetRegion->setPushButtonCalculateFluxEnable(false);
+
+    ui->menuGenerated_Files->setEnabled(false);
 
     emit startProcess();
 }
@@ -296,7 +299,7 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
 
 void MainWindow::updateAbsRateTable(std::shared_ptr<CalculatedData> DDResult)
 {
-    if (!DDResult || DDResult->absorptionRate.empty())
+    if (!DDResult || DDResult->integratedAbsorptionRatePerRegion.empty())
         return;
 
     const auto regionNumber = proj->regionNumber;
@@ -317,7 +320,7 @@ void MainWindow::updateAbsRateTable(std::shared_ptr<CalculatedData> DDResult)
     ui->widgetNeutronAbsorpt->clearTable();
     ui->widgetNeutronAbsorpt->setTableDimension(energyGroup, regions.size());
     ui->widgetNeutronAbsorpt->setTableHeaders(regions, groups);
-    ui->widgetNeutronAbsorpt->setTableItems(DDResult->absorptionRate);
+    ui->widgetNeutronAbsorpt->setTableItems(DDResult->integratedAbsorptionRatePerRegion);
 }
 
 void MainWindow::init()
@@ -337,10 +340,10 @@ void MainWindow::init()
     ui->tabWidget->setCurrentIndex(tabInputData);
 
     ui->widgetNeutronScalarFlux->setProjectionTitle(Interface::getScalarFluxChartTitle());
-    ui->widgetNeutronScalarFlux->setLabels("Position x (cm)", "Scalar Flux ( neutrons/c².s )");
+    ui->widgetNeutronScalarFlux->setLabels(Interface::getXChart(), Interface::getScalarFluxChartUnit());
 
     ui->widgetNeutronAbsorpt->setProjectionTitle(Interface::getAbsorptionChartTitle());
-    ui->widgetNeutronAbsorpt->setLabels("Position x (cm)", "neutrons/c³.s");
+    ui->widgetNeutronAbsorpt->setLabels(Interface::getXChart(), Interface::getAbsorptionChartUnit());
 
     ui->widgetRegion->setEnableGUI(false);
 
@@ -395,10 +398,16 @@ void MainWindow::setConnections()
                 showDataInFile(calculatedData->scalarFluxFile);
             });
 
-    QObject::connect(ui->actionAbsorption_Rate, &QAction::triggered, this, [this]()
+    QObject::connect(ui->actionAbsorption_Rate_Per_Region, &QAction::triggered, this, [this]()
             {
-                showDataInFile(calculatedData->absorptionRateFile);
+                showDataInFile(calculatedData->averageAbsorptionRatePerRegionFile);
             });
+
+    QObject::connect(ui->actionIntegrated_Absorption_Rate_Per_Region, &QAction::triggered, this, [this]()
+           {
+                         showDataInFile(calculatedData->integratedAbsorptionRatePerRegionFile);
+           });
+
 
     QObject::connect(ui->actionAbsorption_Rate_Per_Node, &QAction::triggered, this, [this]()
             {
@@ -409,6 +418,12 @@ void MainWindow::setConnections()
             {
                 showDataInFile(calculatedData->averageNeutronFluxPerRegionFile);
             });
+
+
+    QObject::connect(ui->actionIntegrated_Neutron_Flux_Per_Region, &QAction::triggered, this, [this]()
+                     {
+                         showDataInFile(calculatedData->integratedNeutronFluxPerRegionFile);
+                     });
 
     QObject::connect(ui->actionThe_app, &QAction::triggered, this, [this](){
         QMessageBox::information(this, "About", Interface::getAboutApp());
@@ -422,14 +437,14 @@ void MainWindow::setConnections()
                 this->statusBar()->showMessage("Finished");
                 ui->widgetRegion->setPushButtonCalculateFluxEnable(true);
                 QTimer::singleShot(2000, this, [&](){ this->statusBar()->showMessage(""); });
-            });
+            }, Qt::QueuedConnection);
 
     QObject::connect(worker, &Worker::errorOccurred, this, [this](auto errors)
             {
                 QMessageBox::information(this, "Information", errors);
-            });
+            }, Qt::QueuedConnection);
 
-    QObject::connect(this, &MainWindow::startProcess, worker, &Worker::process);
+    QObject::connect(this, &MainWindow::startProcess, worker, &Worker::process, Qt::QueuedConnection);
 }
 
 void MainWindow::startWork()
@@ -452,13 +467,18 @@ void MainWindow::stopWork()
 
 void MainWindow::updateGUIWithCalculatedData()
 {
+    std::lock_guard<std::mutex> lock(m_dataMutex);
+
     if (!calculatedData)
         return;
 
-    updateFluxChart(calculatedData);
-    updateFluxTable(calculatedData);
-    updateAbsRateChart(calculatedData);
-    updateAbsRateTable(calculatedData);
+    std::shared_ptr<CalculatedData> localData;
+    localData = calculatedData;
+
+    updateFluxChart(localData);
+    updateFluxTable(localData);
+    updateAbsRateChart(localData);
+    updateAbsRateTable(localData);
 
     ui->widgetNeutronAbsorpt->commitChanges();
     ui->widgetNeutronScalarFlux->commitChanges();

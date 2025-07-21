@@ -194,7 +194,7 @@ struct CalculatedData
     std::vector<double> regionSize;
     int nodesX;
 
-    std::vector<long double> absorptionRate;
+    std::vector<long double> averageAbsorptionRatePerRegion;
     std::vector<std::vector<long double>> averageNeutronFluxPerRegion;
 
     double periodicity;

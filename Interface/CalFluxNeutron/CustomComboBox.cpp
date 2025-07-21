@@ -11,7 +11,6 @@ CustomComboBox::~CustomComboBox()
 
 void CustomComboBox::focusOutEvent(QFocusEvent *event)
 {
-    qInfo()<<"focusOutEvent";
     this->clearFocus();
 
     QWidget * parent = nullptr;
@@ -25,7 +24,6 @@ void CustomComboBox::focusOutEvent(QFocusEvent *event)
 
 void CustomComboBox::leaveEvent(QEvent *event)
 {
-    qInfo()<<"leaveEvent";
     this->clearFocus();
 
     QWidget * parent = nullptr;
