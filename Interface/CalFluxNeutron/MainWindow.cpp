@@ -341,9 +341,11 @@ void MainWindow::init()
 
     ui->widgetNeutronScalarFlux->setProjectionTitle(Interface::getScalarFluxChartTitle());
     ui->widgetNeutronScalarFlux->setLabels(Interface::getXChart(), Interface::getScalarFluxChartUnit());
+    ui->widgetNeutronScalarFlux->setTableTitle(Interface::getScalarFluxTableUnit());
 
     ui->widgetNeutronAbsorpt->setProjectionTitle(Interface::getAbsorptionChartTitle());
     ui->widgetNeutronAbsorpt->setLabels(Interface::getXChart(), Interface::getAbsorptionChartUnit());
+    ui->widgetNeutronAbsorpt->setTableTitle(Interface::getAbsorptionTableUnit());
 
     ui->widgetRegion->setEnableGUI(false);
 

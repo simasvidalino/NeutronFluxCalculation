@@ -120,7 +120,7 @@ const char *getAbsorptionChartTitle()
 
 const char *getAbsorptionChartUnit()
 {
-    return "Absorption/s";
+    return "Absorption Rate ( Absorptions/cm³.s )";
 }
 
 const char *getScalarFluxChartUnit()
@@ -131,5 +131,16 @@ const char *getScalarFluxChartUnit()
 const char *getXChart()
 {
     return "Position x (cm)";
+}
+
+const char *getAbsorptionTableUnit()
+{
+    //Absorption per node * volume
+    return "Absorption Rate per Region ( Absorption/s )";
+}
+
+const char *getScalarFluxTableUnit()
+{
+    return "Scalar Flux per Region ( Neutrons/cm.s )";
 }
 }

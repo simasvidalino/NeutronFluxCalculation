@@ -86,6 +86,11 @@ void NeutronAnalysisChartWidget::setTableHeaders(QStringList &horizontalHeaderSt
     ui->tableWidget->setVerticalHeaderLabels(verticalHeaderStr);
 }
 
+void NeutronAnalysisChartWidget::setTableTitle(const QString &title)
+{
+    ui->labelTableTitle->setText(title);
+}
+
 void NeutronAnalysisChartWidget::addTableItems()
 {
     if (tableItem.empty())

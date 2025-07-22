@@ -46,6 +46,8 @@ public:
 
     void setTableHeaders(QStringList &horizontalHeaderStr, QStringList &verticalHeaderStr);
 
+    void setTableTitle(const QString &title);
+
 private:
     Ui::NeutronAnalysisChartWidget *ui;
 
