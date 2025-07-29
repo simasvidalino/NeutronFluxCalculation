@@ -165,8 +165,8 @@ void BuildMatrices::calculateAverageAbsorptionRatePerRegion(dados_entrada *data,
         }
     }
 
-    std::cout << std::setprecision(20) << std::fixed;
-    std::cout<<"total "<<sumTotal<<" Doente "<<absorptionRateSummedPerRegion[1]<<" Sadio "<< absorptionRateSummedPerRegion[0] + absorptionRateSummedPerRegion[2]<<std::endl;
+    //std::cout << std::setprecision(20) << std::fixed;
+    //std::cout<<"total "<<sumTotal<<" Doente "<<absorptionRateSummedPerRegion[1]<<" Sadio "<< absorptionRateSummedPerRegion[0] + absorptionRateSummedPerRegion[2]<<std::endl;
 
     DDResult->averageAbsorptionRatePerRegion.swap(absorptionRate);
 }
@@ -216,8 +216,8 @@ void BuildMatrices::calculateIntegratedAbsorptionRatePerRegion(dados_entrada *da
         }
     }
 
-    std::cout << std::setprecision(20) << std::fixed;
-    std::cout<<"total "<<sumTotal<<" Doente "<<absorptionRateSummedPerRegion[1]<<" Sadio "<< absorptionRateSummedPerRegion[0] + absorptionRateSummedPerRegion[2]<<std::endl;
+    //std::cout << std::setprecision(20) << std::fixed;
+    //std::cout<<"total "<<sumTotal<<" Doente "<<absorptionRateSummedPerRegion[1]<<" Sadio "<< absorptionRateSummedPerRegion[0] + absorptionRateSummedPerRegion[2]<<std::endl;
 
     DDResult->totalAbsorptionRate.swap(absorptionRateSummedPerRegion);
     DDResult->integratedAbsorptionRatePerRegion.swap(absorptionRate);
@@ -888,28 +888,42 @@ void BuildMatrices::calculateLegendreMatrix(dados_entrada* data)
 
 void BuildMatrices::calculateDataMatrices(dados_entrada *data)
 {
-    data->TAM_TOTAL = 0;  //comprimento total de x
-    data->NODOSX    = 0;  // numero total de nodos por regiao
+    data->TAM_TOTAL = 0; //comprimento total de x
+    data->NODOSX    = 0; // numero total de nodos por regiao
 
     for (int j = 0; j < data->n_R; j++)
     {
         data->CONTX[j] = data->NODOSX + data->n_nodos[j];
-        data->PASSO[j] = data->TAM[j]/data->n_nodos[j];
+        data->PASSO[j] = data->TAM[j] / data->n_nodos[j];
         data->NODOSX   = data->CONTX[j];
-        data->TAM_TOTAL +=  data->TAM[j];
+        data->TAM_TOTAL += data->TAM[j];
     }
 
     //fluxo angular e fluxo escalar
 
-    data->FLUXO_ANGULAR = new long double**[data->G];
-    data->smgi          = new long double**[data->G];
-    data->FLUXO_ESCALAR = new long double*[data->G];
+    data->FLUXO_ANGULAR          = new long double **[data->G];
+    data->smgi                   = new long double **[data->G];
+    data->FLUXO_ESCALAR          = new long double *[data->G];
+
+    data->FLUXO_ANGULAR_DIREITA  = new long double **[data->G];
+    data->FLUXO_ANGULAR_ESQUERDA = new long double **[data->G];
 
     for (int g = 0; g < data->G; g++)
     {
-        data->FLUXO_ANGULAR[g] = new long double*[(data->NODOSX) + 1];
-        data->smgi[g]          = new long double*[data->NODOSX      ];
-        data->FLUXO_ESCALAR[g] = new long double[(data->NODOSX)  + 1];
+        data->FLUXO_ANGULAR[g]          = new long double *[(data->NODOSX) + 1];
+        data->smgi[g]                   = new long double *[data->NODOSX];
+        data->FLUXO_ESCALAR[g]          = new long double[(data->NODOSX) + 1];
+
+        data->FLUXO_ANGULAR_DIREITA[g]  = new long double *[(data->NODOSX) + 1];
+        data->FLUXO_ANGULAR_ESQUERDA[g] = new long double *[(data->NODOSX) + 1];
+
+        for (int o = 0; o <= data->NODOSX; o++)
+        {
+            data->FLUXO_ANGULAR[g][o]          = new long double[data->n];
+
+            data->FLUXO_ANGULAR_DIREITA[g][o]  = new long double[data->n];
+            data->FLUXO_ANGULAR_ESQUERDA[g][o] = new long double[data->n];
+        }
 
         for (int o = 0; o < data->NODOSX; o++)
         {
