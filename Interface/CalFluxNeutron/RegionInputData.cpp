@@ -541,6 +541,7 @@ void RegionInputData::loadGUI()
     }
 
     ui->spinBoxLegendreOrder->setValue(proj->legendreOrder);
+    ui->doubleSpinBoxPeriodicity->setValue(proj->periodicity);
 }
 
 void RegionInputData::saveGUI()
@@ -581,6 +582,7 @@ void RegionInputData::saveGUI()
     proj->quadratureOrder = ui->spinBoxQuadratureOrder->value();
     proj->maximumIterationsNumber = ui->spinBoxMaxNumberIteration->value();
     proj->stopOrder = ui->spinBoxStopOrder->value();
+    proj->periodicity = ui->doubleSpinBoxPeriodicity->value();
 }
 
 void RegionInputData::updateRegionsIfZonesChanged()

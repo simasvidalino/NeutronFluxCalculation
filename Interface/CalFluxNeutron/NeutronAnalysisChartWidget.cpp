@@ -41,14 +41,14 @@ int NeutronAnalysisChartWidget::getPeriodicityValue() const
     return ui->spinBoxPeriodicity->value();
 }
 
-void NeutronAnalysisChartWidget::setMaxPeriodicity(double periodicity)
+void NeutronAnalysisChartWidget::setMaxPeriodicity(double periodicityMaxValue)
 {
-    ui->spinBoxPeriodicity->setMaximum(periodicity);
+    ui->spinBoxPeriodicity->setMaximum(periodicityMaxValue);
 }
 
-void NeutronAnalysisChartWidget::setPeriodicityValue(double periodicity)
+void NeutronAnalysisChartWidget::setPeriodicityValue(double periodicityValue)
 {
-    ui->spinBoxPeriodicity->setMaximum(periodicity);
+    ui->spinBoxPeriodicity->setValue(periodicityValue);
 }
 
 void NeutronAnalysisChartWidget::setProjectionTitle(const QString &value)
@@ -118,6 +118,9 @@ void NeutronAnalysisChartWidget::addTableItems()
 void NeutronAnalysisChartWidget::init()
 {
     setConnections();
+
+    ui->labelPeriodicity->setVisible(false);
+    ui->spinBoxPeriodicity->setVisible(false);
 
     QLineEdit *lineEdit = ui->spinBoxPeriodicity->findChild<QLineEdit *>();
     lineEdit->setFrame(false);

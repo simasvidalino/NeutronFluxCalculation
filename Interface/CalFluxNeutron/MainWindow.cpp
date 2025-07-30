@@ -45,7 +45,6 @@ void MainWindow::calculateNeutronFluxUsingDD()
 
     //Update proj values before going to the thread
     proj = ui->widgetRegion->getGeneralProjectData();
-    proj->periodicity = ui->widgetNeutronScalarFlux->getPeriodicityValue();
 
     startWork();
 
@@ -173,9 +172,6 @@ void MainWindow::openProject()
     proj           = NeutronFlowJsonIO::getInstance()->getGeneralProjectData();
     calculatedData = NeutronFlowJsonIO::getInstance()->getCalculatedData();
 
-    ui->widgetNeutronAbsorpt->setPeriodicityValue(proj->periodicity);
-    ui->widgetNeutronScalarFlux->setPeriodicityValue(proj->periodicity);
-
     ui->widgetRegion->setGeneralProjectData(proj);
     ui->widgetRegion->setFileName(fileName);
 
@@ -230,7 +226,6 @@ bool MainWindow::saveProject(bool saveMaterialDataFile)
         //Here we save dlg project, the calculated data files are calculated later
         projectSaved = true;
         proj = ui->widgetRegion->getGeneralProjectData();
-        proj->periodicity = ui->widgetNeutronScalarFlux->getPeriodicityValue();
 
         if (saveMaterialDataFile)
             saveMaterialData();
@@ -294,6 +289,7 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
 
     ui->widgetNeutronAbsorpt->setRange(0, 0, totalRegionSize, maxAbpRateValue);
     ui->widgetNeutronAbsorpt->setMaxPeriodicity(totalRegionSize);
+    ui->widgetNeutronAbsorpt->setPeriodicityValue(proj->periodicity);
     ui->widgetNeutronAbsorpt->setFilteredByGroup(group);
 }
 
@@ -535,6 +531,7 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
 
     ui->widgetNeutronScalarFlux->setRange(0, 0, totalRegionSize, maxY);
     ui->widgetNeutronScalarFlux->setMaxPeriodicity(totalRegionSize);
+    ui->widgetNeutronScalarFlux->setPeriodicityValue(proj->periodicity);
     ui->widgetNeutronScalarFlux->setFilteredByGroup(group);
 
     ui->tabWidget->setCurrentIndex(TabResult);

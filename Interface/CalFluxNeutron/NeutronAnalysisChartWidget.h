@@ -30,9 +30,9 @@ public:
 
     void setLabels(const QString &xLabel, const QString &yLabel);
 
-    void setMaxPeriodicity(double periodicity);
+    void setMaxPeriodicity(double periodicityMaxValue);
 
-    void setPeriodicityValue(double periodicity);
+    void setPeriodicityValue(double periodicityValue);
 
     void setProjectionTitle(const QString &value);
 
