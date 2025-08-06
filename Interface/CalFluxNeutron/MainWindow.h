@@ -30,6 +30,8 @@ private slots:
     void saveMaterialData();
     bool saveProject(bool saveMaterialDataFile = false);
     void saveProjectFileDlg();
+    void setScreenMode(const QString &screenMode);
+    void setPalette(const QString &palette);
     void showDataInFile(std::string &file);
     void updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult);
     void updateAbsRateTable(std::shared_ptr<CalculatedData> DDResult);
@@ -62,6 +64,8 @@ private:
     void stopWork();
 
     void updateGUIWithCalculatedData();
+
+    void loadStyle();
 
     ProjectData projectData;
 

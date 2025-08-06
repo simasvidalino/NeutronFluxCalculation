@@ -139,7 +139,7 @@ public:
     void writeAverageNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult);
     void writeIntegratedNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult);
     void writeIntegratedAbsorptionRatePerRegionFile(dados_entrada *DDValues, CalculatedData *DDResult);
-    void writeAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult);
+    void writeAverageAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult);
     void writeNeutronFluxFile(dados_entrada *DDValues, CalculatedData *DDResult);
 
     void writeAbsorptionCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);

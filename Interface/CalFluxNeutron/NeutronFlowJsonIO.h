@@ -105,4 +105,10 @@ private:
     const char *FluxKey                              = "ScalarNeutronFlux";
     const char *ValuesKey                            = "Values";
     const char *RegionKey                            = "RegionFlux";
+    const char *StyleKey                             = "Style";
+    const char *PaletteKey                           = "Palette";
+    const char *ScreenModeKey                        = "ScreenMode";
+    const char *FontKey                              = "Font";
+
+
 };

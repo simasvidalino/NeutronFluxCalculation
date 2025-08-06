@@ -147,6 +147,9 @@ QJsonObject NeutronFlowJsonIO::saveGeneralProjectData() const
         obj[RegionDataKey]                  = QString::number(generalProjectData->regionNumber);
         obj[PeriodicityKey]                 = generalProjectData->periodicity;
         obj[ZoneNumberKey]                  = generalProjectData->zoneNumber;
+        obj[PaletteKey]                     = generalProjectData->palette.c_str();
+        obj[FontKey]                        = generalProjectData->font.c_str();
+        obj[ScreenModeKey]                  = generalProjectData->screenMode.c_str();
 
         if (generalProjectData->bcLeft.has_value())
             obj[LeftBoundaryValuesKey] = saveObjArray(generalProjectData->bcLeft.value());
@@ -277,6 +280,15 @@ ProjectData NeutronFlowJsonIO::loadGeneralProjectData(const QJsonObject &obj)
         }
     }
 
+    if (obj.contains(PaletteKey))
+        ProjectData.palette = obj[PaletteKey].toString().toStdString();
+
+    if (obj.contains(FontKey))
+        ProjectData.font = obj[FontKey].toString().toStdString();
+
+    if (obj.contains(ScreenModeKey))
+        ProjectData.screenMode = obj[ScreenModeKey].toString().toStdString();
+
     return ProjectData;
 }
 
@@ -286,14 +298,14 @@ QJsonObject NeutronFlowJsonIO::saveCalculatedData() const
 
     if (calculatedData && generalProjectData)
     {
-        const auto& regionArray                      = generalProjectData->regionArray;
-        int nodex                                    = 0;
-        double totalRegionSize                       = 0;
+        const auto& regionArray                       = generalProjectData->regionArray;
+        int nodex                                     = 0;
+        double totalRegionSize                        = 0;
 
-        obj[TotalScatteringCrossSectionFilePathKey]  = calculatedData->matrices.totalScatteringCrossSectionFile.c_str();
-        obj[AbsorptionCrossSectionFilePath]          = calculatedData->matrices.absorptionCrossSectionFile.c_str();
-        obj[ScalarFluxFileKey]                       = calculatedData->scalarFluxFile.c_str();
-        obj[AverageAbsorptionRatePerRegionFileKey]                   = calculatedData->averageAbsorptionRatePerRegionFile.c_str();
+        obj[TotalScatteringCrossSectionFilePathKey]   = calculatedData->matrices.totalScatteringCrossSectionFile.c_str();
+        obj[AbsorptionCrossSectionFilePath]           = calculatedData->matrices.absorptionCrossSectionFile.c_str();
+        obj[ScalarFluxFileKey]                        = calculatedData->scalarFluxFile.c_str();
+        obj[AverageAbsorptionRatePerRegionFileKey]    = calculatedData->averageAbsorptionRatePerRegionFile.c_str();
         obj[AbsorptionRatePerNodeFileKey]             = calculatedData->absorptionRatePerNodeFile.c_str();
         obj[AverageNeutronFluxPerRegionFileKey]       = calculatedData->averageNeutronFluxPerRegionFile.c_str();
         obj[IntegratedNeutronFluxPerRegionFileKey]    = calculatedData->integratedNeutronFluxPerRegionFile.c_str();

@@ -202,7 +202,7 @@ void BuildMatrices::calculateIntegratedAbsorptionRatePerRegion(dados_entrada *da
             for (int n = 0; n < nodesInRegion; ++n, ++nodeIndex)
             {
                 long double fluxa = data->FLUXO_ESCALAR[gIndex][nodeIndex];
-                long double fluxb = data->FLUXO_ESCALAR[gIndex][nodeIndex];
+                long double fluxb = data->FLUXO_ESCALAR[gIndex][nodeIndex + 1];
 
                 regionGroupSum += fluxa + fluxb;
             }
@@ -216,8 +216,8 @@ void BuildMatrices::calculateIntegratedAbsorptionRatePerRegion(dados_entrada *da
         }
     }
 
-    //std::cout << std::setprecision(20) << std::fixed;
-    //std::cout<<"total "<<sumTotal<<" Doente "<<absorptionRateSummedPerRegion[1]<<" Sadio "<< absorptionRateSummedPerRegion[0] + absorptionRateSummedPerRegion[2]<<std::endl;
+    std::cout << std::setprecision(17) << std::fixed;
+    std::cout<<"total "<<sumTotal<<" Doente "<<absorptionRateSummedPerRegion[1]<<" Sadio "<< absorptionRateSummedPerRegion[0] + absorptionRateSummedPerRegion[2]<<std::endl;
 
     DDResult->totalAbsorptionRate.swap(absorptionRateSummedPerRegion);
     DDResult->integratedAbsorptionRatePerRegion.swap(absorptionRate);
@@ -1265,7 +1265,7 @@ void BuildMatrices::writeIntegratedNeutronFluxPerRegion(dados_entrada *DDValues,
 void BuildMatrices::writeIntegratedAbsorptionRatePerRegionFile(dados_entrada *DDValues, CalculatedData *DDResult)
 {
 
-    if (DDResult->averageAbsorptionRatePerRegion.empty())
+    if (DDResult->integratedAbsorptionRatePerRegion.empty())
     {
         throw std::runtime_error("Absorption Matrix is empty.");
     }
@@ -1278,7 +1278,7 @@ void BuildMatrices::writeIntegratedAbsorptionRatePerRegionFile(dados_entrada *DD
         throw std::runtime_error("Error opening file: " + titleStr);
     }
 
-    DDResult->averageAbsorptionRatePerRegionFile = titleStr;
+    DDResult->integratedAbsorptionRatePerRegionFile = titleStr;
 
     // Iterate over zones
     for (size_t rIndex = 0; rIndex < DDValues->n_R; ++rIndex)
@@ -1293,13 +1293,13 @@ void BuildMatrices::writeIntegratedAbsorptionRatePerRegionFile(dados_entrada *DD
         for (size_t group = 0; group < DDValues->G; ++group)
         {
             outFile << std::left << std::setw(15) << group + 1
-                    << DDResult->averageAbsorptionRatePerRegion[rIndex][group] << std::endl;
+                    << DDResult->integratedAbsorptionRatePerRegion[rIndex][group] << std::endl;
         }
 
         outFile << "-----------------------------------------------------------------------------------------" << std::endl;
 
         // Add a newline for separation between Region if there are multiple Regions
-        if (rIndex < DDResult->averageAbsorptionRatePerRegion.size() - 1)
+        if (rIndex < DDResult->integratedAbsorptionRatePerRegion.size() - 1)
         {
             outFile << std::endl;
         }
@@ -1308,14 +1308,14 @@ void BuildMatrices::writeIntegratedAbsorptionRatePerRegionFile(dados_entrada *DD
     outFile.close();
 }
 
-void BuildMatrices::writeAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult)
+void BuildMatrices::writeAverageAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult)
 {
     if (DDResult->averageAbsorptionRatePerRegion.empty())
     {
         throw std::runtime_error("Absorption Matrix is empty.");
     }
 
-    std::string titleStr = computerFileName(DDValues, "Absorption_Rate");
+    std::string titleStr = computerFileName(DDValues, "Average_Absorption_Rate");
     std::ofstream outFile(titleStr);
 
     if (!outFile.is_open())

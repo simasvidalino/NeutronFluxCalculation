@@ -109,7 +109,7 @@ void Worker::calculateAbsorptionNeutronRatePerRegion()
 
     BuildMatrices::getInstance()->calculateIntegratedAbsorptionRatePerRegion(DDValues.get(), DDResult.get());
 
-    BuildMatrices::getInstance()->writeAbsorptionRateFile(DDValues.get(), DDResult.get());
+    BuildMatrices::getInstance()->writeAverageAbsorptionRateFile(DDValues.get(), DDResult.get());
 
     BuildMatrices::getInstance()->writeIntegratedAbsorptionRatePerRegionFile(DDValues.get(), DDResult.get());
 }

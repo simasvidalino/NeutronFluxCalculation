@@ -47,4 +47,9 @@ struct ProjectData
     std::optional<std::vector<double>> bcRight;
 
     std::array<RegionData, 10> regionArray;
+
+    //Style
+    std::string palette    = "Color scheme to Dark";
+    std::string font       = "Arial";
+    std::string screenMode = "Normal";
 };

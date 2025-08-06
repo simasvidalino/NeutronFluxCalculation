@@ -71,37 +71,29 @@ void MainWindow::changeFont()
     else
     {
         qWarning()<<"Font issue";
+        return;
     }
+
+    proj->font = font.toString().toStdString();
 }
 
 void MainWindow::changeViewMode()
 {
+    QString screenMode = "Full";
+
     if (this->isFullScreen())
     {
-        ui->actionScreenMode->setText("Full Screen");
-        this->showNormal();
+        screenMode = "Normal";
     }
-    else
-    {
-        ui->actionScreenMode->setText("Nomal Screen");
-        this->showFullScreen();
-    }
+
+    setScreenMode(screenMode);
 }
 
 void MainWindow::changePalette()
 {
-    const QString darkText = "Color scheme to Dark";
+    QString toggledColor  = ui->actionPalette->text();
 
-    if (ui->actionPalette->text() == darkText)
-    {
-        ui->actionPalette->setText("Color scheme to Light");
-        QApplication::setPalette(Interface::getDarkPalette());
-    }
-    else
-    {
-        ui->actionPalette->setText(darkText);
-        QApplication::setPalette(Interface::getLightPalette());
-    }
+    setPalette(toggledColor);
 }
 
 void MainWindow::onOutputData(std::shared_ptr<CalculatedData> data)
@@ -175,6 +167,8 @@ void MainWindow::openProject()
     ui->widgetRegion->setGeneralProjectData(proj);
     ui->widgetRegion->setFileName(fileName);
 
+    loadStyle();
+
     QTimer::singleShot(2000, this, [&](){
         this->statusBar()->showMessage("Ready");
         ui->widgetRegion->setPushButtonCalculateFluxEnable(true);
@@ -199,6 +193,46 @@ void MainWindow::saveProjectFileDlg()
     (void)saveProject(saveMaterialData);
 
     ui->widgetRegion->setFileName(this->fileName);
+}
+
+void MainWindow::setScreenMode(const QString& screenMode)
+{
+    QString fullText;
+
+    if (screenMode.contains("Full"))
+    {
+        this->showFullScreen();
+        fullText = "Nomal Screen";
+    }
+    else
+    {
+        this->showNormal();
+        fullText = "Full Screen";
+    }
+
+    ui->actionScreenMode->setText(fullText);
+}
+
+void MainWindow::setPalette(const QString& palette)
+{
+    QString fullText = "Color scheme to ";
+    QString newPaletteText  = "Dark";
+
+    if (palette.contains("Light"))
+    {
+        newPaletteText = "Dark";
+        QApplication::setPalette(Interface::getLightPalette());
+    }
+    else
+    {
+        newPaletteText = "Light";
+        QApplication::setPalette(Interface::getDarkPalette());
+    }
+
+    fullText = fullText + newPaletteText;
+    ui->actionPalette->setText(fullText);
+
+    proj->palette = palette.toStdString();
 }
 
 void MainWindow::showDataInFile(std::string& file)
@@ -480,6 +514,19 @@ void MainWindow::updateGUIWithCalculatedData()
 
     ui->widgetNeutronAbsorpt->commitChanges();
     ui->widgetNeutronScalarFlux->commitChanges();
+}
+
+void MainWindow::loadStyle()
+{
+    QString palette = proj->palette.c_str();
+    setPalette(palette);
+
+    QFont restoredFont;
+    restoredFont.fromString(QString::fromStdString(proj->font));
+    this->setFont(restoredFont);
+
+    QString screenMode = proj->screenMode.c_str();
+    setScreenMode(screenMode);
 }
 
 void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
