@@ -47,6 +47,8 @@ set(PROJECT_SOURCES
     CustomTableModel.h
     InterFaceDefinitions.cpp
     InterFaceDefinitions.h
+    LegendWidget.h
+    LegendWidget.cpp
     MainWindow.cpp
     MainWindow.h
     MainWindow.ui

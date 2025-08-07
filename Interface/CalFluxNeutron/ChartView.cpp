@@ -5,16 +5,25 @@
 #include <QPen>
 #include <QShortcut>
 #include <QWheelEvent>
+#include <QVBoxLayout>
 
 ChartView::ChartView(QWidget *parent)
     : QChartView{parent},
     axisX(new QValueAxis()),
-    axisY(new QValueAxis())
+    axisY(new QValueAxis()),
+    legendWindow(new LegendWidget(chart(), nullptr)),
+    legendButton(new QToolButton())
 {
     init();
 }
 
-ChartView::~ChartView() = default;
+ChartView::~ChartView()
+{
+    if (nullptr != legendWindow)
+    {
+        delete legendWindow;
+    }
+};
 
 void ChartView::init()
 {
@@ -40,6 +49,46 @@ void ChartView::init()
     mChart->setPlotAreaBackgroundVisible(true);
 
     QChartView::setChart(mChart);
+
+    legendButton->setToolTip("Show Legend");
+    legendButton->setAutoRaise(true);
+    legendButton->setCursor(Qt::PointingHandCursor);
+    legendButton->setText("🛈");
+
+    const int btnSize = 28;
+    legendButton->setFixedSize(btnSize, btnSize);
+    legendButton->setStyleSheet(QString(R"(
+    QToolButton {
+        background-color: rgba(255, 255, 255, 200);
+        border: 1px solid #888;
+        border-radius: %1px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+    }
+    QToolButton:hover {
+        background-color: rgba(240, 240, 240, 240);
+        border: 1px solid #444;
+    }
+    QToolButton:pressed {
+        background-color: rgba(220, 220, 220, 255);
+    }
+)").arg(btnSize / 2));
+
+    legendButtonProxy = chart()->scene()->addWidget(legendButton);
+    QRectF plotArea = chart()->plotArea();
+    legendButtonProxy->setPos(plotArea.topRight().x() - legendButton->width(), legendButton->height());
+
+    connect(legendButton, &QToolButton::clicked, this, [=]() {
+        if (nullptr != legendWindow)
+        {
+            legendWindow->deleteLater();
+            legendWindow = nullptr;
+        }
+
+        legendWindow = new LegendWidget(chart());
+        legendWindow->show();
+    });
 }
 
 void ChartView::setInputData(const QList<QPointF> &points, int group, QColor color)
@@ -116,9 +165,23 @@ void ChartView::setChart()
         {
             addSeries(it.value(), it.key());
         }
+
+        if (pointsByGroup.size() > 20)
+        {
+            legendButton->show();
+            chart()->legend()->hide();
+        }
+        else
+        {
+            legendButton->hide();
+            chart()->legend()->show();
+        }
     }
     else
     {
+        legendButton->hide();
+        chart()->legend()->show();
+
         int group = option - 1;
         if (pointsByGroup.contains(group))
         {
@@ -140,7 +203,7 @@ void ChartView::addSeries(const SeriesData &data, int group)
 
     auto *serie = new QLineSeries();
     serie->append(data.points);
-    serie->setName("Group " + QString::number(group + 1));
+    serie->setName("G" + QString::number(group + 1));
 
     QPen pen = serie->pen();
     pen.setColor(data.color);
@@ -215,5 +278,18 @@ void ChartView::wheelEvent(QWheelEvent *event)
     else
     {
         QChartView::wheelEvent(event);
+    }
+}
+
+void ChartView::resizeEvent(QResizeEvent *event)
+{
+    QChartView::resizeEvent(event);
+
+    if (legendButton && legendButtonProxy)
+    {
+        legendButton->adjustSize();
+        QRectF plotArea = chart()->plotArea();
+
+        legendButtonProxy->setPos(plotArea.topRight().x() - legendButton->width(), legendButton->height());
     }
 }

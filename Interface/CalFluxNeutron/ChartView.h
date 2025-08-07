@@ -4,6 +4,7 @@
 #include <QLineSeries>
 #include <QMap>
 #include <QValueAxis>
+#include "LegendWidget.h"
 
 struct SeriesData
 {
@@ -43,6 +44,7 @@ protected:
 private:
     void init();
     void addSeries(const SeriesData &data, int group);
+    void createLegend();
 
     QString xLabel;
     QString yLabel;
@@ -54,4 +56,11 @@ private:
     int option     = 0;
 
     QMap<int, SeriesData> pointsByGroup;
+
+    LegendWidget *legendWindow;
+    QGraphicsProxyWidget* legendButtonProxy;
+    QToolButton* legendButton;
+    // QWidget interface
+protected:
+    virtual void resizeEvent(QResizeEvent *event) override;
 };
