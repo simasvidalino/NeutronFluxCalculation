@@ -291,10 +291,13 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
     long double maxAbpRateValue = 0.0;
     double totalRegionSize = 0.0;
     int nodex = 0;
+    QList<long double> regionLimit;
 
     for (int rIndex = 0; rIndex < regionNumber; ++rIndex)
     {
         totalRegionSize += regionArray[rIndex].quote;
+        regionLimit.push_back(totalRegionSize);
+
         nodex += proj->regionArray[rIndex].node;
     }
 
@@ -322,9 +325,9 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
     }
 
     ui->widgetNeutronAbsorpt->setRange(0, 0, totalRegionSize, maxAbpRateValue);
-    ui->widgetNeutronAbsorpt->setMaxPeriodicity(totalRegionSize);
     ui->widgetNeutronAbsorpt->setPeriodicityValue(proj->periodicity);
     ui->widgetNeutronAbsorpt->setFilteredByGroup(group);
+    ui->widgetNeutronAbsorpt->setRegionLimit(regionLimit);
 }
 
 void MainWindow::updateAbsRateTable(std::shared_ptr<CalculatedData> DDResult)
@@ -512,8 +515,8 @@ void MainWindow::updateGUIWithCalculatedData()
     updateAbsRateChart(localData);
     updateAbsRateTable(localData);
 
-    ui->widgetNeutronAbsorpt->commitChanges();
     ui->widgetNeutronScalarFlux->commitChanges();
+    ui->widgetNeutronAbsorpt->commitChanges();
 }
 
 void MainWindow::loadStyle()
@@ -545,10 +548,13 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
     double totalRegionSize = 0.0;
     int nodex = 0;
     const auto scalarFlux = DDResult->scalarFlux;
+    QList<long double> regionLimit;
 
     for (int rIndex = 0; rIndex < regionNumber; ++rIndex)
     {
         totalRegionSize += regionArray[rIndex].quote;
+        regionLimit.push_back(totalRegionSize);
+
         nodex += proj->regionArray[rIndex].node;
     }
 
@@ -577,9 +583,9 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
     }
 
     ui->widgetNeutronScalarFlux->setRange(0, 0, totalRegionSize, maxY);
-    ui->widgetNeutronScalarFlux->setMaxPeriodicity(totalRegionSize);
     ui->widgetNeutronScalarFlux->setPeriodicityValue(proj->periodicity);
     ui->widgetNeutronScalarFlux->setFilteredByGroup(group);
+    ui->widgetNeutronScalarFlux->setRegionLimit(regionLimit);
 
     ui->tabWidget->setCurrentIndex(TabResult);
 }

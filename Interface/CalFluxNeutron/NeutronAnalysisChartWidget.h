@@ -42,6 +42,8 @@ public:
     void setTableItems(std::vector<std::vector<long double> > &&item);
     void setTableItems(std::vector<std::vector<long double> > &item);
 
+    void setRegionLimit(QList<long double> &limit);
+
     void setTableDimension(int rowCount, int columnCount);
 
     void setTableHeaders(QStringList &horizontalHeaderStr, QStringList &verticalHeaderStr);

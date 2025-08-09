@@ -17,7 +17,6 @@ BuildMatrices* BuildMatrices::m_ptr = nullptr;
 
 BuildMatrices::BuildMatrices()
 {
-
 }
 
 BuildMatrices *BuildMatrices::getInstance()

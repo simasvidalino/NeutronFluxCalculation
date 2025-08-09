@@ -135,6 +135,11 @@ void ChartView::setProjectionTitle(const QString &title)
     chart()->setTitle(title);
 }
 
+void ChartView::setRegionLimit(QList<long double> &limit)
+{
+    this->limit = limit;
+}
+
 void ChartView::setTickNumber(int newTickNumber)
 {
     tickNumber = newTickNumber;
@@ -158,6 +163,9 @@ void ChartView::setChart()
 
     chart()->zoomReset();
     chart()->removeAllSeries();
+
+    setRegionsZonesInChart();
+    setRegionLabelsChart();
 
     if (option == 0)  // All groups
     {
@@ -213,6 +221,69 @@ void ChartView::addSeries(const SeriesData &data, int group)
     chart()->addSeries(serie);
     serie->attachAxis(axisX);
     serie->attachAxis(axisY);
+}
+
+void ChartView::clearLabelsChart()
+{
+    for (QGraphicsItem *item : chart()->scene()->items())
+    {
+        auto *textItem = qgraphicsitem_cast<QGraphicsSimpleTextItem *>(item);
+        if (textItem && textItem->zValue() == 1000)
+        {
+            chart()->scene()->removeItem(textItem);
+            delete textItem;
+        }
+    }
+}
+
+void ChartView::setRegionLabelsChart()
+{
+    double yCenter = (axisY->min() + axisY->max()) * 0.5;
+    double xBeg    = 0;
+    double xEnd    = 0;
+
+    clearLabelsChart();
+
+    for (int i = 0; i < limit.size(); ++i)
+    {
+        xEnd    = limit[i];
+        double xCenter = xBeg + ((xEnd - xBeg) * 0.5);
+
+        auto textItem = new QGraphicsSimpleTextItem(QString("Region %1").arg(i + 1));
+        textItem->setBrush(Qt::lightGray);
+
+        QPointF scenePos = chart()->mapToPosition(QPointF(xCenter, yCenter));
+        textItem->setPos(scenePos);
+
+        textItem->setZValue(1000);
+
+        chart()->scene()->addItem(textItem);
+
+        xBeg = xEnd;
+    }
+}
+
+void ChartView::setRegionsZonesInChart()
+{
+    for (int i = 0; i < limit.size() - 1; ++i)
+    {
+        auto *boundaryLine = new QLineSeries();
+        boundaryLine->append(limit[i], axisY->min());
+        boundaryLine->append(limit[i], axisY->max());
+
+        QPen pen(Qt::lightGray);
+        pen.setWidth(2);
+        pen.setStyle(Qt::DashLine);
+        boundaryLine->setPen(pen);
+
+        chart()->addSeries(boundaryLine);
+        boundaryLine->attachAxis(axisX);
+        boundaryLine->attachAxis(axisY);
+
+        auto markers = chart()->legend()->markers(boundaryLine);
+        if (!markers.isEmpty())
+            markers.first()->setVisible(false);
+    }
 }
 
 void ChartView::clearChart()
@@ -273,6 +344,9 @@ void ChartView::wheelEvent(QWheelEvent *event)
         {
             chart()->zoomOut();
         }
+
+        setRegionLabelsChart();
+
         event->accept();
     }
     else
@@ -291,5 +365,6 @@ void ChartView::resizeEvent(QResizeEvent *event)
         QRectF plotArea = chart()->plotArea();
 
         legendButtonProxy->setPos(plotArea.topRight().x() - legendButton->width(), legendButton->height());
+        setRegionLabelsChart();
     }
 }

@@ -25,6 +25,8 @@ public:
     void setYLabel(const QString &label);
     void setProjectionTitle(const QString &title);
 
+    void setRegionLimit(QList<long double> &limit);
+
     void setTickNumber(int newTickNumber);
     void setYRange(double min, double max);
     void setXRange(double min, double max);
@@ -44,7 +46,10 @@ protected:
 private:
     void init();
     void addSeries(const SeriesData &data, int group);
+    void clearLabelsChart();
     void createLegend();
+    void setRegionLabelsChart();
+    void setRegionsZonesInChart();
 
     QString xLabel;
     QString yLabel;
@@ -60,6 +65,7 @@ private:
     LegendWidget *legendWindow;
     QGraphicsProxyWidget* legendButtonProxy;
     QToolButton* legendButton;
+    QList<long double> limit;
     // QWidget interface
 protected:
     virtual void resizeEvent(QResizeEvent *event) override;

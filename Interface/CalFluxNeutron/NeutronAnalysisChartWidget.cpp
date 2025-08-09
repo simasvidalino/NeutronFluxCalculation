@@ -1,3 +1,4 @@
+
 #include "NeutronAnalysisChartWidget.h"
 #include "ui_NeutronAnalysisChartWidget.h"
 
@@ -62,6 +63,11 @@ void NeutronAnalysisChartWidget::setRange(long double x1, long double y1, long d
     ui->widgetChart->setYRange(std::floor(y1), std::ceil(y2));
 
     totalRegionSize = x2;
+}
+
+void NeutronAnalysisChartWidget::setRegionLimit(QList<long double>& limit)
+{
+    ui->widgetChart->setRegionLimit(limit);
 }
 
 void NeutronAnalysisChartWidget::setTableItems(std::vector<std::vector<long double>> &&item)
