@@ -33,6 +33,8 @@ void ChartView::init()
     QShortcut *resetShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Z), this);
     QObject::connect(resetShortcut, &QShortcut::activated, this, [this]() {
         chart()->zoomReset();
+        setRegionLabelsChart();
+
     });
 
     this->setFocusPolicy(Qt::FocusPolicy::ClickFocus);

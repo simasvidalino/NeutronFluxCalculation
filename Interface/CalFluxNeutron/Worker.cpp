@@ -38,16 +38,10 @@ void Worker::process()
         //Calculate scalar neutron Flux
         DDMethod::getInstance()->runDDMethodWithOneThread(*DDValues);
 
-        copyScalarNeutronFluxToVector();
-
+        //The order metters
         calculateCrossSectionMatrices();
-
-        calculateFluxPerRegion();
-
-        //Calculate Abs Rate
-        calculateAbsorptionNeutronRatePerRegion();
-
-        calculateAbsorptionNeutronRatePerNode();
+        calculateNeutronFluxData();
+        calculateAbsorptionNeutronRateData();
 
         emit outputData(DDResult);
 
@@ -85,48 +79,40 @@ void Worker::updateDDValues()
     if (!DDValues)
         DDValues = std::unique_ptr<dados_entrada>();
 
-    DDValues = BuildMatrices::getInstance()->copyProjectDataToRawPointers(*proj, ParseFile::getInstance()->getCrossSectionDataFileInfomation());
+    DDValues = BuildMatrices::getInstance()
+                   ->copyProjectDataToRawPointers(*proj, ParseFile::getInstance()->getCrossSectionDataFileInfomation());
 }
 
-void Worker::calculateAbsorptionNeutronRatePerNode()
+void Worker::calculateAbsorptionNeutronRateData()
 {
     if (!DDResult)
         DDResult = std::make_shared<CalculatedData>();
 
-    BuildMatrices::getInstance()->calculateAbsorptionRatePerNode(DDValues.get(),
-                                              DDResult.get());
+    //The order metters
+    BuildMatrices::getInstance()->calculateAbsorptionRatePerNode(DDValues.get(), DDResult.get());
+
+    BuildMatrices::getInstance()->calculateAverageAbsorptionRatePerRegion(DDValues.get(), DDResult.get());
+    BuildMatrices::getInstance()->calculateIntegratedAbsorptionRatePerRegion(DDValues.get(), DDResult.get());
+    BuildMatrices::getInstance()->calculateTotalAbsorptionRatePerGroupPerRegion(DDValues.get(), DDResult.get());
+    BuildMatrices::getInstance()->calculateTotalAbsorptionRatePerRegion(DDValues.get(), DDResult.get());
 
     BuildMatrices::getInstance()->writeAbsRatePerNode(DDValues.get(), DDResult.get());
-}
-
-void Worker::calculateAbsorptionNeutronRatePerRegion()
-{
-    if (!DDResult)
-        DDResult = std::make_shared<CalculatedData>();
-
-    BuildMatrices::getInstance()->calculateAverageAbsorptionRatePerRegion(DDValues.get(),
-                                     DDResult.get());
-
-    BuildMatrices::getInstance()->calculateIntegratedAbsorptionRatePerRegion(DDValues.get(), DDResult.get());
-
     BuildMatrices::getInstance()->writeAverageAbsorptionRateFile(DDValues.get(), DDResult.get());
-
     BuildMatrices::getInstance()->writeIntegratedAbsorptionRatePerRegionFile(DDValues.get(), DDResult.get());
 }
 
-void Worker::calculateFluxPerRegion()
+void Worker::calculateNeutronFluxData()
 {
-    if (!DDValues)
-        DDValues = std::unique_ptr<dados_entrada>();
-
     if (!DDResult)
         DDResult = std::make_shared<CalculatedData>();
 
-    DDResult->averageNeutronFluxPerRegion =
-            BuildMatrices::getInstance()->calculateAverageNeutronFluxPerRegion(DDValues.get());
+    copyScalarNeutronFluxToVector();
 
-    DDResult->integratedNeutronFluxPerRegion =
-        BuildMatrices::getInstance()->calculateIntegratedNeutronFluxPerRegion(DDValues.get());
+    BuildMatrices::getInstance()->calculateAverageNeutronFluxPerRegion(DDValues.get(), DDResult.get());
+
+    BuildMatrices::getInstance()->calculateIntegratedNeutronFluxPerRegion(DDValues.get(),DDResult.get());
+    BuildMatrices::getInstance()->calculateTotalNeutronFluxPerRegion(DDValues.get(), DDResult.get());
+    BuildMatrices::getInstance()->calculateTotalNeutronFluxPerGroupPerRegion(DDValues.get(), DDResult.get());
 
     BuildMatrices::getInstance()->writeAverageNeutronFluxPerRegion(DDValues.get(), DDResult.get());
     BuildMatrices::getInstance()->writeIntegratedNeutronFluxPerRegion(DDValues.get(), DDResult.get());

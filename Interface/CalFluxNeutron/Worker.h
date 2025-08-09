@@ -32,9 +32,8 @@ signals:
 
 protected:
     void updateDDValues(); //DD method depends on some row matrices.
-    virtual void calculateAbsorptionNeutronRatePerNode();
-    virtual void calculateAbsorptionNeutronRatePerRegion();
-    virtual void calculateFluxPerRegion();
+    virtual void calculateAbsorptionNeutronRateData();
+    virtual void calculateNeutronFluxData();
     virtual void calculateCrossSectionMatrices();
     void copyScalarNeutronFluxToVector();
 

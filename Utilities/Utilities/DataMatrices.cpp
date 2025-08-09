@@ -124,13 +124,11 @@ CalculatedCrossSectionMatrices BuildMatrices::calculateCrossSectionMatrices(dado
 
 void BuildMatrices::calculateAverageAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult)
 {
-    std::vector<std::vector<long double>> averageAbsorptionRatePerRegion;
-
     if (DDResult->matrices.absorptionCrossSection.empty())
         throw std::invalid_argument("Error: Absorption Cross Section Matrix is empty");
 
-    if (DDResult->averageNeutronFluxPerRegion.empty())
-        throw std::invalid_argument("Error: Average Neutron Flux Per Region Matrix is empty");
+    if (DDResult->scalarFlux.empty())
+        throw std::invalid_argument("Error: Scalar Flux Matrix is empty");
 
     long double sumTotal = 0.0;
 
@@ -166,24 +164,15 @@ void BuildMatrices::calculateAverageAbsorptionRatePerRegion(dados_entrada *data,
 
     //std::cout << std::setprecision(20) << std::fixed;
     //std::cout<<"total "<<sumTotal<<" Doente "<<absorptionRateSummedPerRegion[1]<<" Sadio "<< absorptionRateSummedPerRegion[0] + absorptionRateSummedPerRegion[2]<<std::endl;
-
     DDResult->averageAbsorptionRatePerRegion.swap(absorptionRate);
 }
 
 void BuildMatrices::calculateIntegratedAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult)
 {
-    std::vector<std::vector<long double>> averageAbsorptionRatePerRegion;
-
     if (DDResult->matrices.absorptionCrossSection.empty())
         throw std::invalid_argument("Error: Absorption Cross Section Matrix is empty");
 
-    if (DDResult->averageNeutronFluxPerRegion.empty())
-        throw std::invalid_argument("Error: Average Neutron Flux Per Region Matrix is empty");
-
-    long double sumTotal = 0.0;
-
-    std::vector<std::vector<long double>> absorptionRate(data->n_R, std::vector<long double>(data->G, 0.0));
-    std::vector<long double> absorptionRateSummedPerRegion(data->n_R, 0.0);
+    std::vector<std::vector<long double>> absorptionRate(data->n_R, std::vector<long double>(data->G, 0.0L));
 
     for (int gIndex = 0; gIndex < data->G; ++gIndex)
     {
@@ -209,17 +198,38 @@ void BuildMatrices::calculateIntegratedAbsorptionRatePerRegion(dados_entrada *da
             long double trapezeMethod = sigmaAbs*regionGroupSum*step*0.5;
 
             absorptionRate[rIndex][gIndex] = trapezeMethod;
-            absorptionRateSummedPerRegion[rIndex]  += trapezeMethod;
-
-            sumTotal += trapezeMethod;
         }
     }
 
     std::cout << std::setprecision(17) << std::fixed;
-    std::cout<<"total "<<sumTotal<<" Doente "<<absorptionRateSummedPerRegion[1]<<" Sadio "<< absorptionRateSummedPerRegion[0] + absorptionRateSummedPerRegion[2]<<std::endl;
+    //std::cout<<"total "<<sumTotal<<" Doente "<<absorptionRateSummedPerRegion[1]<<" Sadio "<< absorptionRateSummedPerRegion[0] + absorptionRateSummedPerRegion[2]<<std::endl;
 
-    DDResult->totalAbsorptionRate.swap(absorptionRateSummedPerRegion);
+    //DDResult->totalAbsorptionRatePerRegion.swap(absorptionRateSummedPerRegion);
     DDResult->integratedAbsorptionRatePerRegion.swap(absorptionRate);
+}
+
+void BuildMatrices::calculateTotalAbsorptionRatePerGroupPerRegion(dados_entrada *data, CalculatedData *DDResult)
+{
+    if (DDResult->absorptionRatePerNode.empty())
+        throw std::invalid_argument("Error: Absorption Rate Per Node Matrix is empty");
+
+    std::vector<std::vector<long double>> absorptionRate(data->n_R, std::vector<long double>(data->G, 0.0L));
+    int nodeIndex = 0;
+
+    for (int r = 0; r < data->n_R; ++r)
+    {
+        for (int n = 0; n < data->n_nodos[r]; ++n)
+        {
+            for (int g = 0; g < data->G; ++g)
+            {
+                absorptionRate[r][g] += DDResult->absorptionRatePerNode[g][nodeIndex];
+            }
+
+            nodeIndex++;
+        }
+    }
+
+    DDResult->totalAbsorptionRatePerGroupPerRegion.swap(absorptionRate);
 }
 
 void BuildMatrices::calculateAbsorptionRatePerNode(dados_entrada *data, CalculatedData *DDResult)
@@ -227,24 +237,24 @@ void BuildMatrices::calculateAbsorptionRatePerNode(dados_entrada *data, Calculat
     if (DDResult->matrices.absorptionCrossSection.empty())
         throw std::invalid_argument("Error: Absorption Cross Section Matrix is empty");
 
-    if (data->FLUXO_ESCALAR == nullptr)
-        throw std::invalid_argument("Error: Scalar Flux Matrix is not initialized");
+    if (DDResult->scalarFlux.empty())
+        throw std::invalid_argument("Error: Scalar Flux Matrix is empty");
 
     std::vector<std::vector<long double>> absorptionRatePerNode(data->G, std::vector<long double>(data->NODOSX));
-
     int nodeIndex = 0;
+
     for (int r = 0; r < data->n_R; ++r)
     {
-        const int z     = data->Map_R[r] - 1;
-        const int nodes = data->n_nodos[r];
+        const int zone = data->Map_R[r] - 1;
 
-        for (int n = 0; n < nodes; ++n)
+        for (int n = 0; n < data->n_nodos[r]; ++n)
         {
             for (int g = 0; g < data->G; ++g)
             {
-                absorptionRatePerNode[g][nodeIndex] = DDResult->matrices.absorptionCrossSection[z][g]
-                                                      * data->FLUXO_ESCALAR[g][nodeIndex];
+                absorptionRatePerNode[g][nodeIndex] = DDResult->matrices.absorptionCrossSection[zone][g]
+                                                      * DDResult->scalarFlux[g][nodeIndex];
             }
+
             nodeIndex++;
         }
     }
@@ -252,8 +262,40 @@ void BuildMatrices::calculateAbsorptionRatePerNode(dados_entrada *data, Calculat
     DDResult->absorptionRatePerNode.swap(absorptionRatePerNode);
 }
 
-std::vector<std::vector<long double>> BuildMatrices::calculateAverageNeutronFluxPerRegion(dados_entrada *data)
+void BuildMatrices::calculateTotalAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult)
 {
+    if (DDResult->absorptionRatePerNode.empty())
+        throw std::invalid_argument("Error: Absorption Rate Per Node Matrix is empty");
+
+    std::vector<long double> absorptionRate(data->n_R, 0.0L);
+    int nodeIndex          = 0;
+    long double regionFlux = 0.0L;
+
+    for (int r = 0; r < data->n_R; ++r)
+    {
+        regionFlux = 0.0L;
+
+        for (int n = 0; n < data->n_nodos[r]; ++n)
+        {
+            for (int g = 0; g < data->G; ++g)
+            {
+                regionFlux += DDResult->absorptionRatePerNode[g][nodeIndex];
+            }
+
+            nodeIndex++;
+        }
+
+        absorptionRate[r] = regionFlux;
+    }
+
+    DDResult->totalAbsorptionRatePerRegion.swap(absorptionRate);
+}
+
+void BuildMatrices::calculateAverageNeutronFluxPerRegion(dados_entrada *data, CalculatedData *DDResult)
+{
+    if (DDResult->scalarFlux.empty())
+        throw std::invalid_argument("Error: Scalar Flux Matrix is empty");
+
     std::vector<std::vector<long double>> averageFlux;
     averageFlux.reserve(data->n_R);
 
@@ -268,8 +310,9 @@ std::vector<std::vector<long double>> BuildMatrices::calculateAverageNeutronFlux
         {
             for (int g = 0; g < data->G; ++g)
             {
-                regionAvgFlux[g] += data->FLUXO_ESCALAR[g][nodeIndex];
+                regionAvgFlux[g] += DDResult->scalarFlux[g][nodeIndex];
             }
+
             nodeIndex++;
         }
 
@@ -281,42 +324,97 @@ std::vector<std::vector<long double>> BuildMatrices::calculateAverageNeutronFlux
         averageFlux.push_back(std::move(regionAvgFlux));
     }
 
-    return averageFlux;
+    DDResult->averageNeutronFluxPerRegion.swap(averageFlux);
 }
 
-std::vector<std::vector<long double>> BuildMatrices::calculateIntegratedNeutronFluxPerRegion(dados_entrada *data)
+void BuildMatrices::calculateIntegratedNeutronFluxPerRegion(dados_entrada *data, CalculatedData *DDResult)
 {
-    std::vector<std::vector<long double>> integratedFlux;
+    if (DDResult->scalarFlux.empty())
+        throw std::invalid_argument("Error: Scalar Flux Matrix is empty");
 
+    std::vector<std::vector<long double>> integratedFlux;
     integratedFlux.reserve(data->n_R);
 
     int nodeIndex = 0;
 
-    for (int r = 0; r < data->n_R; ++r)
+    for (int rIndex = 0; rIndex < data->n_R; ++rIndex)
     {
-        const int nodesInRegion = data->n_nodos[r];
-        const double dx         = data->PASSO[r];
+        long double step = data->PASSO[rIndex];
+        long double regionGroupSum = 0.0L;
         std::vector<long double> regionFlux(data->G, 0.0L);
 
-        for (int g = 0; g < data->G; ++g)
+        for (int n = 0; n < data->n_nodos[rIndex]; ++n)
         {
-            long double sum = 0.0;
-
-            for (int n = 0; n < nodesInRegion - 1; ++n)
+            for (int gIndex = 0; gIndex < data->G; ++gIndex)
             {
-                const double phi1 = data->FLUXO_ESCALAR[g][nodeIndex + n];
-                const double phi2 = data->FLUXO_ESCALAR[g][nodeIndex + n + 1];
-                sum += (phi1 + phi2) * dx * 0.5;
+                long double fluxa    = DDResult->scalarFlux[gIndex][nodeIndex];
+                long double fluxb    = DDResult->scalarFlux[gIndex][nodeIndex + 1];
+
+                regionGroupSum += (fluxa + fluxb);
+
+                regionFlux[gIndex] = regionGroupSum * step * 0.5;
             }
 
-            regionFlux[g] = sum;
+            ++nodeIndex;
         }
 
         integratedFlux.push_back(std::move(regionFlux));
-        nodeIndex += nodesInRegion;
     }
 
-    return integratedFlux;
+    DDResult->integratedNeutronFluxPerRegion.swap(integratedFlux);
+}
+
+void BuildMatrices::calculateTotalNeutronFluxPerGroupPerRegion(dados_entrada *data, CalculatedData *DDResult)
+{
+    if (DDResult->scalarFlux.empty())
+        throw std::invalid_argument("Error: Scalar Flux Matrix is empty");
+
+    std::vector<std::vector<long double>> flux(data->n_R, std::vector<long double>(data->G, 0.0L));
+    int nodeIndex = 0;
+
+    for (int r = 0; r < data->n_R; ++r)
+    {
+        for (int n = 0; n < data->n_nodos[r]; ++n)
+        {
+            for (int g = 0; g < data->G; ++g)
+            {
+                flux[r][g] += DDResult->scalarFlux[g][nodeIndex];
+            }
+
+            nodeIndex++;
+        }
+    }
+
+    DDResult->totalNeutronFluxPerGroupPerRegion.swap(flux);
+}
+
+void BuildMatrices::calculateTotalNeutronFluxPerRegion(dados_entrada *data, CalculatedData *DDResult)
+{
+    if (DDResult->scalarFlux.empty())
+        throw std::invalid_argument("Error: Scalar Flux Matrix is empty");
+
+    std::vector<long double> flux(data->n_R, 0.0L);
+    int nodeIndex = 0;
+    long double regionFlux = 0.0L;
+
+    for (int r = 0; r < data->n_R; ++r)
+    {
+        regionFlux = 0.0L;
+
+        for (int n = 0; n < data->n_nodos[r]; ++n)
+        {
+            for (int g = 0; g < data->G; ++g)
+            {
+                regionFlux += DDResult->scalarFlux[g][nodeIndex];
+            }
+
+            nodeIndex++;
+        }
+
+        flux[r] = regionFlux;
+    }
+
+    DDResult->totalNeutronFluxPerRegion.swap(flux);
 }
 
 void BuildMatrices::copyResourceToDestination(const std::string &resourcePath, const std::string &destinationPath)
@@ -707,7 +805,8 @@ std::vector<std::vector<long double>> BuildMatrices::calculateAbsorptionCrossSec
 {
     if (data->s_t == nullptr || sigmaScattering.empty())
     {
-        throw std::invalid_argument("Error: Invalid input data. Ensure sigmaTotal and sigmaScattering are correctly initialized.");
+        throw std::invalid_argument(
+            "Error: Invalid input data. Ensure sigmaTotal and sigmaScattering are correctly initialized.");
     }
 
     std::vector<std::vector<long double>> absorptionMatrix;
@@ -1201,7 +1300,7 @@ void BuildMatrices::writeAverageNeutronFluxPerRegion(dados_entrada *DDValues, Ca
         outFile << "Region " << rIndex + 1 << std::endl;
 
         // Write table headers
-        outFile << std::left << std::setw(15) << "Group" << "Average Neutron Flux" << std::endl;
+        outFile << std::left << std::setw(15) << "Group" << "Average Neutron Flux Per Region" << std::endl;
 
         for (size_t group = 0; group < DDValues->G; ++group)
         {
@@ -1241,7 +1340,7 @@ void BuildMatrices::writeIntegratedNeutronFluxPerRegion(dados_entrada *DDValues,
         outFile << "Region " << rIndex + 1 << std::endl;
 
         // Write table headers
-        outFile << std::left << std::setw(15) << "Group" << "Average Neutron Flux" << std::endl;
+        outFile << std::left << std::setw(15) << "Group" << "Integrated Neutron Flux Per Region" << std::endl;
 
         for (size_t group = 0; group < DDValues->G; ++group)
         {
@@ -1263,7 +1362,6 @@ void BuildMatrices::writeIntegratedNeutronFluxPerRegion(dados_entrada *DDValues,
 
 void BuildMatrices::writeIntegratedAbsorptionRatePerRegionFile(dados_entrada *DDValues, CalculatedData *DDResult)
 {
-
     if (DDResult->integratedAbsorptionRatePerRegion.empty())
     {
         throw std::runtime_error("Absorption Matrix is empty.");
@@ -1287,7 +1385,7 @@ void BuildMatrices::writeIntegratedAbsorptionRatePerRegionFile(dados_entrada *DD
         outFile << "Region " << rIndex + 1 << std::endl;
 
         // Write table headers
-        outFile << std::left << std::setw(15) << "Group" << "Absorption Rate" << std::endl;
+        outFile << std::left << std::setw(15) << "Group" << "Integrated Absorption Rate Per Region" << std::endl;
 
         for (size_t group = 0; group < DDValues->G; ++group)
         {
@@ -1332,7 +1430,7 @@ void BuildMatrices::writeAverageAbsorptionRateFile(dados_entrada *DDValues, Calc
         outFile << "Region " << rIndex + 1 << std::endl;
 
         // Write table headers
-        outFile << std::left << std::setw(15) << "Group" << "Absorption Rate" << std::endl;
+        outFile << std::left << std::setw(15) << "Group" << "Average Absorption Rate" << std::endl;
 
         for (size_t group = 0; group < DDValues->G; ++group)
         {

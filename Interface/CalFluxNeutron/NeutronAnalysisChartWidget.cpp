@@ -4,6 +4,8 @@
 
 #include <QLineEdit>
 
+#include "InterFaceDefinitions.h"
+
 NeutronAnalysisChartWidget::NeutronAnalysisChartWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::NeutronAnalysisChartWidget)
@@ -34,7 +36,10 @@ void NeutronAnalysisChartWidget::commitChanges()
     ui->widgetChart->filterChange(0); // Always reset to 'All'
     ui->widgetChart->blockSignals(false);
 
-    addTableItems();
+    addTableItemsByGroup();
+    addTableItemsByRegion();
+
+    styleTable();
 }
 
 int NeutronAnalysisChartWidget::getPeriodicityValue() const
@@ -65,19 +70,19 @@ void NeutronAnalysisChartWidget::setRange(long double x1, long double y1, long d
     totalRegionSize = x2;
 }
 
-void NeutronAnalysisChartWidget::setRegionLimit(QList<long double>& limit)
+void NeutronAnalysisChartWidget::setRegionLimit(QList<long double> &limit)
 {
     ui->widgetChart->setRegionLimit(limit);
 }
 
-void NeutronAnalysisChartWidget::setTableItems(std::vector<std::vector<long double>> &&item)
+void NeutronAnalysisChartWidget::setTableItemsByGroup(std::vector<std::vector<long double> > &item)
 {
-    tableItem = std::move(item);
+    tableItemByGroup = std::move(item);
 }
 
-void NeutronAnalysisChartWidget::setTableItems(std::vector<std::vector<long double>> &item)
+void NeutronAnalysisChartWidget::setTotalByRegion(std::vector<long double> &item)
 {
-    tableItem = item;
+    tableItemByRegion = std::move(item);
 }
 
 void NeutronAnalysisChartWidget::setTableDimension(int rowCount, int columnCount)
@@ -97,28 +102,43 @@ void NeutronAnalysisChartWidget::setTableTitle(const QString &title)
     ui->labelTableTitle->setText(title);
 }
 
-void NeutronAnalysisChartWidget::addTableItems()
+void NeutronAnalysisChartWidget::addTableItemsByGroup()
 {
-    if (tableItem.empty())
+    if (tableItemByGroup.empty())
         return;
 
-    const auto rowCount = ui->tableWidget->rowCount();
-    const auto columnCount = ui->tableWidget->columnCount();
+    int rowCount    = tableItemByGroup[0].size();
+    int columnCount = tableItemByGroup.size();
+    int precision   = Interface::getPrecision();
 
-    for (int col = 0; col < columnCount; ++col)
+    for (int row = 0; row < rowCount; ++row)
     {
-        for (int row = 0; row < rowCount; ++row)
+        for (int col = 0; col < columnCount; ++col)
         {
-            QTableWidgetItem *measureItem = new QTableWidgetItem(QString::number(static_cast<double>(tableItem[col][row])));
+            const QString value           = QString::number(static_cast<double>(tableItemByGroup[col][row]), 'g', precision);
+            QTableWidgetItem *measureItem = new QTableWidgetItem(value);
             measureItem->setTextAlignment(Qt::AlignCenter);
             ui->tableWidget->setItem(row, col, measureItem);
         }
     }
+}
 
-    ui->tableWidget->resizeColumnsToContents();
-    ui->tableWidget->resizeRowsToContents();
-    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+void NeutronAnalysisChartWidget::addTableItemsByRegion()
+{
+    if (tableItemByRegion.empty())
+        return;
+
+    int rowCount    = ui->tableWidget->rowCount();
+    int columnCount = tableItemByRegion.size();
+    int precision   = Interface::getPrecision();
+
+    for (int col = 0; col < columnCount; ++col)
+    {
+        const QString value           = QString::number(static_cast<double>(tableItemByRegion[col]), 'g', precision);
+        QTableWidgetItem *measureItem = new QTableWidgetItem(value);
+        measureItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(rowCount - 1, col, measureItem);
+    }
 }
 
 void NeutronAnalysisChartWidget::init()
@@ -148,6 +168,14 @@ void NeutronAnalysisChartWidget::setConnections()
                              ui->tableWidget->setCurrentCell(index - 1, 0);
                          }
                      });
+}
+
+void NeutronAnalysisChartWidget::styleTable()
+{
+    ui->tableWidget->resizeColumnsToContents();
+    ui->tableWidget->resizeRowsToContents();
+    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 void NeutronAnalysisChartWidget::updateChartStep(int step)

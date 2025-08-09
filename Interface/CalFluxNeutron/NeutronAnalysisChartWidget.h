@@ -39,10 +39,11 @@ public:
     void setRange(long double x1 = 0.0, long double y1 = 0.0 ,
                   long double x2 = 0.0, long double y2 = 0.0);
 
-    void setTableItems(std::vector<std::vector<long double> > &&item);
-    void setTableItems(std::vector<std::vector<long double> > &item);
-
     void setRegionLimit(QList<long double> &limit);
+
+    void setTableItemsByGroup(std::vector<std::vector<long double>> &item);
+
+    void setTotalByRegion(std::vector<long double> &item);
 
     void setTableDimension(int rowCount, int columnCount);
 
@@ -53,15 +54,20 @@ public:
 private:
     Ui::NeutronAnalysisChartWidget *ui;
 
-    void addTableItems();
+    void addTableItemsByGroup();
+    void addTableItemsByRegion();
 
     void init();
 
     void setConnections();
 
+    void styleTable();
+
     void updateChartStep(int step);
 
-    std::vector<std::vector<long double>> tableItem;
+    std::vector<std::vector<long double>> tableItemByGroup;
+    std::vector<long double> tableItemByRegion;
+
     double totalRegionSize;
 };
 

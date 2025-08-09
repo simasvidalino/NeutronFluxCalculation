@@ -30,4 +30,5 @@ const char * getScalarFluxTableUnit();
 const char * getToolTipForNodes();
 const int getMaxRegionQtt();
 const char * getXChart();
+const int getPrecision();
 };

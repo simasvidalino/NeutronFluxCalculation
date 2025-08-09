@@ -345,15 +345,19 @@ void MainWindow::updateAbsRateTable(std::shared_ptr<CalculatedData> DDResult)
     }
 
     QStringList groups;
+
     for (int groupIndex = 1; groupIndex <= energyGroup; ++groupIndex)
     {
         groups << "Group " + QString::number(groupIndex);
     }
 
+    groups << "Total";
+
     ui->widgetNeutronAbsorpt->clearTable();
-    ui->widgetNeutronAbsorpt->setTableDimension(energyGroup, regions.size());
+    ui->widgetNeutronAbsorpt->setTableDimension(energyGroup + 1, regions.size());
     ui->widgetNeutronAbsorpt->setTableHeaders(regions, groups);
-    ui->widgetNeutronAbsorpt->setTableItems(DDResult->integratedAbsorptionRatePerRegion);
+    ui->widgetNeutronAbsorpt->setTableItemsByGroup(DDResult->totalAbsorptionRatePerGroupPerRegion);
+    ui->widgetNeutronAbsorpt->setTotalByRegion(DDResult->totalAbsorptionRatePerRegion);
 }
 
 void MainWindow::init()
@@ -605,15 +609,19 @@ void MainWindow::updateFluxTable(std::shared_ptr<CalculatedData> DDResult)
     }
 
     QStringList groups;
+
     for (int groupIndex = 1; groupIndex <= energyGroup; ++groupIndex)
     {
         groups << "Group " + QString::number(groupIndex);
     }
 
+    groups << "Total";
+
     ui->widgetNeutronScalarFlux->clearTable();
-    ui->widgetNeutronScalarFlux->setTableDimension(energyGroup, regions.size());
+    ui->widgetNeutronScalarFlux->setTableDimension(energyGroup + 1, regions.size());
     ui->widgetNeutronScalarFlux->setTableHeaders(regions, groups);
-    ui->widgetNeutronScalarFlux->setTableItems(DDResult->averageNeutronFluxPerRegion);
+    ui->widgetNeutronScalarFlux->setTableItemsByGroup(DDResult->totalNeutronFluxPerGroupPerRegion);
+    ui->widgetNeutronScalarFlux->setTotalByRegion(DDResult->totalNeutronFluxPerRegion);
 }
 
 QString MainWindow::getDefaultName(const QString& name, const QString& extension)

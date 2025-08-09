@@ -143,4 +143,9 @@ const char *getScalarFluxTableUnit()
 {
     return "Scalar Flux per Region ( Neutrons/cm.s )";
 }
+
+const int getPrecision()
+{
+    return 20;
+}
 }

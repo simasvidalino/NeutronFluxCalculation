@@ -52,14 +52,18 @@ struct CalculatedData
     * regionSize             -> Size of each region
     *******************************************************************************************/
 
-    std::vector<std::vector<long double>> scalarFlux;
     std::vector<std::vector<long double>> averageAbsorptionRatePerRegion;
-    std::vector<std::vector<long double>> integratedAbsorptionRatePerRegion;
     std::vector<std::vector<long double>> absorptionRatePerNode;
+    std::vector<std::vector<long double>> integratedAbsorptionRatePerRegion;
+    std::vector<std::vector<long double>> totalAbsorptionRatePerGroupPerRegion;
+
+    std::vector<std::vector<long double>> scalarFlux;
     std::vector<std::vector<long double>> averageNeutronFluxPerRegion;
     std::vector<std::vector<long double>> integratedNeutronFluxPerRegion;
+    std::vector<std::vector<long double>> totalNeutronFluxPerGroupPerRegion;
 
-    std::vector<long double> totalAbsorptionRate;
+    std::vector<long double> totalNeutronFluxPerRegion;
+    std::vector<long double> totalAbsorptionRatePerRegion;
 
     std::string scalarFluxFile;
     std::string averageAbsorptionRatePerRegionFile;
@@ -91,16 +95,22 @@ public:
 
     BuildMatrices(dados_entrada *newDatricesDD_Data, ProjectData *newProjectInterfaceData);
 
+    void calculateAbsorptionRatePerNode(dados_entrada *data, CalculatedData *DDResult);
+
     void calculateAverageAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult);
     void calculateIntegratedAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult);
-    void calculateAbsorptionRatePerNode(dados_entrada *data, CalculatedData *DDResult);
+    void calculateTotalAbsorptionRatePerGroupPerRegion(dados_entrada *data, CalculatedData *DDResult);
+    void calculateTotalAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult);
 
     void calculateLegendreMatrix(dados_entrada* data);
 
-    std::vector<std::vector<long double> > calculateAverageNeutronFluxPerRegion(dados_entrada *data);
-    std::vector<std::vector<long double> > calculateIntegratedNeutronFluxPerRegion(dados_entrada *data);
+    void calculateAverageNeutronFluxPerRegion(dados_entrada *data, CalculatedData *DDResult);
+    void calculateIntegratedNeutronFluxPerRegion(dados_entrada *data, CalculatedData *DDResult);
+    void calculateTotalNeutronFluxPerGroupPerRegion(dados_entrada *data, CalculatedData *DDResult);
+    void calculateTotalNeutronFluxPerRegion(dados_entrada *data, CalculatedData *DDResult);
 
-    std::unique_ptr<dados_entrada> copyProjectDataToRawPointers(ProjectData &proj,  CrossSectionDataFilerParameters& fileParameter);
+    std::unique_ptr<dados_entrada> copyProjectDataToRawPointers(ProjectData &proj,
+                                                                CrossSectionDataFilerParameters &fileParameter);
 
     CalculatedCrossSectionMatrices calculateCrossSectionMatrices(dados_entrada *data);
 
