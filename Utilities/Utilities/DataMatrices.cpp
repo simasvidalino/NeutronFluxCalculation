@@ -38,11 +38,21 @@ void BuildMatrices::destroyInstance()
     }
 }
 
-BuildMatrices::BuildMatrices(dados_entrada *newDatricesDD_Data,
-                             ProjectData *newProjectInterfaceData)
-    : matricesDD_Data(newDatricesDD_Data),
-    projectInterfaceData(newProjectInterfaceData)
+void BuildMatrices::calculateAbsorptionRateData(dados_entrada *data, CalculatedData *DDResult)
 {
+    calculateAbsorptionRatePerNode(data, DDResult);
+    calculateAverageAbsorptionRatePerRegion(data, DDResult);
+    calculateIntegratedAbsorptionRatePerRegion(data, DDResult);
+    calculateTotalAbsorptionRatePerGroupPerRegion(data, DDResult);
+    calculateTotalAbsorptionRatePerRegion(data, DDResult);
+}
+
+void BuildMatrices::calculateScalarNeutronFluxData(dados_entrada *data, CalculatedData *DDResult)
+{
+    calculateAverageNeutronFluxPerRegion(data, DDResult);
+    calculateIntegratedNeutronFluxPerRegion(data,DDResult);
+    calculateTotalNeutronFluxPerRegion(data, DDResult);
+    calculateTotalNeutronFluxPerGroupPerRegion(data, DDResult);
 }
 
 std::unique_ptr<dados_entrada> BuildMatrices::copyProjectDataToRawPointers(ProjectData &proj, CrossSectionDataFilerParameters& fileParameter)
@@ -130,8 +140,6 @@ void BuildMatrices::calculateAverageAbsorptionRatePerRegion(dados_entrada *data,
     if (DDResult->scalarFlux.empty())
         throw std::invalid_argument("Error: Scalar Flux Matrix is empty");
 
-    long double sumTotal = 0.0;
-
     std::vector<std::vector<long double>> absorptionRate(data->n_R, std::vector<long double>(data->G, 0.0));
     std::vector<long double> absorptionRateSummedPerRegion(data->n_R, 0.0);
 
@@ -149,7 +157,7 @@ void BuildMatrices::calculateAverageAbsorptionRatePerRegion(dados_entrada *data,
 
             for (int n = 0; n < nodesInRegion; ++n, ++nodeIndex)
             {
-                long double flux = data->FLUXO_ESCALAR[gIndex][nodeIndex];
+                long double flux = DDResult->scalarFlux[gIndex][nodeIndex];
                 regionGroupSum += flux;
             }
 
@@ -157,13 +165,9 @@ void BuildMatrices::calculateAverageAbsorptionRatePerRegion(dados_entrada *data,
 
             absorptionRate[rIndex][gIndex] = average;
             absorptionRateSummedPerRegion[rIndex]  += average;
-
-            sumTotal += average;
         }
     }
 
-    //std::cout << std::setprecision(20) << std::fixed;
-    //std::cout<<"total "<<sumTotal<<" Doente "<<absorptionRateSummedPerRegion[1]<<" Sadio "<< absorptionRateSummedPerRegion[0] + absorptionRateSummedPerRegion[2]<<std::endl;
     DDResult->averageAbsorptionRatePerRegion.swap(absorptionRate);
 }
 
@@ -172,40 +176,51 @@ void BuildMatrices::calculateIntegratedAbsorptionRatePerRegion(dados_entrada *da
     if (DDResult->matrices.absorptionCrossSection.empty())
         throw std::invalid_argument("Error: Absorption Cross Section Matrix is empty");
 
+    if (DDResult->scalarFlux.empty())
+        throw std::invalid_argument("Error: Scalar Flux Matrix is empty");
+
     std::vector<std::vector<long double>> absorptionRate(data->n_R, std::vector<long double>(data->G, 0.0L));
 
-    for (int gIndex = 0; gIndex < data->G; ++gIndex)
+    int nodeIndex = 0;
+
+    for (int rIndex = 0; rIndex < data->n_R; ++rIndex)
     {
-        int nodeIndex = 0;
+        long double step  = data->PASSO[rIndex];
+        int zIndex        = data->Map_R[rIndex] - 1;
+        int nodesInRegion = data->n_nodos[rIndex];
 
-        for (int rIndex = 0; rIndex < data->n_R; ++rIndex)
+        for (int n = 0; n < nodesInRegion; ++n)
         {
-            long double step           = data->PASSO[rIndex];
-            int zIndex                 = data->Map_R[rIndex] - 1;
-            int nodesInRegion          = data->n_nodos[rIndex];
-            long double sigmaAbs       = DDResult->matrices.absorptionCrossSection[zIndex][gIndex];
-
-            long double regionGroupSum = 0.0;
-
-            for (int n = 0; n < nodesInRegion; ++n, ++nodeIndex)
+            for (int gIndex = 0; gIndex < data->G; ++gIndex)
             {
-                long double fluxa = data->FLUXO_ESCALAR[gIndex][nodeIndex];
-                long double fluxb = data->FLUXO_ESCALAR[gIndex][nodeIndex + 1];
-
-                regionGroupSum += fluxa + fluxb;
+                long double sigmaAbs       = DDResult->matrices.absorptionCrossSection[zIndex][gIndex];
+                //Total 2.28921889943969660 Doente 0.56384786212899666 Sadio 1.72537103731069994
+                long double value      = sigmaAbs * DDResult->scalarFlux[gIndex][nodeIndex] * step;
+                absorptionRate[rIndex][gIndex] += value;
             }
 
-            long double trapezeMethod = sigmaAbs*regionGroupSum*step*0.5;
-
-            absorptionRate[rIndex][gIndex] = trapezeMethod;
+            ++nodeIndex;
         }
     }
 
-    std::cout << std::setprecision(17) << std::fixed;
-    //std::cout<<"total "<<sumTotal<<" Doente "<<absorptionRateSummedPerRegion[1]<<" Sadio "<< absorptionRateSummedPerRegion[0] + absorptionRateSummedPerRegion[2]<<std::endl;
+    std::vector<long double> sum;
+    for (int rIndex = 0; rIndex < data->n_R; ++rIndex)
+    {
+        long double var = 0.0L;
+        for (int gIndex = 0; gIndex < data->G; ++gIndex)
+        {
+            var += absorptionRate[rIndex][gIndex];
+        }
 
-    //DDResult->totalAbsorptionRatePerRegion.swap(absorptionRateSummedPerRegion);
-    DDResult->integratedAbsorptionRatePerRegion.swap(absorptionRate);
+        const QString value = QString::number(var, 'g', 20);
+
+        qInfo() << value << rIndex;
+        sum.push_back(var);
+    }
+    std::cout << std::setprecision(17) << std::fixed;
+    std::cout << "Total " << sum[1] + sum[0] + sum[2] << " Doente " << sum[1] << " Sadio " << sum[0] + sum[2] << std::endl;
+
+    DDResult->integratedAbsorptionRatePerGroupPerRegion.swap(absorptionRate);
 }
 
 void BuildMatrices::calculateTotalAbsorptionRatePerGroupPerRegion(dados_entrada *data, CalculatedData *DDResult)
@@ -343,7 +358,7 @@ void BuildMatrices::calculateIntegratedNeutronFluxPerRegion(dados_entrada *data,
         long double regionGroupSum = 0.0L;
         std::vector<long double> regionFlux(data->G, 0.0L);
 
-        for (int n = 0; n < data->n_nodos[rIndex]; ++n)
+        for (int n = 0; n < data->n_nodos[rIndex] - 1; ++n)
         {
             for (int gIndex = 0; gIndex < data->G; ++gIndex)
             {
@@ -1182,6 +1197,40 @@ std::string BuildMatrices::saveMaterialData(std::string &finalPath, std::string 
     return destinationPath;
 }
 
+void BuildMatrices::writeHTMLAbsorptionRateData(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    writeHTMLAborptionRate(DDValues, DDResult);
+    writeHTMLIntegratedAbsorptionRatePerRegionFile(DDValues, DDResult);
+    writeHTMLAverageAbsorptionRateFile(DDValues, DDResult);
+}
+
+void BuildMatrices::writeHTMLScalarNeutronFluxData(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    writeHTMLNeutronFluxFile(DDValues, DDResult);
+    writeHTMLAverageNeutronFluxPerRegion(DDValues, DDResult);
+    writeHTMLIntegratedFluxByRegion(DDValues, DDResult);
+}
+
+void BuildMatrices::writeHTMLCrossSectionMatrices(dados_entrada *DDValues, CalculatedCrossSectionMatrices *matrices)
+{
+    writeHTMLAbsorptionCrossSectionFile(DDValues, matrices);
+    writeHTMLScatteringCrossSectionFile(DDValues, matrices);
+}
+
+void BuildMatrices::writeTXTAbsorptionRateData(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    writeAbsRatePerNode(DDValues, DDResult);
+    writeIntegratedAbsorptionRatePerRegionFile(DDValues, DDResult);
+    writeAverageAbsorptionRateFile(DDValues, DDResult);
+}
+
+void BuildMatrices::writeTXTScalarNeutronFluxData(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    writeNeutronFluxFile(DDValues, DDResult);
+    writeAverageNeutronFluxPerRegion(DDValues, DDResult);
+    writeIntegratedNeutronFluxPerRegion(DDValues, DDResult);
+}
+
 void BuildMatrices::writeAbsRatePerNode(dados_entrada *DDValues, CalculatedData *DDResult)
 {
     if (DDResult->absorptionRatePerNode.empty())
@@ -1189,7 +1238,7 @@ void BuildMatrices::writeAbsRatePerNode(dados_entrada *DDValues, CalculatedData 
         throw std::runtime_error("absorptionRatePerNode is empty");
     }
 
-    std::string titleStr = computerFileName(DDValues, "Absorption_Rate_Per_Node");
+    std::string titleStr = computerFileName(DDValues, "Absorption_Rate_Per_Node") + ".txt";
     std::ofstream output(titleStr);
 
     if (!output.is_open())
@@ -1272,8 +1321,7 @@ std::string BuildMatrices::computerFileName(dados_entrada* DDValues, std::string
           << "_G"            << DDValues->G
           << "_L"            << DDValues->L
           << "_N"            << DDValues->n
-          << "_Nod"          << DDValues->NODOSX
-          << ".txt";
+          << "_Nod"          << DDValues->NODOSX;
 
     titleStr = title.str();
 
@@ -1282,7 +1330,7 @@ std::string BuildMatrices::computerFileName(dados_entrada* DDValues, std::string
 
 void BuildMatrices::writeAverageNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult)
 {
-    std::string titleStr = computerFileName(DDValues, "Average_Neutron_Flux_Per_Region");
+    std::string titleStr = computerFileName(DDValues, "Average_Neutron_Flux_Per_Region") + ".txt";
     std::ofstream outFile(titleStr);
 
     if (!outFile.is_open())
@@ -1322,7 +1370,7 @@ void BuildMatrices::writeAverageNeutronFluxPerRegion(dados_entrada *DDValues, Ca
 
 void BuildMatrices::writeIntegratedNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult)
 {
-    std::string titleStr = computerFileName(DDValues, "Integrated_Neutron_Flux_Per_Region");
+    std::string titleStr = computerFileName(DDValues, "Integrated_Neutron_Flux_Per_Region") + ".txt";
     std::ofstream outFile(titleStr);
 
     if (!outFile.is_open())
@@ -1362,12 +1410,12 @@ void BuildMatrices::writeIntegratedNeutronFluxPerRegion(dados_entrada *DDValues,
 
 void BuildMatrices::writeIntegratedAbsorptionRatePerRegionFile(dados_entrada *DDValues, CalculatedData *DDResult)
 {
-    if (DDResult->integratedAbsorptionRatePerRegion.empty())
+    if (DDResult->integratedAbsorptionRatePerGroupPerRegion.empty())
     {
         throw std::runtime_error("Absorption Matrix is empty.");
     }
 
-    std::string titleStr = computerFileName(DDValues, "Integrated_Absorption_Rate_Per_Region");
+    std::string titleStr = computerFileName(DDValues, "Integrated_Absorption_Rate_Per_Region") + ".txt";
     std::ofstream outFile(titleStr);
 
     if (!outFile.is_open())
@@ -1390,13 +1438,13 @@ void BuildMatrices::writeIntegratedAbsorptionRatePerRegionFile(dados_entrada *DD
         for (size_t group = 0; group < DDValues->G; ++group)
         {
             outFile << std::left << std::setw(15) << group + 1
-                    << DDResult->integratedAbsorptionRatePerRegion[rIndex][group] << std::endl;
+                    << DDResult->integratedAbsorptionRatePerGroupPerRegion[rIndex][group] << std::endl;
         }
 
         outFile << "-----------------------------------------------------------------------------------------" << std::endl;
 
         // Add a newline for separation between Region if there are multiple Regions
-        if (rIndex < DDResult->integratedAbsorptionRatePerRegion.size() - 1)
+        if (rIndex < DDResult->integratedAbsorptionRatePerGroupPerRegion.size() - 1)
         {
             outFile << std::endl;
         }
@@ -1412,7 +1460,7 @@ void BuildMatrices::writeAverageAbsorptionRateFile(dados_entrada *DDValues, Calc
         throw std::runtime_error("Absorption Matrix is empty.");
     }
 
-    std::string titleStr = computerFileName(DDValues, "Average_Absorption_Rate");
+    std::string titleStr = computerFileName(DDValues, "Average_Absorption_Rate") + ".txt";
     std::ofstream outFile(titleStr);
 
     if (!outFile.is_open())
@@ -1461,7 +1509,7 @@ void BuildMatrices::writeAbsorptionCrossSectionFile(dados_entrada *DDValues, Cal
     auto zoneNumber  = DDValues->n_Z;
     auto groupNumber = DDValues->G;
 
-    std::string titleStr = computerFileName(DDValues, "Absorption_Cross_Section");
+    std::string titleStr = computerFileName(DDValues, "Absorption_Cross_Section") + ".txt";
     std::ofstream outFile(titleStr);
 
     if (!outFile.is_open())
@@ -1505,7 +1553,7 @@ void BuildMatrices::writeNeutronFluxFile(dados_entrada *DDValues, CalculatedData
         throw std::runtime_error("NeutronFlux Matrix is null.");
     }
 
-    std::string titleStr = computerFileName(DDValues, "Scalar_Flux");
+    std::string titleStr = computerFileName(DDValues, "Scalar_Flux") + ".txt";
     std::ofstream output(titleStr);
 
     if (!output.is_open())
@@ -1577,7 +1625,7 @@ void BuildMatrices::writeScatteringCrossSectionFile(dados_entrada *DDValues, Cal
     auto zoneNumber       = DDValues->n_Z;
     auto groupNumber      = DDValues->G;
 
-    std::string titleStr = computerFileName(DDValues, "Scattering_Cross_Section");
+    std::string titleStr = computerFileName(DDValues, "Scattering_Cross_Section") + ".txt";
     std::ofstream output(titleStr);
 
     if (!output.is_open())
@@ -1610,4 +1658,595 @@ void BuildMatrices::writeScatteringCrossSectionFile(dados_entrada *DDValues, Cal
     }
 
     output.close();
+}
+
+void BuildMatrices::writeHTMLNeutronFluxFile(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    if (!DDValues->FLUXO_ESCALAR)
+    {
+        throw std::runtime_error("NeutronFlux Matrix is null.");
+    }
+
+    std::string titleStr = computerFileName(DDValues, "Scalar_Flux") + ".html";
+    std::ofstream out(titleStr);
+
+    if (!out.is_open()) throw std::runtime_error("Error opening file: " + titleStr);
+    DDResult->scalarFluxFile = titleStr;
+
+    const int precisionPos = 2;
+    const int precisionVal = 30;
+
+    out <<
+        R"(<!doctype html>
+            <html lang="en"><head><meta charset="utf-8">
+            <style>
+            html,body{margin:0;padding:16px;background:#121212;color:#ddd;font:14px/1.4 system-ui,Segoe UI,Arial,sans-serif}
+            table{border-collapse:collapse;width:100%;margin-top:8px}
+            th,td{border:1px solid #555;padding:6px 10px}
+            th{text-align:center;background:#1f1f1f;color:#ddd}
+            td.num{text-align:right;font-family:ui-monospace,Consolas,monospace}
+            td.grp{text-align:center}
+            caption{caption-side:top;text-align:left;margin:8px 0;font-weight:600}
+            .info{margin:6px 0 12px;color:#bbb}
+            </style></head><body>
+            )";
+
+    out << "<h2>Scalar Neutron Flux</h2>";
+    out << "<div class='info'><b>Iteration Number:</b> " << DDValues->iteracaoFinal
+        << " &nbsp; <b>Time:</b> " << DDValues->tempoFinalDeProcessamento << "s</div>\n";
+
+    out << "<table>\n<caption>Scalar Neutron Flux</caption>\n";
+    out << "<thead><tr><th>Position x (cm)</th><th>Group</th><th>Scalar Neutron Flux</th></tr></thead>\n<tbody>\n";
+
+    double totalRegionSize = 0.0;
+    for (int r = 0; r < DDValues->n_R; ++r) totalRegionSize += DDValues->TAM[r];
+
+    const int nodStep = std::max(1, static_cast<int>(
+                                        (DDValues->NODOSX * DDValues->periodicidade) / DDValues->TAM_TOTAL));
+
+    double t = 0.0;
+    int nod  = 0;
+
+    std::ostringstream posFmt, valFmt;
+    while (t <= totalRegionSize && nod <= DDValues->NODOSX)
+    {
+        for (int g = 0; g < DDValues->G; ++g)
+        {
+            posFmt.str({}); posFmt.clear();
+            posFmt << std::fixed << std::setprecision(precisionPos) << t;
+
+            valFmt.str({}); valFmt.clear();
+            valFmt << std::scientific << std::setprecision(precisionVal)
+                   << DDValues->FLUXO_ESCALAR[g][nod];
+
+            out << "<tr>"
+                << "<td class='num'>" << (g==0 ? posFmt.str() : "") << "</td>"
+                << "<td class='grp'>" << (g+1) << "</td>"
+                << "<td class='num'>" << valFmt.str() << "</td>"
+                << "</tr>\n";
+        }
+        t   += DDValues->periodicidade;
+        nod += nodStep;
+    }
+
+    out << "</tbody>\n</table>\n</body></html>";
+}
+
+void BuildMatrices::writeHTMLAborptionRate(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    if (DDResult->absorptionRatePerNode.empty())
+        throw std::runtime_error("absorptionRatePerNode is empty");
+
+    std::string titleStr = computerFileName(DDValues, "Absorption_Rate_Per_Node") + ".html";
+    std::ofstream out(titleStr);
+    if (!out.is_open()) throw std::runtime_error("Error opening file: " + titleStr);
+
+    DDResult->absorptionRatePerNodeFile = titleStr;
+
+    const int precisionPos = 2;
+    const int precisionVal = 15;
+
+    out <<
+        R"(<!doctype html>
+            <html lang="en"><head><meta charset="utf-8">
+            <style>
+            html,body{margin:0;padding:16px;background:#121212;color:#ddd;font:14px/1.4 system-ui,Segoe UI,Arial,sans-serif}
+            table{border-collapse:collapse;width:100%;margin-top:8px}
+            th,td{border:1px solid #555;padding:6px 10px}
+            th{text-align:center;background:#1f1f1f;color:#ddd}
+            td.num{text-align:right;font-family:ui-monospace,Consolas,monospace}
+            td.grp{text-align:center}
+            caption{caption-side:top;text-align:left;margin:8px 0;font-weight:600}
+            .info{margin:6px 0 12px;color:#bbb}
+            </style></head><body>
+            )";
+
+    out << "<h2>Absorption Rate</h2>";
+    out << "<table>\n<caption>Absorption Rate Per Node</caption>\n";
+    out << "<thead><tr><th>Position x (cm)</th><th>Group</th><th>Absorption Rate Per Node</th></tr></thead>\n<tbody>\n";
+
+    double totalRegionSize = 0.0;
+    for (int r = 0; r < DDValues->n_R; ++r)
+        totalRegionSize += DDValues->TAM[r];
+
+    const int nodStep = std::max(1, static_cast<int>(
+                                        (DDValues->NODOSX * DDValues->periodicidade) / DDValues->TAM_TOTAL));
+
+    double t = 0.0;
+    int nod  = 0;
+
+    std::ostringstream posFmt, valFmt;
+
+    while (t <= totalRegionSize && nod < DDValues->NODOSX + 1)
+    {
+        for (int g = 0; g < DDValues->G; ++g)
+        {
+            posFmt.str({}); posFmt.clear();
+            posFmt << std::fixed << std::setprecision(precisionPos) << t;
+
+            valFmt.str({}); valFmt.clear();
+            valFmt << std::scientific << std::setprecision(precisionVal)
+                   << DDResult->absorptionRatePerNode[g][nod];
+
+            out << "<tr>"
+                << "<td class='num'>" << (g==0 ? posFmt.str() : "") << "</td>"
+                << "<td class='grp'>" << (g+1) << "</td>"
+                << "<td class='num'>" << valFmt.str() << "</td>"
+                << "</tr>\n";
+        }
+        t   += DDValues->periodicidade;
+        nod += nodStep;
+    }
+
+    out << "</tbody>\n</table>\n</body></html>";
+}
+
+void BuildMatrices::writeHTMLIntegratedFluxByRegion(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    if (DDResult->integratedNeutronFluxPerRegion.empty())
+        throw std::runtime_error("integratedNeutronFluxPerRegion is empty");
+
+    std::string titleStr = computerFileName(DDValues, "Integrated_Neutron_Flux_Per_Region") + ".html";
+    std::ofstream out(titleStr);
+    if (!out.is_open()) throw std::runtime_error("Error opening file: " + titleStr);
+
+    DDResult->integratedNeutronFluxPerRegionFile = titleStr;
+
+    const int precisionVal = 15;
+
+    out <<
+        R"(<!doctype html>
+            <html lang="en"><head><meta charset="utf-8">
+            <style>
+            html,body{margin:0;padding:16px;background:#121212;color:#ddd;font:14px/1.4 system-ui,Segoe UI,Arial,sans-serif}
+            section{margin:16px 0 24px}
+            h2{margin:0 0 8px 0;font-size:18px;font-weight:700;color:#eee}
+            .info{margin:6px 0 12px;color:#bbb}
+            table{border-collapse:collapse;width:100%;margin-top:6px}
+            th,td{border:1px solid #555;padding:6px 10px}
+            th{text-align:center;background:#1f1f1f;color:#ddd}
+            td.grp{text-align:center}
+            td.num{text-align:right;font-family:ui-monospace,Consolas,monospace}
+            caption{caption-side:top;text-align:left;margin:6px 0;font-weight:600}
+            hr{border:none;border-top:1px solid #333;margin:16px 0}
+            </style></head><body>
+            <h2>Integrated Neutron Flux Per Region</h2>
+            <hr>
+            )";
+
+    for (size_t r = 0; r < DDValues->n_R; ++r)
+    {
+        out << "<section>\n";
+        out << "<h3>Region " << (r + 1) << "</h3>\n";
+        out << "<table>\n";
+        out << "<thead><tr><th>Group</th><th>Integrated Neutron Flux Per Region</th></tr></thead>\n<tbody>\n";
+
+        for (size_t g = 0; g < DDValues->G; ++g)
+        {
+            std::ostringstream vfmt;
+            vfmt << std::scientific << std::setprecision(precisionVal)
+                 << DDResult->integratedNeutronFluxPerRegion[r][g];
+
+            out << "<tr>"
+                << "<td class='grp'>" << (g + 1) << "</td>"
+                << "<td class='num'>" << vfmt.str() << "</td>"
+                << "</tr>\n";
+        }
+
+        out << "</tbody>\n</table>\n";
+        out << "</section>\n";
+        if (r + 1 < DDValues->n_R)
+        {
+            out << "<hr/>\n";
+        }
+    }
+
+    out << "</body></html>";
+}
+void BuildMatrices::writeHTMLAverageNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    if (DDResult->averageNeutronFluxPerRegion.empty())
+    {
+        throw std::runtime_error("averageNeutronFluxPerRegion is empty");
+    }
+
+    std::string titleStr = computerFileName(DDValues, "Average_Neutron_Flux_Per_Region") + ".html";
+    std::ofstream out(titleStr);
+    if (!out.is_open())
+    {
+        throw std::runtime_error("Error opening file: " + titleStr);
+    }
+
+    DDResult->averageNeutronFluxPerRegionFile = titleStr;
+
+    const int precisionVal                    = 15;
+
+    out <<
+        R"(<!doctype html>
+            <html lang="en"><head><meta charset="utf-8">
+            <style>
+            html,body{margin:0;padding:16px;background:#121212;color:#ddd;font:14px/1.4 system-ui,Segoe UI,Arial,sans-serif}
+            h1{margin:0 0 12px 0;font-size:22px;font-weight:700;color:#fff}
+            section{margin:16px 0 24px}
+            h2{margin:0 0 8px 0;font-size:18px;font-weight:700;color:#eee}
+            .info{margin:6px 0 12px;color:#bbb}
+            table{border-collapse:collapse;width:100%;margin-top:6px}
+            th,td{border:1px solid #555;padding:6px 10px}
+            th{text-align:center;background:#1f1f1f;color:#ddd}
+            td.grp{text-align:center}
+            td.num{text-align:right;font-family:ui-monospace,Consolas,monospace}
+            hr{border:none;border-top:1px solid #333;margin:16px 0}
+            </style></head><body>
+            <h2>Average Neutron Flux Per Region</h2>
+            <hr>
+            )";
+
+    for (size_t r = 0; r < DDValues->n_R; ++r)
+    {
+        out << "<section>\n";
+        out << "<h2>Region " << (r + 1) << "</h2>\n";
+        out << "<table>\n<thead><tr><th>Group</th><th>Average Neutron Flux</th></tr></thead>\n<tbody>\n";
+
+        for (size_t g = 0; g < DDValues->G; ++g)
+        {
+            std::ostringstream vfmt;
+            vfmt << std::scientific << std::setprecision(precisionVal) << DDResult->averageNeutronFluxPerRegion[r][g];
+
+            out << "<tr>"
+                << "<td class='grp'>" << (g + 1) << "</td>"
+                << "<td class='num'>" << vfmt.str() << "</td>"
+                << "</tr>\n";
+        }
+
+        out << "</tbody>\n</table>\n</section>\n";
+        if (r + 1 < DDValues->n_R)
+        {
+            out << "<hr/>\n";
+        }
+    }
+
+    out << "</body></html>";
+}
+
+void BuildMatrices::writeHTMLIntegratedNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    if (DDResult->integratedNeutronFluxPerRegion.empty())
+    {
+        throw std::runtime_error("integratedNeutronFluxPerRegion is empty");
+    }
+
+    std::string titleStr = computerFileName(DDValues, "Integrated_Neutron_Flux_Per_Region") + ".html";
+    std::ofstream out(titleStr);
+    if (!out.is_open())
+    {
+        throw std::runtime_error("Error opening file: " + titleStr);
+    }
+
+    DDResult->integratedNeutronFluxPerRegionFile = titleStr;
+
+    const int precisionVal                       = 15;
+
+    out <<
+        R"(<!doctype html>
+            <html lang="en"><head><meta charset="utf-8">
+            <style>
+            html,body{margin:0;padding:16px;background:#121212;color:#ddd;font:14px/1.4 system-ui,Segoe UI,Arial,sans-serif}
+            h1{margin:0 0 12px 0;font-size:22px;font-weight:700;color:#fff}
+            section{margin:16px 0 24px}
+            h2{margin:0 0 8px 0;font-size:18px;font-weight:700;color:#eee}
+            .info{margin:6px 0 12px;color:#bbb}
+            table{border-collapse:collapse;width:100%;margin-top:6px}
+            th,td{border:1px solid #555;padding:6px 10px}
+            th{text-align:center;background:#1f1f1f;color:#ddd}
+            td.grp{text-align:center}
+            td.num{text-align:right;font-family:ui-monospace,Consolas,monospace}
+            hr{border:none;border-top:1px solid #333;margin:16px 0}
+            </style></head><body>
+            <h2>Integrated Neutron Flux Per Region</h2>
+            <hr>
+            )";
+
+    for (size_t r = 0; r < DDValues->n_R; ++r)
+    {
+        out << "<section>\n";
+        out << "<h2>Region " << (r + 1) << "</h2>\n";
+        out << "<table>\n<thead><tr><th>Group</th><th>Integrated Neutron Flux</th></tr></thead>\n<tbody>\n";
+
+        for (size_t g = 0; g < DDValues->G; ++g)
+        {
+            std::ostringstream vfmt;
+            vfmt << std::scientific << std::setprecision(precisionVal) << DDResult->integratedNeutronFluxPerRegion[r][g];
+
+            out << "<tr>"
+                << "<td class='grp'>" << (g + 1) << "</td>"
+                << "<td class='num'>" << vfmt.str() << "</td>"
+                << "</tr>\n";
+        }
+
+        out << "</tbody>\n</table>\n</section>\n";
+        if (r + 1 < DDValues->n_R)
+        {
+            out << "<hr/>\n";
+        }
+    }
+
+    out << "</body></html>";
+}
+
+void BuildMatrices::writeHTMLIntegratedAbsorptionRatePerRegionFile(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    if (DDResult->integratedAbsorptionRatePerGroupPerRegion.empty())
+    {
+        throw std::runtime_error("integratedAbsorptionRatePerGroupPerRegion is empty");
+    }
+
+    std::string titleStr = computerFileName(DDValues, "Integrated_Absorption_Rate_Per_Region") + ".html";
+    std::ofstream out(titleStr);
+    if (!out.is_open())
+    {
+        throw std::runtime_error("Error opening file: " + titleStr);
+    }
+
+    DDResult->integratedAbsorptionRatePerRegionFile = titleStr;
+
+    const int precisionVal                          = 15;
+
+    out <<
+        R"(<!doctype html>
+            <html lang="en"><head><meta charset="utf-8">
+            <style>
+            html,body{margin:0;padding:16px;background:#121212;color:#ddd;font:14px/1.4 system-ui,Segoe UI,Arial,sans-serif}
+            h1{margin:0 0 12px 0;font-size:22px;font-weight:700;color:#fff}
+            section{margin:16px 0 24px}
+            h2{margin:0 0 8px 0;font-size:18px;font-weight:700;color:#eee}
+            .info{margin:6px 0 12px;color:#bbb}
+            table{border-collapse:collapse;width:100%;margin-top:6px}
+            th,td{border:1px solid #555;padding:6px 10px}
+            th{text-align:center;background:#1f1f1f;color:#ddd}
+            td.grp{text-align:center}
+            td.num{text-align:right;font-family:ui-monospace,Consolas,monospace}
+            hr{border:none;border-top:1px solid #333;margin:16px 0}
+            </style></head><body>
+            <h2>Integrated Absorption Rate Per Region</h2>
+            <hr>
+            )";
+
+    for (size_t r = 0; r < DDValues->n_R; ++r)
+    {
+        out << "<section>\n";
+        out << "<h2>Region " << (r + 1) << "</h2>\n";
+        out << "<table>\n<thead><tr><th>Group</th><th>Integrated Absorption Rate</th></tr></thead>\n<tbody>\n";
+
+        for (size_t g = 0; g < DDValues->G; ++g)
+        {
+            std::ostringstream vfmt;
+            vfmt << std::scientific << std::setprecision(precisionVal) << DDResult->integratedAbsorptionRatePerGroupPerRegion[r][g];
+
+            out << "<tr>"
+                << "<td class='grp'>" << (g + 1) << "</td>"
+                << "<td class='num'>" << vfmt.str() << "</td>"
+                << "</tr>\n";
+        }
+
+        out << "</tbody>\n</table>\n</section>\n";
+        if (r + 1 < DDValues->n_R)
+        {
+            out << "<hr/>\n";
+        }
+    }
+
+    out << "</body></html>";
+}
+
+void BuildMatrices::writeHTMLAverageAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult)
+{
+    if (DDResult->averageAbsorptionRatePerRegion.empty())
+    {
+        throw std::runtime_error("averageAbsorptionRatePerRegion is empty");
+    }
+
+    std::string titleStr = computerFileName(DDValues, "Average_Absorption_Rate") + ".html";
+    std::ofstream out(titleStr);
+    if (!out.is_open())
+    {
+        throw std::runtime_error("Error opening file: " + titleStr);
+    }
+
+    DDResult->averageAbsorptionRatePerRegionFile = titleStr;
+
+    const int precisionVal                       = 15;
+
+    out <<
+        R"(<!doctype html>
+            <html lang="en"><head><meta charset="utf-8">
+            <style>
+            html,body{margin:0;padding:16px;background:#121212;color:#ddd;font:14px/1.4 system-ui,Segoe UI,Arial,sans-serif}
+            h1{margin:0 0 12px 0;font-size:22px;font-weight:700;color:#fff}
+            section{margin:16px 0 24px}
+            h2{margin:0 0 8px 0;font-size:18px;font-weight:700;color:#eee}
+            .info{margin:6px 0 12px;color:#bbb}
+            table{border-collapse:collapse;width:100%;margin-top:6px}
+            th,td{border:1px solid #555;padding:6px 10px}
+            th{text-align:center;background:#1f1f1f;color:#ddd}
+            td.grp{text-align:center}
+            td.num{text-align:right;font-family:ui-monospace,Consolas,monospace}
+            hr{border:none;border-top:1px solid #333;margin:16px 0}
+            </style></head><body>
+            <h2>Average Absorption Rate Per Region</h2>
+            <hr>
+            )";
+
+    for (size_t r = 0; r < DDValues->n_R; ++r)
+    {
+        out << "<section>\n";
+        out << "<h2>Region " << (r + 1) << "</h2>\n";
+        out << "<table>\n<thead><tr><th>Group</th><th>Average Absorption Rate</th></tr></thead>\n<tbody>\n";
+
+        for (size_t g = 0; g < DDValues->G; ++g)
+        {
+            std::ostringstream vfmt;
+            vfmt << std::scientific << std::setprecision(precisionVal) << DDResult->averageAbsorptionRatePerRegion[r][g];
+
+            out << "<tr>"
+                << "<td class='grp'>" << (g + 1) << "</td>"
+                << "<td class='num'>" << vfmt.str() << "</td>"
+                << "</tr>\n";
+        }
+
+        out << "</tbody>\n</table>\n</section>\n";
+        if (r + 1 < DDValues->n_R)
+        {
+            out << "<hr/>\n";
+        }
+    }
+
+    out << "</body></html>";
+}
+
+void BuildMatrices::writeHTMLAbsorptionCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult)
+{
+    if (DDResult->absorptionCrossSection.empty())
+    {
+        throw std::runtime_error("Absorption Cross Section Matrix is empty.");
+    }
+
+    std::string titleStr = computerFileName(DDValues, "Absorption_Cross_Section") + ".html";
+    std::ofstream out(titleStr);
+    if (!out.is_open())
+    {
+        throw std::runtime_error("Error opening file: " + titleStr);
+    }
+
+    DDResult->absorptionCrossSectionFile = titleStr;
+
+    const int precisionVal               = 15;
+
+    out <<
+        R"(<!doctype html>
+            <html lang="en"><head><meta charset="utf-8">
+            <style>
+            html,body{margin:0;padding:16px;background:#121212;color:#ddd;font:14px/1.4 system-ui,Segoe UI,Arial,sans-serif}
+            h1{margin:0 0 12px 0;font-size:22px;font-weight:700;color:#fff}
+            section{margin:16px 0 24px}
+            h2{margin:0 0 8px 0;font-size:18px;font-weight:700;color:#eee}
+            table{border-collapse:collapse;width:100%;margin-top:6px}
+            th,td{border:1px solid #555;padding:6px 10px}
+            th{text-align:center;background:#1f1f1f;color:#ddd}
+            td.grp{text-align:center}
+            td.num{text-align:right;font-family:ui-monospace,Consolas,monospace}
+            hr{border:none;border-top:1px solid #333;margin:16px 0}
+            </style></head><body>
+            <h2>Absorption Cross Section</h2>
+            <hr>
+            )";
+
+    for (size_t z = 0; z < static_cast<size_t>(DDValues->n_Z); ++z)
+    {
+        out << "<section>\n";
+        out << "<h2>Zone " << (z + 1) << "</h2>\n";
+        out << "<table>\n<thead><tr><th>Energy Group</th><th>Absorption Cross-Section</th></tr></thead>\n<tbody>\n";
+
+        for (size_t g = 0; g < static_cast<size_t>(DDValues->G); ++g)
+        {
+            std::ostringstream vfmt;
+            vfmt << std::scientific << std::setprecision(precisionVal) << DDResult->absorptionCrossSection[z][g];
+
+            out << "<tr>"
+                << "<td class='grp'>" << (g + 1) << "</td>"
+                << "<td class='num'>" << vfmt.str() << "</td>"
+                << "</tr>\n";
+        }
+
+        out << "</tbody>\n</table>\n</section>\n";
+        if (z + 1 < static_cast<size_t>(DDValues->n_Z))
+        {
+            out << "<hr/>\n";
+        }
+    }
+
+    out << "</body></html>";
+}
+
+void BuildMatrices::writeHTMLScatteringCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult)
+{
+    if (DDResult->scatteringCrossSection.empty())
+    {
+        throw std::runtime_error("Scattering Cross Section Matrix is empty.");
+    }
+
+    std::string titleStr = computerFileName(DDValues, "Scattering_Cross_Section") + ".html";
+    std::ofstream out(titleStr);
+    if (!out.is_open())
+    {
+        throw std::runtime_error("Error opening file: " + titleStr);
+    }
+
+    DDResult->totalScatteringCrossSectionFile = titleStr;
+
+    const int precisionVal                    = 15;
+
+    out <<
+        R"(<!doctype html>
+        <html lang="en"><head><meta charset="utf-8">
+        <style>
+        html,body{margin:0;padding:16px;background:#121212;color:#ddd;font:14px/1.4 system-ui,Segoe UI,Arial,sans-serif}
+        h1{margin:0 0 12px 0;font-size:22px;font-weight:700;color:#fff}
+        section{margin:16px 0 24px}
+        h2{margin:0 0 8px 0;font-size:18px;font-weight:700;color:#eee}
+        table{border-collapse:collapse;width:100%;margin-top:6px}
+        th,td{border:1px solid #555;padding:6px 10px}
+        th{text-align:center;background:#1f1f1f;color:#ddd}
+        td.grp{text-align:center}
+        td.num{text-align:right;font-family:ui-monospace,Consolas,monospace}
+        hr{border:none;border-top:1px solid #333;margin:16px 0}
+        </style></head><body>
+        <h2>Scattering Cross Section</h2>
+        <hr>
+        )";
+
+    for (size_t z = 0; z < static_cast<size_t>(DDValues->n_Z); ++z)
+    {
+        out << "<section>\n";
+        out << "<h2>Zone " << (z + 1) << "</h2>\n";
+        out << "<table>\n<thead><tr><th>Energy Group</th><th>Scattering Cross-Section</th></tr></thead>\n<tbody>\n";
+
+        for (size_t g = 0; g < static_cast<size_t>(DDValues->G); ++g)
+        {
+            std::ostringstream vfmt;
+            vfmt << std::scientific << std::setprecision(precisionVal) << DDResult->scatteringCrossSection[z][g];
+
+            out << "<tr>"
+                << "<td class='grp'>" << (g + 1) << "</td>"
+                << "<td class='num'>" << vfmt.str() << "</td>"
+                << "</tr>\n";
+        }
+
+        out << "</tbody>\n</table>\n</section>\n";
+        if (z + 1 < static_cast<size_t>(DDValues->n_Z))
+        {
+            out << "<hr/>\n";
+        }
+    }
+
+    out << "</body></html>";
 }

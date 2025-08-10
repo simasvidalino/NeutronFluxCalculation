@@ -129,13 +129,13 @@ void RegionInputData::onCreateCrossSectionFile()
 
     auto pathStr = scatteringPath.toStdString();
 
-    dlg.loadCrossSectionFile(pathStr);
+    dlg.loadTxtFile(pathStr);
     dlg.setDefaultFileName(projectFileName);
 
     if (!dlg.exec())
         return;
 
-    scatteringPath = dlg.getPathCrossSection();
+    scatteringPath = dlg.getFilePath();
 }
 
 void RegionInputData::onNJOYClicked()

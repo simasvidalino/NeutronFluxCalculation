@@ -47,12 +47,14 @@ private:
         int group, int nodex, int totalRegionSize, const char *key, std::vector<std::vector<long double> > &vectorData) const;
     std::vector<std::vector<long double> > loadArrayPerNode(const QJsonArray &objArray);
 
-    QJsonArray saveArrayPerRegion(int regionNumber,
+    QJsonArray saveArrayPerGroupPerRegion(int regionNumber,
                                   int group,
                                   const char *key,
                                   std::vector<std::vector<long double> > &vectorData) const;
-    std::vector<std::vector<long double> > loadArrayPerRegion(const QJsonArray &objArray);
+    std::vector<std::vector<long double> > loadArrayPerGroupPerRegion(const QJsonArray &objArray);
 
+    QJsonArray saveArrayPerRegion(int regionNumber, const char *key, std::vector<long double> &vectorData) const;
+    std::vector<long double> loadArrayPerRegion(const QJsonArray &objArray);
 
     static NeutronFlowJsonIO *mClass;
 
@@ -98,13 +100,21 @@ private:
     const char *NeutronFluxPointsPerNodeKey          = "NeutronFluxPointsPerNode";
     const char *AbsorptionRatePerNodeKey             = "AbsorptionRatePerNode";
 
-    const char *NeutronFluxPointsPerRegion           = "NeutronFluxPointsPerRegion";
-    const char *AverageAbsorptionRatePerRegionKey    = "AverageAbsorptionRatePerRegion";
-    const char *IntegratedAbsorptionRatePerRegionKey = "IntegratedAbsorptionRatePerRegion";
-    const char *PositionKey                          = "Position";
-    const char *FluxKey                              = "ScalarNeutronFlux";
-    const char *ValuesKey                            = "Values";
-    const char *RegionKey                            = "RegionFlux";
+    const char *AverageNeutronFluxPointsPerRegion          = "AverageNeutronFluxPointsPerRegion";
+    const char *AverageAbsorptionRatePerRegionKey          = "AverageAbsorptionRatePerRegion";
+    const char *IntegratedAbsorptionRatePerRegionKey       = "IntegratedAbsorptionRatePerRegion";
+    const char *PositionKey                                = "Position";
+    const char *FluxKey                                    = "ScalarNeutronFlux";
+    const char *ValuesKey                                  = "Values";
+    const char *ValueKey                                   = "Value";
+    const char *RegionKey                                  = "RegionFlux";
+
+    const char *TotalAbsorptionRatePerGroupPerRegionKey    = "TotalAbsorptionRatePerGroupPerRegion";
+    const char *TotalScalarNeutronFluxPerGroupPerRegionKey = "TotalScalarNeutronFluxPerGroupPerRegion";
+    const char *TotalAbsorptionRatePerRegionKey            = "TotalAbsorptionRatePerRegion";
+    const char *TotalScalarNeutronFluxPerRegionKey         = "TotalScalarNeutronFluxPerRegion";
+
+    //Style
     const char *StyleKey                             = "Style";
     const char *PaletteKey                           = "Palette";
     const char *ScreenModeKey                        = "ScreenMode";

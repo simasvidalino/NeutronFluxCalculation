@@ -30,6 +30,8 @@ MainWindow::~MainWindow()
 {
     stopWork();
 
+    BuildMatrices::getInstance()->destroyInstance();
+
     delete ui;
 }
 
@@ -61,9 +63,9 @@ void MainWindow::calculateNeutronFluxUsingDD()
 
 void MainWindow::changeFont()
 {
-    bool ok;
-    QFont font = QFontDialog::getFont(
-        &ok, QFont("Helvetica [Cronyx]", 10), this);
+    bool ok = true;
+    QFont font = QFontDialog::getFont(&ok, QFont("Helvetica [Cronyx]", 10), this);
+
     if (ok)
     {
         this->setFont(font);
@@ -242,7 +244,7 @@ void MainWindow::showDataInFile(std::string& file)
 
     FileViewerDlg dlg(this);
 
-    dlg.loadCrossSectionFile(file);
+    dlg.readHTMFile(file.c_str());
     dlg.makeReadOnly();
     dlg.exec();
 }
@@ -332,7 +334,7 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
 
 void MainWindow::updateAbsRateTable(std::shared_ptr<CalculatedData> DDResult)
 {
-    if (!DDResult || DDResult->integratedAbsorptionRatePerRegion.empty())
+    if (!DDResult || DDResult->integratedAbsorptionRatePerGroupPerRegion.empty())
         return;
 
     const auto regionNumber = proj->regionNumber;

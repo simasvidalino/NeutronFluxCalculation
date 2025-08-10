@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
+#include <QDesktopServices>
 #include <iostream>
 
 FileViewerDlg::FileViewerDlg(QWidget *parent,
@@ -42,7 +43,7 @@ void FileViewerDlg::openFile()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Open File", "", "Text Files (*.txt)");
 
-    pathCrossSection = fileName;
+    this->filePath = fileName;
 
     readFile(fileName);
 }
@@ -75,7 +76,7 @@ void FileViewerDlg::openFile()
 
 void FileViewerDlg::saveText()
 {
-    writeFile(pathCrossSection);
+    writeFile(filePath);
 }
 
 void FileViewerDlg::saveTextDlg()
@@ -90,7 +91,7 @@ void FileViewerDlg::saveTextDlg()
         fileName.push_back(".txt");
     }
 
-    pathCrossSection = fileName;
+    this->filePath = fileName;
 
     saveText();
 }
@@ -126,6 +127,16 @@ void FileViewerDlg::readFile(QString &filePath)
     file.close();
 }
 
+void FileViewerDlg::readHTMFile(std::string filePath)
+{
+    QFile file(QString::fromStdString(filePath));
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    ui->textEdit->setHtml(QString::fromUtf8(file.readAll()));
+}
+
 void FileViewerDlg::writeFile(QString &filePath)
 {
     //The filePath will be updated in json only when the user runs the app.
@@ -159,17 +170,17 @@ void FileViewerDlg::setConnection()
     QObject::connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &FileViewerDlg::reject);
 }
 
-void FileViewerDlg::loadCrossSectionFile(std::string &newPathCrossSection)
+void FileViewerDlg::loadTxtFile(std::string &file)
 {
-    pathCrossSection = QString::fromStdString(newPathCrossSection);
-    readFile(pathCrossSection);
+    filePath = QString::fromStdString(file);
+    readFile(filePath);
 }
 
 void FileViewerDlg::makeReadOnly()
 {
     ui->groupBox->hide();
     ui->buttonBox->setVisible(false);
-    setWindowTitle(pathCrossSection);
+    setWindowTitle(filePath);
     ui->textEdit->setReadOnly(true);
 }
 
@@ -182,9 +193,9 @@ void FileViewerDlg::setDefaultFileName(const QString &name)
     defaultFileName = baseName;
 }
 
-QString FileViewerDlg::getPathCrossSection() const
+QString FileViewerDlg::getFilePath() const
 {
-    return pathCrossSection;
+    return filePath;
 }
 
 ParseFile::ParseErrors FileViewerDlg::getEParseError() const

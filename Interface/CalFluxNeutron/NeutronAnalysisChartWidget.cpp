@@ -40,6 +40,7 @@ void NeutronAnalysisChartWidget::commitChanges()
     addTableItemsByRegion();
 
     styleTable();
+    ui->tableWidget->setCurrentCell(ui->tableWidget->rowCount() - 1, 0);
 }
 
 int NeutronAnalysisChartWidget::getPeriodicityValue() const
@@ -77,12 +78,12 @@ void NeutronAnalysisChartWidget::setRegionLimit(QList<long double> &limit)
 
 void NeutronAnalysisChartWidget::setTableItemsByGroup(std::vector<std::vector<long double> > &item)
 {
-    tableItemByGroup = std::move(item);
+    tableItemByGroup = item;
 }
 
 void NeutronAnalysisChartWidget::setTotalByRegion(std::vector<long double> &item)
 {
-    tableItemByRegion = std::move(item);
+    tableItemByRegion = item;
 }
 
 void NeutronAnalysisChartWidget::setTableDimension(int rowCount, int columnCount)
@@ -166,6 +167,10 @@ void NeutronAnalysisChartWidget::setConnections()
                          if (index != 0) // Not "All"
                          {
                              ui->tableWidget->setCurrentCell(index - 1, 0);
+                         }
+                         else
+                         {
+                             ui->tableWidget->setCurrentCell(ui->tableWidget->rowCount() - 1, 0);
                          }
                      });
 }

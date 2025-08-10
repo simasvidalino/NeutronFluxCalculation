@@ -22,11 +22,13 @@ public:
 
     ParseFile::ParseErrors getEParseError() const;
 
-    QString getPathCrossSection() const;
+    QString getFilePath() const;
 
-    void loadCrossSectionFile(std::string &newPathCrossSection);
+    void loadTxtFile(std::string &file);
 
     void makeReadOnly();
+
+    void readHTMFile(std::string filePath); //read the txt
 
     void setDefaultFileName(const QString& name);
 
@@ -61,7 +63,7 @@ private:
 
     ParseFile::ParseErrors eParseError;
 
-    QString pathCrossSection;
+    QString filePath;
     QString defaultFileName;
 
 };

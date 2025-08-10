@@ -94,16 +94,19 @@
      <property name="title">
       <string>Open</string>
      </property>
-     <addaction name="actionAbsorption_Cross_Section"/>
+     <addaction name="separator"/>
      <addaction name="actionScattering_Cross_Section"/>
+     <addaction name="actionAbsorption_Cross_Section"/>
      <addaction name="separator"/>
      <addaction name="actionScalar_Flux"/>
-     <addaction name="actionAbsorption_Rate_Per_Region"/>
-     <addaction name="actionIntegrated_Absorption_Rate_Per_Region"/>
      <addaction name="actionAbsorption_Rate_Per_Node"/>
      <addaction name="separator"/>
+     <addaction name="actionAbsorption_Rate_Per_Region"/>
      <addaction name="actionAverage_Neutron_Flux_Per_Region"/>
+     <addaction name="separator"/>
+     <addaction name="separator"/>
      <addaction name="actionIntegrated_Neutron_Flux_Per_Region"/>
+     <addaction name="actionIntegrated_Absorption_Rate_Per_Region"/>
      <addaction name="separator"/>
     </widget>
     <addaction name="menuOpen"/>
@@ -165,32 +168,32 @@
   </action>
   <action name="actionScalar_Flux">
    <property name="text">
-    <string>Scalar_Flux</string>
+    <string>Neutron Scalar Flux</string>
    </property>
   </action>
   <action name="actionAbsorption_Rate_Per_Region">
    <property name="text">
-    <string>Average_Absorption_Rate_Per_Region</string>
+    <string>Average Absorption Rate Per Region</string>
    </property>
   </action>
   <action name="actionAbsorption_Rate_Per_Node">
    <property name="text">
-    <string>Absorption_Rate_Per_Node</string>
+    <string>Absorption Rate</string>
    </property>
   </action>
   <action name="actionAverage_Neutron_Flux_Per_Region">
    <property name="text">
-    <string>Average_Neutron_Flux_Per_Region</string>
+    <string>Average Neutron Flux Per Region</string>
    </property>
   </action>
   <action name="actionIntegrated_Neutron_Flux_Per_Region">
    <property name="text">
-    <string>Integrated_Neutron_Flux_Per_Region</string>
+    <string>Integrated Neutron Flux Per Region</string>
    </property>
   </action>
   <action name="actionIntegrated_Absorption_Rate_Per_Region">
    <property name="text">
-    <string>Integrated_Absorption_Rate_Per_Region</string>
+    <string>Integrated Absorption Rate Per Region</string>
    </property>
   </action>
  </widget>

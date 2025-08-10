@@ -88,17 +88,8 @@ void Worker::calculateAbsorptionNeutronRateData()
     if (!DDResult)
         DDResult = std::make_shared<CalculatedData>();
 
-    //The order metters
-    BuildMatrices::getInstance()->calculateAbsorptionRatePerNode(DDValues.get(), DDResult.get());
-
-    BuildMatrices::getInstance()->calculateAverageAbsorptionRatePerRegion(DDValues.get(), DDResult.get());
-    BuildMatrices::getInstance()->calculateIntegratedAbsorptionRatePerRegion(DDValues.get(), DDResult.get());
-    BuildMatrices::getInstance()->calculateTotalAbsorptionRatePerGroupPerRegion(DDValues.get(), DDResult.get());
-    BuildMatrices::getInstance()->calculateTotalAbsorptionRatePerRegion(DDValues.get(), DDResult.get());
-
-    BuildMatrices::getInstance()->writeAbsRatePerNode(DDValues.get(), DDResult.get());
-    BuildMatrices::getInstance()->writeAverageAbsorptionRateFile(DDValues.get(), DDResult.get());
-    BuildMatrices::getInstance()->writeIntegratedAbsorptionRatePerRegionFile(DDValues.get(), DDResult.get());
+    BuildMatrices::getInstance()->calculateAbsorptionRateData(DDValues.get(), DDResult.get());
+    BuildMatrices::getInstance()->writeHTMLAbsorptionRateData(DDValues.get(), DDResult.get());
 }
 
 void Worker::calculateNeutronFluxData()
@@ -108,14 +99,8 @@ void Worker::calculateNeutronFluxData()
 
     copyScalarNeutronFluxToVector();
 
-    BuildMatrices::getInstance()->calculateAverageNeutronFluxPerRegion(DDValues.get(), DDResult.get());
-
-    BuildMatrices::getInstance()->calculateIntegratedNeutronFluxPerRegion(DDValues.get(),DDResult.get());
-    BuildMatrices::getInstance()->calculateTotalNeutronFluxPerRegion(DDValues.get(), DDResult.get());
-    BuildMatrices::getInstance()->calculateTotalNeutronFluxPerGroupPerRegion(DDValues.get(), DDResult.get());
-
-    BuildMatrices::getInstance()->writeAverageNeutronFluxPerRegion(DDValues.get(), DDResult.get());
-    BuildMatrices::getInstance()->writeIntegratedNeutronFluxPerRegion(DDValues.get(), DDResult.get());
+    BuildMatrices::getInstance()->calculateScalarNeutronFluxData(DDValues.get(), DDResult.get());
+    BuildMatrices::getInstance()->writeHTMLScalarNeutronFluxData(DDValues.get(), DDResult.get());
 }
 
 void Worker::calculateCrossSectionMatrices()
@@ -124,9 +109,7 @@ void Worker::calculateCrossSectionMatrices()
         DDResult = std::make_shared<CalculatedData>();
 
     DDResult->matrices = BuildMatrices::getInstance()->calculateCrossSectionMatrices(DDValues.get());
-
-    BuildMatrices::getInstance()->writeAbsorptionCrossSectionFile(DDValues.get(), &DDResult->matrices);
-    BuildMatrices::getInstance()->writeScatteringCrossSectionFile(DDValues.get(), &DDResult->matrices);
+    BuildMatrices::getInstance()->writeHTMLCrossSectionMatrices(DDValues.get(), &DDResult->matrices);
 }
 
 void Worker::copyScalarNeutronFluxToVector()
@@ -156,8 +139,6 @@ void Worker::copyScalarNeutronFluxToVector()
     }
 
     DDResult->scalarFlux.swap(scalarFlux);
-
-    BuildMatrices::getInstance()->writeNeutronFluxFile(DDValues.get(), DDResult.get());
 }
 
 void Worker::parseCrossSectionDataFileValues()
