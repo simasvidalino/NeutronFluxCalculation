@@ -1073,7 +1073,7 @@ std::tuple<std::vector<double>, std::vector<double>> BuildMatrices::getQuadratur
     {
         auto quad = get_GQ(NWanted);
 
-        saveQuadratureValueInCSV(quad, NWanted, csvPath);
+        saveQuadratureValueInCSV(quad, NWanted, csvPath.string());
 
         return quad;
     }
@@ -1125,7 +1125,7 @@ std::tuple<std::vector<double>, std::vector<double>> BuildMatrices::getQuadratur
     if (false == quadratureFound)
     {
         std::tie(mu_values, w_values) = get_GQ(NWanted);
-        saveQuadratureValueInCSV(std::make_tuple(mu_values, w_values), NWanted, csvPath);
+        saveQuadratureValueInCSV(std::make_tuple(mu_values, w_values), NWanted, csvPath.string());
     }
 
     file.close();
@@ -1191,10 +1191,10 @@ std::string BuildMatrices::saveMaterialData(std::string &finalPath, std::string 
     }
     else
     {
-        copyResourceToDestination(oldPath, destinationPath);
+        copyResourceToDestination(oldPath, destinationPath.string());
     }
 
-    return destinationPath;
+    return destinationPath.string();
 }
 
 void BuildMatrices::writeHTMLAbsorptionRateData(dados_entrada *DDValues, CalculatedData *DDResult)

@@ -95,6 +95,8 @@ ParseFile::ParseErrors ParseFile::parseFile(std::string &fileName)
 
     file.close();
 
+    fileContent.erase(std::remove(fileContent.begin(), fileContent.end(), '\r'), fileContent.end());
+
     return parseString(fileContent);
 }
 

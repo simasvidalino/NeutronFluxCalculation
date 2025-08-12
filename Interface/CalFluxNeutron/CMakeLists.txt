@@ -110,7 +110,11 @@ endif()
 
 add_dependencies(CalFluxNeutron DDMethod Utilities)
 
-target_link_libraries(CalFluxNeutron PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Charts Qt${QT_VERSION_MAJOR}::Core ${LIBS}/libDDMethod.so ${LIBS}/libUtilities.so)
+target_link_libraries(CalFluxNeutron PRIVATE
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Charts Qt${QT_VERSION_MAJOR}::Core
+    DDMethod
+    Utilities)
 
 set_target_properties(CalFluxNeutron PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
