@@ -12,6 +12,12 @@ enum eBoundaryConditionsType
     eReflective
 };
 
+enum eStoppingCriteriaType
+{
+    eAbsoluteDiff,
+    eRelativeDiff
+};
+
 struct RegionData
 {
     //int groupNumber = 1;
@@ -28,7 +34,8 @@ struct RegionData
 struct ProjectData
 {
     eBoundaryConditionsType rightBoundaryConditionsType = eVaccuo;
-    eBoundaryConditionsType leftBoundaryConditionsType  = eVaccuo; //@TBD types
+    eBoundaryConditionsType leftBoundaryConditionsType  = eVaccuo;
+    eStoppingCriteriaType stoppingCriteriaType          = eRelativeDiff;
 
     int maximumIterationsNumber = 1000;
     int energyGroup = 1;

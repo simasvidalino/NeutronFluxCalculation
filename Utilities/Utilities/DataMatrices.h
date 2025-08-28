@@ -139,8 +139,8 @@ public:
     int getIterationNumber() const;
     void setIterationNumber(int newIterationNumber);
 
-    std::tuple<std::vector<double>, std::vector<double>> getQuadratureValues(int NWanted);
-    void saveQuadratureValueInCSV(const std::tuple<std::vector<double>, std::vector<double>> &value,
+    std::tuple<std::vector<long double>, std::vector<long double>> getQuadratureValues(int NWanted);
+    void saveQuadratureValueInCSV(const std::tuple<std::vector<long double>, std::vector<long double>> &value,
                                   int NNew,
                                   std::string filePath);
 

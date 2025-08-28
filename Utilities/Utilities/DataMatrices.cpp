@@ -1018,24 +1018,15 @@ void BuildMatrices::calculateDataMatrices(dados_entrada *data)
     data->smgi                   = new long double **[data->G];
     data->FLUXO_ESCALAR          = new long double *[data->G];
 
-    data->FLUXO_ANGULAR_DIREITA  = new long double **[data->G];
-    data->FLUXO_ANGULAR_ESQUERDA = new long double **[data->G];
-
     for (int g = 0; g < data->G; g++)
     {
         data->FLUXO_ANGULAR[g]          = new long double *[(data->NODOSX) + 1];
         data->smgi[g]                   = new long double *[data->NODOSX];
         data->FLUXO_ESCALAR[g]          = new long double[(data->NODOSX) + 1];
 
-        data->FLUXO_ANGULAR_DIREITA[g]  = new long double *[(data->NODOSX) + 1];
-        data->FLUXO_ANGULAR_ESQUERDA[g] = new long double *[(data->NODOSX) + 1];
-
         for (int o = 0; o <= data->NODOSX; o++)
         {
             data->FLUXO_ANGULAR[g][o]          = new long double[data->n];
-
-            data->FLUXO_ANGULAR_DIREITA[g][o]  = new long double[data->n];
-            data->FLUXO_ANGULAR_ESQUERDA[g][o] = new long double[data->n];
         }
 
         for (int o = 0; o < data->NODOSX; o++)
@@ -1057,10 +1048,10 @@ void BuildMatrices::setIterationNumber(int newIterationNumber)
     iterationNumber = newIterationNumber;
 }
 
-std::tuple<std::vector<double>, std::vector<double>> BuildMatrices::getQuadratureValues(int NWanted)
+std::tuple<std::vector<long double>, std::vector<long double>> BuildMatrices::getQuadratureValues(int NWanted)
 {
-    std::vector<double> mu_values;
-    std::vector<double> w_values;
+    std::vector<long double> mu_values;
+    std::vector<long double> w_values;
 
     std::filesystem::path jsonPath(fileName);
     std::filesystem::path parentDir = jsonPath.parent_path();
@@ -1133,7 +1124,7 @@ std::tuple<std::vector<double>, std::vector<double>> BuildMatrices::getQuadratur
     return std::make_tuple(mu_values, w_values);
 }
 
-void BuildMatrices::saveQuadratureValueInCSV(const std::tuple<std::vector<double>, std::vector<double>> &value,
+void BuildMatrices::saveQuadratureValueInCSV(const std::tuple<std::vector<long double>, std::vector<long double>> &value,
                                              int NNew,
                                              std::string filePath)
 {

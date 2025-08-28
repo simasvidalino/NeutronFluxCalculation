@@ -28,9 +28,6 @@ RegionInputData::RegionInputData(QWidget *parent)
 
     //TBD
     QTimer::singleShot(1000, this, [&](){ init(); });
-
-    //Future implementation
-    ui->pushButtonNJOY->hide();
 }
 
 RegionInputData::~RegionInputData()
@@ -258,6 +255,9 @@ void RegionInputData::init()
     ui->buttonGroupRightBoundaryConditions->setId(ui->radioButtonBCRightPrescribed, 1);
     ui->buttonGroupRightBoundaryConditions->setId(ui->radioButtonBCRightReflexive, 2);
 
+    ui->buttonGroupStoppingCriterion->setId(ui->radioButtonAbsoluteDifference, 0);
+    ui->buttonGroupStoppingCriterion->setId(ui->radioButtonRelativeDifference, 1);
+
     ui->graphicsView->setPalette(Interface::getLightPalette()); //@TBD Even with the dark palette, the graphics must be clear
 
     RegionData dataInitial{50, 50};
@@ -296,8 +296,6 @@ void RegionInputData::setConnections()
 
     connect(ui->spinBoxRegionQtt, &QSpinBox::valueChanged, this, &RegionInputData::setGraphicScene);
     connect(ui->pushButtonClear, &QPushButton::clicked, this, &RegionInputData::clearRegions);
-
-    connect(ui->pushButtonNJOY, &QPushButton::clicked, this, &RegionInputData::onNJOYClicked);
 
     //all operations are done in the MainWindow so as not to overload this window.
     connect(ui->pushButtonCalculateFlux, &QPushButton::clicked, this, [this](){
@@ -542,6 +540,12 @@ void RegionInputData::loadGUI()
 
     ui->spinBoxLegendreOrder->setValue(proj->legendreOrder);
     ui->doubleSpinBoxPeriodicity->setValue(proj->periodicity);
+
+    QAbstractButton *stoppingCriteriaTypeButton = ui->buttonGroupStoppingCriterion->button(
+        proj->stoppingCriteriaType);
+
+    if (stoppingCriteriaTypeButton)
+        stoppingCriteriaTypeButton->click();
 }
 
 void RegionInputData::saveGUI()
@@ -583,6 +587,8 @@ void RegionInputData::saveGUI()
     proj->maximumIterationsNumber = ui->spinBoxMaxNumberIteration->value();
     proj->stopOrder = ui->spinBoxStopOrder->value();
     proj->periodicity = ui->doubleSpinBoxPeriodicity->value();
+
+    proj->stoppingCriteriaType = eStoppingCriteriaType(ui->buttonGroupStoppingCriterion->checkedId());
 }
 
 void RegionInputData::updateRegionsIfZonesChanged()

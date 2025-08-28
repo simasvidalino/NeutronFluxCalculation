@@ -142,6 +142,7 @@ QJsonObject NeutronFlowJsonIO::saveGeneralProjectData() const
         obj[MaximumIterationsNumberKey]     = QString::number(generalProjectData->maximumIterationsNumber);
         obj[LeftBoundaryConditionsTypeKey]  = QString::number(((int)generalProjectData->leftBoundaryConditionsType));
         obj[RightBoundaryConditionsTypeKey] = QString::number(((int)generalProjectData->rightBoundaryConditionsType));
+        obj[StoppingCriteriaTypeKey]       = QString::number(((int)generalProjectData->stoppingCriteriaType));
         obj[ScatteringCrossSectionFileKey]  = generalProjectData->neutronMacroscopicCrossSectionsFilePath.c_str();
         obj[StopOrderKey]                   = QString::number(generalProjectData->stopOrder);
         obj[RegionDataKey]                  = QString::number(generalProjectData->regionNumber);
@@ -204,6 +205,14 @@ ProjectData NeutronFlowJsonIO::loadGeneralProjectData(const QJsonObject &obj)
                     obj[RightBoundaryConditionsTypeKey].toString().toInt(&ok));
 
         verifyConversion(ok, "Error: Json  Right boundary condition type conversion");
+    }
+
+    if (obj.contains(StoppingCriteriaTypeKey))
+    {
+        ProjectData.stoppingCriteriaType = static_cast<eStoppingCriteriaType>(
+            obj[StoppingCriteriaTypeKey].toString().toInt(&ok));
+
+        verifyConversion(ok, "Error: Json  Stopping Criterion type conversion");
     }
 
     if (obj.contains(ScatteringCrossSectionFileKey))

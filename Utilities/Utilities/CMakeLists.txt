@@ -15,7 +15,7 @@ set(HEADERS
 
 # List of cpps
 set(SOURCES
-    DataMatrices.cpp
+
 )
 
 find_package(Qt6 REQUIRED COMPONENTS Core)
@@ -24,7 +24,8 @@ include_directories(${DD_METHOD}) #tbd
 link_directories(${DD_METHOD})
 
 # Create a shared library (.so)
-add_library(Utilities SHARED ${HEADERS} ${SOURCES})
+add_library(Utilities SHARED ${HEADERS} ${SOURCES}
+    DataMatrices.cpp)
 
 target_link_libraries(Utilities
     PRIVATE Qt6::Core
