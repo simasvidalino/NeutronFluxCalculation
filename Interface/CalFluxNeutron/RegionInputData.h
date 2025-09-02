@@ -123,7 +123,7 @@ private:
     int regionQuant;
     std::shared_ptr<dados_entrada> DDValues;
     std::shared_ptr<CalculatedData> DDOutputValues;
-    std::vector<std::vector<long double>> scalarFlux;
+    std::vector<std::vector<long double>> nodalScalarFlux;
 
     QVector<QColor> zoneColors = {
         QColor(143, 187, 217), // Pastel Blue

@@ -55,25 +55,21 @@ struct CalculatedData
     std::vector<std::vector<long double>> averageAbsorptionRatePerRegion;
     std::vector<std::vector<long double>> absorptionRatePerNode;
     std::vector<std::vector<long double>> integratedAbsorptionRatePerGroupPerRegion;
+    std::vector<long double> integratedAbsorptionRatePerZone;
     std::vector<std::vector<long double>> totalAbsorptionRatePerGroupPerRegion;
 
-    std::vector<std::vector<long double>> scalarFlux;
+    std::vector<std::vector<long double>> nodalScalarFlux;
+    std::vector<std::vector<long double>> cellAverageScalarFlux;
     std::vector<std::vector<long double>> averageNeutronFluxPerRegion;
-    std::vector<std::vector<long double>> integratedNeutronFluxPerRegion;
+    std::vector<std::vector<long double>> integratedNeutronFluxPerGroupPerRegion;
     std::vector<std::vector<long double>> totalNeutronFluxPerGroupPerRegion;
 
     std::vector<long double> totalNeutronFluxPerRegion;
     std::vector<long double> totalAbsorptionRatePerRegion;
 
     std::string scalarFluxFile;
-    std::string averageAbsorptionRatePerRegionFile;
-    std::string integratedAbsorptionRatePerRegionFile;
-    std::string absorptionRatePerNodeFile;
-    std::string averageNeutronFluxPerRegionFile;
-    std::string integratedNeutronFluxPerRegionFile;
-
-    std::string totalAbsorptionRateFile;
-    std::string totalScalarNeutronFluxnRateFile;
+    std::string absorptionRateFile;
+    std::string angularNeutronFluxFile;
 
     CalculatedCrossSectionMatrices matrices;
 
@@ -103,13 +99,15 @@ public:
 
     void calculateAverageAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult);
     void calculateIntegratedAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult);
+    void calculateIntegratedAbsorptionRatePerZone(dados_entrada *data, CalculatedData *DDResult);
     void calculateTotalAbsorptionRatePerGroupPerRegion(dados_entrada *data, CalculatedData *DDResult);
     void calculateTotalAbsorptionRatePerRegion(dados_entrada *data, CalculatedData *DDResult);
 
     void calculateLegendreMatrix(dados_entrada* data);
 
     void calculateAverageNeutronFluxPerRegion(dados_entrada *data, CalculatedData *DDResult);
-    void calculateIntegratedNeutronFluxPerRegion(dados_entrada *data, CalculatedData *DDResult);
+    void calculateIntegratedNeutronFluxPerGroupPerRegion(dados_entrada *data, CalculatedData *DDResult);
+    void calculateIntegratedNeutronFluxPerZone(dados_entrada *data, CalculatedData *DDResult);
     void calculateTotalNeutronFluxPerGroupPerRegion(dados_entrada *data, CalculatedData *DDResult);
     void calculateTotalNeutronFluxPerRegion(dados_entrada *data, CalculatedData *DDResult);
 
@@ -139,7 +137,7 @@ public:
     int getIterationNumber() const;
     void setIterationNumber(int newIterationNumber);
 
-    std::tuple<std::vector<long double>, std::vector<long double>> getQuadratureValues(int NWanted);
+    std::tuple<std::vector<long double>, std::vector<long double> > getQuadratureValues(int NWanted);
     void saveQuadratureValueInCSV(const std::tuple<std::vector<long double>, std::vector<long double>> &value,
                                   int NNew,
                                   std::string filePath);
@@ -155,30 +153,23 @@ public:
     void writeTXTScalarNeutronFluxData(dados_entrada *DDValues, CalculatedData *DDResult);
 
 protected:
+    //HTML
+    virtual void writeHTMLNeutronFluxFile(dados_entrada *DDValues, CalculatedData *DDResult);
+    virtual void writeHTMLAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult);
+    virtual void writeHTMLAbsorptionCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);
+    virtual void writeHTMLScatteringCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);
+
     //TXT
     virtual void writeAverageNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult);
-    virtual void writeIntegratedNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult);
+    virtual void writeintegratedNeutronFluxPerGroupPerRegion(dados_entrada *DDValues, CalculatedData *DDResult);
     virtual void writeIntegratedAbsorptionRatePerRegionFile(dados_entrada *DDValues, CalculatedData *DDResult);
     virtual void writeAverageAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult);
 
-    virtual void writeAbsRatePerNode(dados_entrada *DDValues, CalculatedData *DDResult);
+    virtual void writeAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult);
     virtual void writeNeutronFluxFile(dados_entrada *DDValues, CalculatedData *DDResult);
 
     virtual void writeAbsorptionCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);
     virtual void writeScatteringCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);
-
-    //HTML
-    virtual void writeHTMLNeutronFluxFile(dados_entrada *DDValues, CalculatedData *DDResult);
-    virtual void writeHTMLAborptionRate(dados_entrada *DDValues, CalculatedData *DDResult);
-
-    virtual void writeHTMLIntegratedFluxByRegion(dados_entrada *DDValues, CalculatedData *DDResult);
-    virtual void writeHTMLAverageNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult);
-    virtual void writeHTMLIntegratedNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult);
-    virtual void writeHTMLIntegratedAbsorptionRatePerRegionFile(dados_entrada *DDValues, CalculatedData *DDResult);
-    virtual void writeHTMLAverageAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult);
-
-    virtual void writeHTMLAbsorptionCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);
-    virtual void writeHTMLScatteringCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);
 
     virtual std::string computerFileName(dados_entrada *DDValues, std::string name);
 

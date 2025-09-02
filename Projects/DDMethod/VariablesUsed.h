@@ -188,9 +188,7 @@ struct CalculatedData
     double totalLength;
     std::vector<long double> stepSize;
     std::vector<int> cumulativeNodesX;
-   // std::vector<std::vector<std::vector<long double>>> angularFlux;
-    std::vector<std::vector<long double>> scalarFlux;
-    //std::vector<std::vector<std::vector<long double>>> smgi;
+    std::vector<std::vector<long double>> nodalScalarFlux;
     std::vector<double> regionSize;
     int nodesX;
 

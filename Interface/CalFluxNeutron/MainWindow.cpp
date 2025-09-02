@@ -312,7 +312,7 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
         double positionX = 0.0;
         double stepSize = totalRegionSize / static_cast<double>(nodex);
 
-        for (int nod = 0; nod < nodex; ++nod)
+        for (int nod = 0; nod <= nodex; ++nod)
         {
             long double abpValue = absorptionRatePerNode[g][nod];
             maxAbpRateValue = std::max(maxAbpRateValue, abpValue);
@@ -439,32 +439,16 @@ void MainWindow::setConnections()
                 showDataInFile(calculatedData->scalarFluxFile);
             });
 
-    QObject::connect(ui->actionAbsorption_Rate_Per_Region, &QAction::triggered, this, [this]()
+    QObject::connect(ui->actionAbsorption_Rate, &QAction::triggered, this, [this]()
             {
-                showDataInFile(calculatedData->averageAbsorptionRatePerRegionFile);
+                         showDataInFile(calculatedData->absorptionRateFile);
             });
 
-    QObject::connect(ui->actionIntegrated_Absorption_Rate_Per_Region, &QAction::triggered, this, [this]()
+    QObject::connect(ui->actionAbsorption_Rate, &QAction::triggered, this, [this]()
            {
-                         showDataInFile(calculatedData->integratedAbsorptionRatePerRegionFile);
-           });
-
-
-    QObject::connect(ui->actionAbsorption_Rate_Per_Node, &QAction::triggered, this, [this]()
-            {
-                showDataInFile(calculatedData->absorptionRatePerNodeFile);
+                         showDataInFile(calculatedData->angularNeutronFluxFile);
             });
 
-    QObject::connect(ui->actionAverage_Neutron_Flux_Per_Region, &QAction::triggered, this, [this]()
-            {
-                showDataInFile(calculatedData->averageNeutronFluxPerRegionFile);
-            });
-
-
-    QObject::connect(ui->actionIntegrated_Neutron_Flux_Per_Region, &QAction::triggered, this, [this]()
-                     {
-                         showDataInFile(calculatedData->integratedNeutronFluxPerRegionFile);
-                     });
 
     QObject::connect(ui->actionThe_app, &QAction::triggered, this, [this](){
         QMessageBox::information(this, "About", Interface::getAboutApp());
@@ -540,7 +524,7 @@ void MainWindow::loadStyle()
 
 void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
 {
-    if (!DDResult || DDResult->scalarFlux.empty())
+    if (!DDResult || DDResult->nodalScalarFlux.empty())
         return;
 
     if (!proj)
@@ -553,7 +537,7 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
     long double maxY = 0.0;
     double totalRegionSize = 0.0;
     int nodex = 0;
-    const auto scalarFlux = DDResult->scalarFlux;
+    const auto nodalScalarFlux = DDResult->nodalScalarFlux;
     QList<long double> regionLimit;
 
     for (int rIndex = 0; rIndex < regionNumber; ++rIndex)
@@ -574,9 +558,9 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
 
         double positionX = 0.0;
 
-        for (int nod = 0; nod < nodex; ++nod)
+        for (int nod = 0; nod <= nodex; ++nod)
         {
-            long double fluxValue = scalarFlux[g][nod];
+            long double fluxValue = nodalScalarFlux[g][nod];
             maxY = std::max(maxY, fluxValue);
 
             QPointF point(positionX, fluxValue);

@@ -75,7 +75,7 @@ std::shared_ptr<dados_entrada> RegionInputData::getDdValues() const
 
 const std::vector<std::vector<long double>> &RegionInputData::getScalarFlux() const
 {
-    return scalarFlux;
+    return nodalScalarFlux;
 }
 
 std::vector<int> RegionInputData::calculateRegionHeights()

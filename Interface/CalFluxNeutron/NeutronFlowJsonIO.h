@@ -90,11 +90,6 @@ private:
     const char *AbsorptionCrossSectionFilePath         = "AbsorptionCrossSectionFilePath";
 
     const char *ScalarFluxFileKey                        = "ScalarFluxFile";
-    const char *AverageAbsorptionRatePerRegionFileKey    = "AverageAbsorptionRatePerRegionFile";
-    const char *IntegratedAbsorptionRatePerRegionFileKey = "IntegratedAbsorptionRatePerRegionFile";
-    const char *AbsorptionRatePerNodeFileKey             = "AbsorptionRatePerNodeFile";
-    const char *AverageNeutronFluxPerRegionFileKey       = "AverageNeutronFluxPerRegionFile";
-    const char *IntegratedNeutronFluxPerRegionFileKey    = "IntegratedNeutronFluxPerRegionFile";
 
     //Results
     const char *CalculationResultsKey                = "CalculationResults";

@@ -117,28 +117,36 @@ void Worker::copyScalarNeutronFluxToVector()
     if (this->thread()->isInterruptionRequested())
         return;
 
-    int nodex = 0;
-    std::vector<std::vector<long double>> scalarFlux;
+    // Nodes represent the vertices of the mesh, and cells represent the intervals between them.
+    const int totalNode  = DDValues->NODOSX + 1;
+    const int totalCells = DDValues->NODOSX;
 
-    if (!DDResult)
-        DDResult = std::make_shared<CalculatedData>();
+    std::vector<std::vector<long double>> scalarFluxCellAvg(DDValues->G, std::vector<long double>(totalCells));
+    std::vector<std::vector<long double>> scalarFlux(DDValues->G, std::vector<long double>(totalNode));
 
-    for (int rIndex = 0; rIndex < DDValues->n_R; ++rIndex)
-        nodex += DDValues->n_nodos[rIndex];
-
+    //Nodal
     for (int g = 0; g < DDValues->G; ++g)
     {
-        std::vector<long double> scalarFluxGroup;
-        for (int nod = 0; nod < nodex; ++nod)
+        for (int nod = 0; nod < totalNode; ++nod)
         {
-            long double fluxValue = DDValues->FLUXO_ESCALAR[g][nod];
-            scalarFluxGroup.push_back(fluxValue);
+            scalarFlux[g][nod] = DDValues->FLUXO_ESCALAR[g][nod];
         }
-
-        scalarFlux.push_back(scalarFluxGroup);
     }
 
-    DDResult->scalarFlux.swap(scalarFlux);
+    //Average
+    for (int g = 0; g < DDValues->G; ++g)
+    {
+        for (int nod = 0; nod < totalCells; ++nod)
+        {
+            const long double phiL = scalarFlux[g][nod];
+            const long double phiR = scalarFlux[g][nod + 1];
+
+            scalarFluxCellAvg[g][nod] =  ( 0.5L * (phiL + phiR) );
+        }
+    }
+
+    DDResult->nodalScalarFlux.swap(scalarFlux);
+    DDResult->cellAverageScalarFlux.swap(scalarFluxCellAvg);
 }
 
 void Worker::parseCrossSectionDataFileValues()
@@ -148,7 +156,9 @@ void Worker::parseCrossSectionDataFileValues()
                                              proj->zoneNumber);
 
     if (ParseFile::ParseErrors::eOk != ParseFile::getInstance()->parseFile(proj->neutronMacroscopicCrossSectionsFilePath))
+    {
         throw std::logic_error(ParseFile::getInstance()->makeInstruction());
+    }
 }
 
 void Worker::setCancelResult()
