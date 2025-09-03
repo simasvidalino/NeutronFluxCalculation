@@ -134,10 +134,12 @@ void MapRegion::initDialog()
 
     ui->tableWidgetRegion->setCellWidget(eMaterialZone, 0, comboBox);
 
-    auto nodesItem = new QTableWidgetItem("");
-    nodesItem->setToolTip(Interface::getToolTipForNodes());
+    auto *nodesSpinBox = new QSpinBox();
+    nodesSpinBox->setMinimum(1);
+    nodesSpinBox->setToolTip(Interface::getToolTipForNodes());
 
-    ui->tableWidgetRegion->setItem(eNodes,          0, nodesItem);
+    ui->tableWidgetRegion->setCellWidget(eNodes, 0, nodesSpinBox);
+
     ui->tableWidgetRegion->setItem(eRegionSize,     0, new QTableWidgetItem(""));
     ui->tableWidgetRegion->setItem(ePhysicalSource, 0, new QTableWidgetItem(""));
 
@@ -230,7 +232,13 @@ std::unique_ptr<RegionData> MapRegion::getRegionData() const
             data->zoneStr = chosenMaterial.toStdString();
             data->physicalSource = regionData->physicalSource;
             data->quote = ui->tableWidgetRegion->item(eRegionSize, 0)->text().toDouble(&ok);
-            data->node = ui->tableWidgetRegion->item(eNodes, 0)->text().toInt(&ok);
+
+            QSpinBox* spinBox = qobject_cast<QSpinBox*>(ui->tableWidgetRegion->cellWidget(eNodes, 0));
+
+            if ( nullptr != spinBox)
+            {
+                data->node = spinBox->value();
+            }
         }
         else
         {
@@ -277,7 +285,13 @@ void MapRegion::loadData(const QStringList &newAllZonasStr, std::unique_ptr<Regi
 
     fillTableInMaterial();
 
-    ui->tableWidgetRegion->item(eNodes, 0)->setText(QString::number(regionData->node));
+    QSpinBox* spinBox = qobject_cast<QSpinBox*>(ui->tableWidgetRegion->cellWidget(eNodes, 0));
+
+    if ( nullptr != spinBox)
+    {
+        spinBox->setValue(regionData->node);
+    }
+
     ui->tableWidgetRegion->item(eRegionSize, 0)->setText(QString::number(regionData->quote));
 
     //Create a string with physical source
