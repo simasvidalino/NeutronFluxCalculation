@@ -107,7 +107,8 @@ void MapRegion::onPhysicalSource()
 {
     TableInputDlg dlg(this);
 
-    dlg.configTable(groupNumber, QString("Physical Source"), QString("Group"));
+    dlg.setWindowTitle("Physical Source");
+    dlg.configTable(groupNumber, QString("Data"), QString("Group"));
 
     if (regionData->physicalSource.has_value())
         dlg.setColumnValues(0, regionData->physicalSource.value());

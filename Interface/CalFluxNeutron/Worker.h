@@ -26,7 +26,6 @@ signals:
     void errorOccurred(const QString &error);
     void finished();
     void outputData(std::shared_ptr<CalculatedData>);
-    void entrytData(std::shared_ptr<dados_entrada>); //TBD delete it
     void nodalScalarFlux(std::vector<std::vector<long double>>&);
     void averageAbsorptionRatePerRegion(std::vector<long double>);
 

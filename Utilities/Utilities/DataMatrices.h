@@ -152,10 +152,21 @@ public:
     void writeTXTAbsorptionRateData(dados_entrada *DDValues, CalculatedData *DDResult);
     void writeTXTScalarNeutronFluxData(dados_entrada *DDValues, CalculatedData *DDResult);
 
+    int getDataVisualizationType() const;
+    void setDataVisualizationType(int newDataVisualizationType);
+
 protected:
     //HTML
-    virtual void writeHTMLNeutronFluxFile(dados_entrada *DDValues, CalculatedData *DDResult);
-    virtual void writeHTMLAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult);
+    virtual void writeHTMLNeutronFluxFilePerPeridiocity(dados_entrada *DDValues, CalculatedData *DDResult);
+    virtual void writeHTMLAbsorptionRateFilePerPeridiocity(dados_entrada *DDValues, CalculatedData *DDResult);
+
+    virtual void writeHTMLNeutronFluxFilePerRegionInterface(dados_entrada *DDValues, CalculatedData *DDResult);
+    virtual void writeHTMLAbsorptionRateFilePerRegionInterface(dados_entrada *DDValues, CalculatedData *DDResult);
+
+    virtual void determinePositionIncrement(std::vector<int> &nodeIndices,
+                                            std::vector<double> &positions,
+                                            dados_entrada *DDValues);
+
     virtual void writeHTMLAbsorptionCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);
     virtual void writeHTMLScatteringCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);
 
@@ -205,6 +216,8 @@ private:
     int periodicity     = 0;
     int leftBCType      = 0;
     int rightBCType     = 0;
+
+    int dataVisualizationType = 1;
 
     dados_entrada *matricesDD_Data;
     ProjectData *projectInterfaceData;

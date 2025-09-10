@@ -77,7 +77,7 @@ private:
     const char *ScatteringCrossSectionFileKey          = "NeutronMacroscopicCrossSections";
     const char *StopOrderKey                           = "StopOrder";
     const char *StoppingCriteriaTypeKey                = "StoppingCriteriaType";
-
+    const char *DataVisualizationTypeKey               = "DataVisualizationType";
 
     const char *NodeKey                                = "NodePerRegion";
     const char *MaterialColorKey                       = "MaterialColor";

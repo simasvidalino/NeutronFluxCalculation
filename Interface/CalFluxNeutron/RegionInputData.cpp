@@ -148,7 +148,8 @@ void RegionInputData::onOpenBCRightInputTable()
     TableInputDlg dlg(this);
     const int rowCount = ui->spinBoxGroup->value(); // energy group
 
-    dlg.configTable(rowCount, QString("Right Boundary Conditions"), QString("Group"));
+    dlg.setWindowTitle("Right Boundary Conditions");
+    dlg.configTable(rowCount, QString("Data"), QString("Group"));
 
     if (bcRight.has_value())
         dlg.setColumnValues(0, bcRight.value());
@@ -164,7 +165,8 @@ void RegionInputData::onOpenBCLeftInputTable()
     TableInputDlg dlg(this);
     const int rowCount = ui->spinBoxGroup->value(); // energy group
 
-    dlg.configTable(rowCount, QString("Left Boundary Conditions"), QString("Group"));
+    dlg.setWindowTitle("Left Boundary Conditions");
+    dlg.configTable(rowCount, QString("Data"), QString("Group"));
 
     dlg.setColumnValues(0, bcLeft.value_or(std::vector<double>{}));
 
@@ -258,6 +260,9 @@ void RegionInputData::init()
     ui->buttonGroupStoppingCriterion->setId(ui->radioButtonAbsoluteDifference, 0);
     ui->buttonGroupStoppingCriterion->setId(ui->radioButtonRelativeDifference, 1);
 
+    ui->buttonGroupDataVisualization->setId(ui->radioButtonDataVisualizationRegion, 0);
+    ui->buttonGroupDataVisualization->setId(ui->radioButtonDataVisualizationPeriodicity, 1);
+
     ui->graphicsView->setPalette(Interface::getLightPalette()); //@TBD Even with the dark palette, the graphics must be clear
 
     RegionData dataInitial{50, 50};
@@ -316,6 +321,18 @@ void RegionInputData::setConnections()
         }
 
         ui->pushButtonAddLeftPrecribedBCValues->setEnabled(enable); });
+
+    connect(ui->buttonGroupDataVisualization, &QButtonGroup::buttonClicked,
+            this, [this](auto button)
+            {
+                bool enable = false;
+
+                if (button == ui->radioButtonDataVisualizationPeriodicity)
+                {
+                    enable = true;
+                }
+
+                ui->doubleSpinBoxPeriodicity->setEnabled(enable); });
 
     connect(ui->buttonGroupRightBoundaryConditions, &QButtonGroup::buttonClicked,
             this, [this](auto button)
@@ -546,6 +563,12 @@ void RegionInputData::loadGUI()
 
     if (stoppingCriteriaTypeButton)
         stoppingCriteriaTypeButton->click();
+
+    QAbstractButton *dataVisualizationButton = ui->buttonGroupDataVisualization->button(
+        proj->dataVisualizationType);
+
+    if (dataVisualizationButton)
+        dataVisualizationButton->click();
 }
 
 void RegionInputData::saveGUI()
@@ -588,7 +611,8 @@ void RegionInputData::saveGUI()
     proj->stopOrder = ui->spinBoxStopOrder->value();
     proj->periodicity = ui->doubleSpinBoxPeriodicity->value();
 
-    proj->stoppingCriteriaType = eStoppingCriteriaType(ui->buttonGroupStoppingCriterion->checkedId());
+    proj->stoppingCriteriaType  = eStoppingCriteriaType(ui->buttonGroupStoppingCriterion->checkedId());
+    proj->dataVisualizationType = eDataVisualizationType(ui->buttonGroupDataVisualization->checkedId());
 }
 
 void RegionInputData::updateRegionsIfZonesChanged()

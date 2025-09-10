@@ -18,6 +18,12 @@ enum eStoppingCriteriaType
     eRelativeDiff
 };
 
+enum eDataVisualizationType
+{
+    eConstantPeriodicity,
+    eRegionInterface
+};
+
 struct RegionData
 {
     //int groupNumber = 1;
@@ -36,6 +42,7 @@ struct ProjectData
     eBoundaryConditionsType rightBoundaryConditionsType = eVaccuo;
     eBoundaryConditionsType leftBoundaryConditionsType  = eVaccuo;
     eStoppingCriteriaType stoppingCriteriaType          = eRelativeDiff;
+    eDataVisualizationType dataVisualizationType        = eConstantPeriodicity;
 
     int maximumIterationsNumber = 1000;
     int energyGroup = 1;

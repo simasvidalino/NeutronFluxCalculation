@@ -141,7 +141,8 @@ QJsonObject NeutronFlowJsonIO::saveGeneralProjectData() const
         obj[MaximumIterationsNumberKey]     = QString::number(generalProjectData->maximumIterationsNumber);
         obj[LeftBoundaryConditionsTypeKey]  = QString::number(((int)generalProjectData->leftBoundaryConditionsType));
         obj[RightBoundaryConditionsTypeKey] = QString::number(((int)generalProjectData->rightBoundaryConditionsType));
-        obj[StoppingCriteriaTypeKey]       = QString::number(((int)generalProjectData->stoppingCriteriaType));
+        obj[StoppingCriteriaTypeKey]        = QString::number(((int)generalProjectData->stoppingCriteriaType));
+        obj[DataVisualizationTypeKey]       = QString::number(((int)generalProjectData->dataVisualizationType));
         obj[ScatteringCrossSectionFileKey]  = generalProjectData->neutronMacroscopicCrossSectionsFilePath.c_str();
         obj[StopOrderKey]                   = QString::number(generalProjectData->stopOrder);
         obj[RegionDataKey]                  = QString::number(generalProjectData->regionNumber);
@@ -212,6 +213,14 @@ ProjectData NeutronFlowJsonIO::loadGeneralProjectData(const QJsonObject &obj)
             obj[StoppingCriteriaTypeKey].toString().toInt(&ok));
 
         verifyConversion(ok, "Error: Json  Stopping Criterion type conversion");
+    }
+
+    if (obj.contains(DataVisualizationTypeKey))
+    {
+        ProjectData.dataVisualizationType = static_cast<eDataVisualizationType>(
+            obj[DataVisualizationTypeKey].toString().toInt(&ok));
+
+        verifyConversion(ok, "Error: Json Data Visualization type conversion");
     }
 
     if (obj.contains(ScatteringCrossSectionFileKey))

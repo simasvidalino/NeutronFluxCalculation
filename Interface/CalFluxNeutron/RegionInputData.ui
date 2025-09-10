@@ -86,33 +86,59 @@
      </layout>
     </widget>
    </item>
-   <item row="4" column="0">
-    <widget class="QGroupBox" name="groupBoxCrossSection">
-     <property name="title">
-      <string>Cross-Section Data</string>
+   <item row="6" column="2">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout" columnstretch="1,1" rowminimumheight="0">
-      <item row="0" column="0">
-       <widget class="QPushButton" name="pushButtonCreateCrossSection">
-        <property name="text">
-         <string>File Data</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <spacer name="horizontalSpacer_4">
-        <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="6" column="7">
+    <spacer name="horizontalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="4">
+    <widget class="QSpinBox" name="spinBoxRegionQtt">
+     <property name="minimum">
+      <number>0</number>
+     </property>
+     <property name="maximum">
+      <number>10</number>
+     </property>
+     <property name="value">
+      <number>1</number>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2" rowspan="5" colspan="6">
+    <widget class="QGraphicsView" name="graphicsView">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::Box</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Raised</enum>
+     </property>
     </widget>
    </item>
    <item row="2" column="0">
@@ -228,66 +254,10 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="2" rowspan="5" colspan="6">
-    <widget class="QGraphicsView" name="graphicsView">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::Shape::Box</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Shadow::Raised</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1" rowspan="7">
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Orientation::Vertical</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="4">
-    <widget class="QSpinBox" name="spinBoxRegionQtt">
-     <property name="minimum">
-      <number>0</number>
-     </property>
-     <property name="maximum">
-      <number>10</number>
-     </property>
-     <property name="value">
-      <number>1</number>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="3" colspan="2">
-    <widget class="QPushButton" name="pushButtonCalculateFlux">
+   <item row="0" column="5">
+    <widget class="QPushButton" name="pushButtonClear">
      <property name="text">
-      <string>Calculate Flux</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="7">
-    <spacer name="horizontalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Orientation::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="0" column="2" colspan="2">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Number Of Region:</string>
+      <string>Clear</string>
      </property>
     </widget>
    </item>
@@ -364,16 +334,6 @@
          <property name="topMargin">
           <number>12</number>
          </property>
-         <item row="0" column="0">
-          <widget class="QRadioButton" name="radioButtonAbsoluteDifference">
-           <property name="text">
-            <string>Absolute difference </string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroupStoppingCriterion</string>
-           </attribute>
-          </widget>
-         </item>
          <item row="0" column="1">
           <widget class="QRadioButton" name="radioButtonRelativeDifference">
            <property name="text">
@@ -387,61 +347,58 @@
            </attribute>
           </widget>
          </item>
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="radioButtonAbsoluteDifference">
+           <property name="text">
+            <string>Absolute difference </string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroupStoppingCriterion</string>
+           </attribute>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="6" column="2">
-    <spacer name="horizontalSpacer">
+   <item row="6" column="3" colspan="2">
+    <widget class="QPushButton" name="pushButtonCalculateFlux">
+     <property name="text">
+      <string>Calculate Flux</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" rowspan="7">
+    <widget class="Line" name="line">
      <property name="orientation">
-      <enum>Qt::Orientation::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="6" column="5">
-    <widget class="QPushButton" name="pushButtonCancel">
-     <property name="text">
-      <string>Cancel</string>
+      <enum>Qt::Orientation::Vertical</enum>
      </property>
     </widget>
    </item>
-   <item row="0" column="5">
-    <widget class="QPushButton" name="pushButtonClear">
+   <item row="0" column="2" colspan="2">
+    <widget class="QLabel" name="label">
      <property name="text">
-      <string>Clear</string>
+      <string>Number Of Region:</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="0">
-    <widget class="QGroupBox" name="groupBox">
+   <item row="4" column="0">
+    <widget class="QGroupBox" name="groupBoxCrossSection">
      <property name="title">
-      <string>Data Visualization</string>
+      <string>Cross-Section Data</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_3">
+     <layout class="QGridLayout" name="gridLayout" columnstretch="1,1" rowminimumheight="0">
       <item row="0" column="0">
-       <widget class="QLabel" name="labelPeriodicity">
+       <widget class="QPushButton" name="pushButtonCreateCrossSection">
         <property name="text">
-         <string>Periodicity</string>
+         <string>File Data</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBoxPeriodicity">
-        <property name="value">
-         <double>1.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <spacer name="horizontalSpacer_3">
+       <spacer name="horizontalSpacer_4">
         <property name="orientation">
          <enum>Qt::Orientation::Horizontal</enum>
         </property>
@@ -456,13 +413,57 @@
      </layout>
     </widget>
    </item>
+   <item row="6" column="5">
+    <widget class="QPushButton" name="pushButtonCancel">
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QGroupBox" name="groupBoxDataVisualization">
+     <property name="title">
+      <string>Data Visualization</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QRadioButton" name="radioButtonDataVisualizationRegion">
+        <property name="text">
+         <string>By region boundaries</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroupDataVisualization</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QRadioButton" name="radioButtonDataVisualizationPeriodicity">
+        <property name="text">
+         <string>By Periodicity </string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroupDataVisualization</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QDoubleSpinBox" name="doubleSpinBoxPeriodicity">
+        <property name="value">
+         <double>1.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroupLeftBoundaryConditions"/>
   <buttongroup name="buttonGroupStoppingCriterion"/>
   <buttongroup name="buttonGroupRightBoundaryConditions"/>
+  <buttongroup name="buttonGroupLeftBoundaryConditions"/>
+  <buttongroup name="buttonGroupDataVisualization"/>
  </buttongroups>
 </ui>
