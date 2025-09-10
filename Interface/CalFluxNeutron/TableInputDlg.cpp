@@ -103,6 +103,9 @@ void TableInputDlg::initDlg()
     ui->tableView->setItemDelegateForColumn(0, new DecimalDelegate(this));
 
     ui->toolButtonPasteData->setDefaultAction(ui->actionPaste);
+
+    ui->toolButtonCopyData->hide();
+    ui->toolButtonPasteData->hide();
 }
 
 void TableInputDlg::onPasteFromClipboard()
@@ -142,8 +145,32 @@ void TableInputDlg::onPasteFromClipboard()
     qInfo()<<"testo colado"<<text;
 }
 
+void TableInputDlg::onClearAll()
+{
+    ui->toolButtonClearAll->setFocus();
+    auto model            = ui->tableView->model();
+
+    const int rowCount    = model->rowCount();
+    const int columnCount = model->columnCount();
+
+    for (int row = 0; row < rowCount; ++row)
+    {
+        for (int column = 0; column < columnCount; ++column)
+        {
+            QModelIndex index = model->index(row, column);
+            if (index.isValid())
+            {
+                model->setData(index, 0.0, Qt::EditRole);
+            }
+        }
+    }
+}
+
 void TableInputDlg::setConnections()
 {
     QObject::connect(ui->toolButtonPasteData->defaultAction(), &QAction::triggered, this,
             &TableInputDlg::onPasteFromClipboard);
+
+    QObject::connect(ui->toolButtonClearAll, &QToolButton::clicked,
+                     this, &TableInputDlg::onClearAll);
 }

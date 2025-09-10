@@ -67,6 +67,7 @@ public:
 
 private slots:
     void onPasteFromClipboard();
+    void onClearAll();
 
 private:
     Ui::TableInputDlg *ui;
