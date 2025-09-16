@@ -88,6 +88,10 @@ void NeutronAnalysisChartWidget::setTotalByRegion(std::vector<long double> &item
 
 void NeutronAnalysisChartWidget::setTableDimension(int rowCount, int columnCount)
 {
+    //We don't need "Total" row because "Total is the sum of all groups
+    if (rowCount == 2)
+        rowCount = 1;
+
     ui->tableWidget->setRowCount(rowCount);
     ui->tableWidget->setColumnCount(columnCount);
 }
