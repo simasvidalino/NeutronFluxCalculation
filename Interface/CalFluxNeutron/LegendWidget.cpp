@@ -3,7 +3,17 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
-LegendWidget::LegendWidget(QChart *chart, QWidget *parent) : QDialog(parent)
+LegendWidget::LegendWidget(QChart *chart, QWidget *parent)
+    : QDialog(parent)
+{
+    setupLegend(chart);
+}
+
+LegendWidget::~LegendWidget()
+{
+}
+
+void LegendWidget::setupLegend(QChart *chart)
 {
     setModal(false);
 
@@ -14,6 +24,12 @@ LegendWidget::LegendWidget(QChart *chart, QWidget *parent) : QDialog(parent)
     // Add legend
     for (QLegendMarker *marker : chart->legend()->markers())
     {
+        QString markerText = marker->series()->name();
+        if (markerText.isEmpty())
+        {
+            continue;
+        }
+
         QWidget *item = new QWidget();
         auto *itemLayout = new QHBoxLayout(item);
         itemLayout->setSpacing(5);
@@ -24,7 +40,7 @@ LegendWidget::LegendWidget(QChart *chart, QWidget *parent) : QDialog(parent)
         icon->setStyleSheet(QString("background-color: %1; border: 1px solid black;")
                                 .arg(marker->brush().color().name()));
 
-        QLabel *text = new QLabel(marker->series()->name());
+        QLabel *text = new QLabel(markerText);
 
         itemLayout->addWidget(icon, 0, Qt::AlignVCenter);
         itemLayout->addWidget(text, 1, Qt::AlignVCenter);
@@ -39,8 +55,4 @@ LegendWidget::LegendWidget(QChart *chart, QWidget *parent) : QDialog(parent)
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(scrollArea);
     setLayout(mainLayout);
-}
-
-LegendWidget::~LegendWidget()
-{
 }
