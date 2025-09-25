@@ -242,11 +242,11 @@ void MainWindow::showDataInFile(std::string& file)
     if (file.empty())
         return;
 
-    FileViewerDlg dlg(this);
-
-    dlg.readHTMFile(file.c_str());
-    dlg.makeReadOnly();
-    dlg.exec();
+    FileViewerDlg *dlg = new FileViewerDlg(this);
+    dlg->readHTMFile(file.c_str());
+    dlg->makeReadOnly();
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->show();
 }
 
 bool MainWindow::saveProject(bool saveMaterialDataFile)
@@ -358,8 +358,8 @@ void MainWindow::updateAbsRateTable(std::shared_ptr<CalculatedData> DDResult)
     ui->widgetNeutronAbsorpt->clearTable();
     ui->widgetNeutronAbsorpt->setTableDimension(energyGroup + 1, regions.size());
     ui->widgetNeutronAbsorpt->setTableHeaders(regions, groups);
-    ui->widgetNeutronAbsorpt->setTableItemsByGroup(DDResult->totalAbsorptionRatePerGroupPerRegion);
-    ui->widgetNeutronAbsorpt->setTotalByRegion(DDResult->totalAbsorptionRatePerRegion);
+    ui->widgetNeutronAbsorpt->setTableItemsByGroup(DDResult->integratedAbsorptionRatePerGroupPerRegion);
+    ui->widgetNeutronAbsorpt->setTotalByRegion(DDResult->integratedAbsorptionRatePerRegion);
 }
 
 void MainWindow::init()
@@ -582,7 +582,7 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
 
 void MainWindow::updateFluxTable(std::shared_ptr<CalculatedData> DDResult)
 {
-    if (DDResult->averageNeutronFluxPerRegion.empty())
+    if (DDResult->averageNeutronFluxPerGroupPerRegion.empty())
         return;
 
     const auto regionNumber = proj->regionNumber;
@@ -606,7 +606,7 @@ void MainWindow::updateFluxTable(std::shared_ptr<CalculatedData> DDResult)
     ui->widgetNeutronScalarFlux->clearTable();
     ui->widgetNeutronScalarFlux->setTableDimension(energyGroup + 1, regions.size());
     ui->widgetNeutronScalarFlux->setTableHeaders(regions, groups);
-    ui->widgetNeutronScalarFlux->setTableItemsByGroup(DDResult->totalNeutronFluxPerGroupPerRegion);
+    ui->widgetNeutronScalarFlux->setTableItemsByGroup(DDResult->averageNeutronFluxPerGroupPerRegion);
     ui->widgetNeutronScalarFlux->setTotalByRegion(DDResult->totalNeutronFluxPerRegion);
 }
 

@@ -137,6 +137,7 @@ void MapRegion::initDialog()
 
     auto *nodesSpinBox = new QSpinBox();
     nodesSpinBox->setMinimum(1);
+    nodesSpinBox->setMaximum(100000);
     nodesSpinBox->setToolTip(Interface::getToolTipForNodes());
 
     ui->tableWidgetRegion->setCellWidget(eNodes, 0, nodesSpinBox);

@@ -54,7 +54,7 @@ void BuildMatrices::calculateAbsorptionRateData(dados_entrada *data, CalculatedD
 
 void BuildMatrices::calculateScalarNeutronFluxData(dados_entrada *data, CalculatedData *DDResult)
 {
-    calculateAverageNeutronFluxPerRegion(data, DDResult);
+    calculateAverageNeutronFluxPerGroupPerRegion(data, DDResult);
     calculateIntegratedNeutronFluxPerGroupPerRegion(data,DDResult);
     calculateTotalNeutronFluxPerRegion(data, DDResult);
     calculateTotalNeutronFluxPerGroupPerRegion(data, DDResult);
@@ -242,6 +242,7 @@ void BuildMatrices::calculateIntegratedAbsorptionRatePerZone( dados_entrada *dat
               << std::endl;
 
     DDResult->integratedAbsorptionRatePerZone.swap(sumPerZone);
+    DDResult->integratedAbsorptionRatePerRegion.swap(integratedAbsorptionRatePerRegion);
 }
 
 void BuildMatrices::calculateTotalAbsorptionRatePerGroupPerRegion(dados_entrada *data, CalculatedData *DDResult)
@@ -330,7 +331,7 @@ void BuildMatrices::calculateTotalAbsorptionRatePerRegion(dados_entrada *data, C
     DDResult->totalAbsorptionRatePerRegion.swap(absorptionRate);
 }
 
-void BuildMatrices::calculateAverageNeutronFluxPerRegion(dados_entrada *data, CalculatedData *DDResult)
+void BuildMatrices::calculateAverageNeutronFluxPerGroupPerRegion(dados_entrada *data, CalculatedData *DDResult)
 {
     if (DDResult->cellAverageScalarFlux.empty())
         throw std::invalid_argument("Error: cell Average Scalar Flux Matrix is empty");
@@ -359,7 +360,12 @@ void BuildMatrices::calculateAverageNeutronFluxPerRegion(dados_entrada *data, Ca
         }
     }
 
-    DDResult->averageNeutronFluxPerRegion.swap(averageFlux);
+    DDResult->averageNeutronFluxPerGroupPerRegion.swap(averageFlux);
+}
+
+void BuildMatrices::calculateAverageNeutronFluxPerRegion(dados_entrada *data, CalculatedData *DDResult)
+{
+
 }
 
 void BuildMatrices::calculateIntegratedNeutronFluxPerGroupPerRegion(dados_entrada *data, CalculatedData *DDResult)
@@ -389,7 +395,7 @@ void BuildMatrices::calculateIntegratedNeutronFluxPerGroupPerRegion(dados_entrad
 
     DDResult->integratedNeutronFluxPerGroupPerRegion.swap(integratedFlux);
 }
-
+//Cálculo inutil
 void BuildMatrices::calculateTotalNeutronFluxPerGroupPerRegion(dados_entrada *data, CalculatedData *DDResult)
 {
     if (DDResult->cellAverageScalarFlux.empty())
@@ -416,31 +422,24 @@ void BuildMatrices::calculateTotalNeutronFluxPerGroupPerRegion(dados_entrada *da
 
 void BuildMatrices::calculateTotalNeutronFluxPerRegion(dados_entrada *data, CalculatedData *DDResult)
 {
-    if (DDResult->cellAverageScalarFlux.empty())
-        throw std::invalid_argument("Error: Cell Average Scalar Flux Matrix is empty");
+    if (DDResult->averageNeutronFluxPerGroupPerRegion.empty())
+        throw std::invalid_argument("Error: Average Scalar Flux per Group per Region Matrix is empty");
 
-    std::vector<long double> flux(data->n_R, 0.0L);
-    int nodeIndex = 0;
-    long double regionFlux = 0.0L;
+    std::vector<long double> fluxRegion(data->n_R, 0.0L);
 
     for (int r = 0; r < data->n_R; ++r)
     {
-        regionFlux = 0.0L;
+        long double flux = 0.0L;
 
-        for (int n = 0; n < data->n_nodos[r]; ++n)
+        for (int g = 0; g < data->G; ++g)
         {
-            for (int g = 0; g < data->G; ++g)
-            {
-                regionFlux += DDResult->cellAverageScalarFlux[g][nodeIndex];
-            }
-
-            nodeIndex++;
+            flux += DDResult->averageNeutronFluxPerGroupPerRegion[r][g];
         }
 
-        flux[r] = regionFlux;
+        fluxRegion[r] = flux;
     }
 
-    DDResult->totalNeutronFluxPerRegion.swap(flux);
+    DDResult->totalNeutronFluxPerRegion.swap(fluxRegion);
 }
 
 void BuildMatrices::copyResourceToDestination(const std::string &resourcePath, const std::string &destinationPath)
@@ -1313,8 +1312,7 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerPeridiocity(dados_entrada *DDValu
         totalRegionSize += DDValues->TAM[r];
     }
 
-    // Nodal Scalar Flux section: Table with positions at mesh points, sampled by periodicity, groups as columns
-    out << "<h2>Nodal Scalar Flux at Mesh Points</h2>\n";
+    out << "<h2>Nodal Scalar Flux </h2>\n";
     out << "<table><thead><tr><th>Position x (cm)</th>";
     for (size_t g = 0; g < DDValues->G; ++g)
     {
@@ -1442,7 +1440,7 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerPeridiocity(dados_entrada *DDValu
         {
             valFmt.str("");
             valFmt.clear();
-            valFmt << std::scientific << std::setprecision(precisionVal) << DDResult->averageNeutronFluxPerRegion[r][g];
+            valFmt << std::scientific << std::setprecision(precisionVal) << DDResult->averageNeutronFluxPerGroupPerRegion[r][g];
             out << "<td class='num'>" << valFmt.str() << "</td>";
         }
         out << "</tr>\n";
@@ -1701,7 +1699,7 @@ void BuildMatrices::writeHTMLAbsorptionCrossSectionFile(dados_entrada *DDValues,
 
     DDResult->absorptionCrossSectionFile = titleStr;
 
-    const int precisionVal               = 15;
+    const int precisionVal               = 6;
 
     out <<
         R"(<!doctype html>
@@ -1731,7 +1729,7 @@ void BuildMatrices::writeHTMLAbsorptionCrossSectionFile(dados_entrada *DDValues,
         for (size_t g = 0; g < static_cast<size_t>(DDValues->G); ++g)
         {
             std::ostringstream vfmt;
-            vfmt << std::scientific << std::setprecision(precisionVal) << DDResult->absorptionCrossSection[z][g];
+            vfmt << std::defaultfloat << std::scientific << std::setprecision(precisionVal) << DDResult->absorptionCrossSection[z][g];
 
             out << "<tr>"
                 << "<td class='grp'>" << (g + 1) << "</td>"
@@ -1884,7 +1882,7 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerRegionInterface( dados_entrada *D
     }
 
     // Nodal Scalar Flux section: Table with positions at mesh points, sampled by periodicity, groups as columns
-    out << "<h2>Nodal Scalar Flux at Mesh Points</h2>\n";
+    out << "<h2>Nodal Scalar Flux</h2>\n";
     out << "<table><thead><tr><th>Position x (cm)</th>";
     for (size_t g = 0; g < DDValues->G; ++g)
     {
@@ -1939,7 +1937,7 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerRegionInterface( dados_entrada *D
         {
             valFmt.str("");
             valFmt.clear();
-            valFmt << std::scientific << std::setprecision(precisionVal) << DDResult->averageNeutronFluxPerRegion[r][g];
+            valFmt << std::scientific << std::setprecision(precisionVal) << DDResult->averageNeutronFluxPerGroupPerRegion[r][g];
             out << "<td class='num'>" << valFmt.str() << "</td>";
         }
         out << "</tr>\n";
@@ -2341,13 +2339,13 @@ void BuildMatrices::writeAverageNeutronFluxPerRegion(dados_entrada *DDValues, Ca
         for (size_t group = 0; group < DDValues->G; ++group)
         {
             outFile << std::left << std::setw(15) << group + 1
-                    << DDResult->averageNeutronFluxPerRegion[rIndex][group] << std::endl;
+                    << DDResult->averageNeutronFluxPerGroupPerRegion[rIndex][group] << std::endl;
         }
 
         outFile << "-----------------------------------------------------------------------------------------" << std::endl;
 
         // Add a newline for separation between Region if there are multiple Regions
-        if (rIndex < DDResult->averageNeutronFluxPerRegion.size() - 1)
+        if (rIndex < DDResult->averageNeutronFluxPerGroupPerRegion.size() - 1)
         {
             outFile << std::endl;
         }

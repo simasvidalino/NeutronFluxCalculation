@@ -136,12 +136,12 @@ const char *getXChart()
 const char *getAbsorptionTableUnit()
 {
     //Absorption per node * volume
-    return "Absorption Rate per Region ( Absorption/s )";
+    return "Total Neutron Absorption Rate per Region ( Absorption/s )";
 }
 
 const char *getScalarFluxTableUnit()
 {
-    return "Scalar Flux per Region ( Neutrons/cm.s )";
+    return "Average Scalar Flux per Region ( Neutrons/cm².s )";
 }
 
 const int getPrecision()

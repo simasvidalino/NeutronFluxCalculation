@@ -90,6 +90,7 @@ private:
     const char *AbsorptionCrossSectionFilePath         = "AbsorptionCrossSectionFilePath";
 
     const char *ScalarFluxFileKey                        = "ScalarFluxFile";
+    const char *AbsorptionRateFileKey                    = "AbsorptionRateFile";
 
     //Results
     const char *CalculationResultsKey                = "CalculationResults";

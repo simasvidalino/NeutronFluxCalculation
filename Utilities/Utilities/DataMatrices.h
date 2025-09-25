@@ -55,12 +55,13 @@ struct CalculatedData
     std::vector<std::vector<long double>> averageAbsorptionRatePerRegion;
     std::vector<std::vector<long double>> absorptionRatePerNode;
     std::vector<std::vector<long double>> integratedAbsorptionRatePerGroupPerRegion;
+    std::vector<long double> integratedAbsorptionRatePerRegion;
     std::vector<long double> integratedAbsorptionRatePerZone;
     std::vector<std::vector<long double>> totalAbsorptionRatePerGroupPerRegion;
 
     std::vector<std::vector<long double>> nodalScalarFlux;
     std::vector<std::vector<long double>> cellAverageScalarFlux;
-    std::vector<std::vector<long double>> averageNeutronFluxPerRegion;
+    std::vector<std::vector<long double>> averageNeutronFluxPerGroupPerRegion;
     std::vector<std::vector<long double>> integratedNeutronFluxPerGroupPerRegion;
     std::vector<std::vector<long double>> totalNeutronFluxPerGroupPerRegion;
 
@@ -105,6 +106,7 @@ public:
 
     void calculateLegendreMatrix(dados_entrada* data);
 
+    void calculateAverageNeutronFluxPerGroupPerRegion(dados_entrada *data, CalculatedData *DDResult);
     void calculateAverageNeutronFluxPerRegion(dados_entrada *data, CalculatedData *DDResult);
     void calculateIntegratedNeutronFluxPerGroupPerRegion(dados_entrada *data, CalculatedData *DDResult);
     void calculateIntegratedNeutronFluxPerZone(dados_entrada *data, CalculatedData *DDResult);

@@ -322,6 +322,7 @@ QJsonObject NeutronFlowJsonIO::saveCalculatedData() const
         obj[TotalScatteringCrossSectionFilePathKey]   = calculatedData->matrices.totalScatteringCrossSectionFile.c_str();
         obj[AbsorptionCrossSectionFilePath]           = calculatedData->matrices.absorptionCrossSectionFile.c_str();
         obj[ScalarFluxFileKey]                        = calculatedData->scalarFluxFile.c_str();
+        obj[AbsorptionRateFileKey]                    = calculatedData->absorptionRateFile.c_str();
 
         for (int rIndex = 0; rIndex < generalProjectData->regionNumber; ++rIndex)
         {
@@ -344,7 +345,7 @@ QJsonObject NeutronFlowJsonIO::saveCalculatedData() const
         obj[AverageNeutronFluxPointsPerRegion]    = saveArrayPerGroupPerRegion(generalProjectData->regionNumber,
                                                                             generalProjectData->energyGroup,
                                                                             AverageNeutronFluxPointsPerRegion,
-                                                                            calculatedData->averageNeutronFluxPerRegion);
+                                                                            calculatedData->averageNeutronFluxPerGroupPerRegion);
 
         obj[AverageAbsorptionRatePerRegionKey]    = saveArrayPerGroupPerRegion(generalProjectData->regionNumber,
                                                                             generalProjectData->energyGroup,
@@ -393,6 +394,9 @@ CalculatedData NeutronFlowJsonIO::loadCalculatedData(const QJsonObject& obj)
     if (obj.contains(ScalarFluxFileKey))
         calculatedData.scalarFluxFile = obj[ScalarFluxFileKey].toString().toStdString();
 
+    if (obj.contains(AbsorptionRateFileKey))
+        calculatedData.absorptionRateFile = obj[AbsorptionRateFileKey].toString().toStdString();
+
     if (obj.contains(NeutronFluxPointsPerNodeKey))
         calculatedData.nodalScalarFlux = loadArrayPerNode(obj[NeutronFluxPointsPerNodeKey].toArray());
 
@@ -400,7 +404,7 @@ CalculatedData NeutronFlowJsonIO::loadCalculatedData(const QJsonObject& obj)
         calculatedData.absorptionRatePerNode = loadArrayPerNode(obj[AbsorptionRatePerNodeKey].toArray());
 
     if (obj.contains(AverageNeutronFluxPointsPerRegion))
-        calculatedData.averageNeutronFluxPerRegion = loadArrayPerGroupPerRegion(obj[AverageNeutronFluxPointsPerRegion].toArray());
+        calculatedData.averageNeutronFluxPerGroupPerRegion = loadArrayPerGroupPerRegion(obj[AverageNeutronFluxPointsPerRegion].toArray());
 
     if (obj.contains(AverageAbsorptionRatePerRegionKey))
         calculatedData.averageAbsorptionRatePerRegion = loadArrayPerGroupPerRegion(obj[AverageAbsorptionRatePerRegionKey].toArray());
