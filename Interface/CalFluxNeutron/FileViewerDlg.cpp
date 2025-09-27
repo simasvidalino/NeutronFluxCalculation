@@ -56,22 +56,25 @@ void FileViewerDlg::openFile()
 
     ParseFile::getInstance()->setProjectData(energyGroup, legendreOrder, zoneNumber);
 
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle("Project data information.");
+    msgBox.setWindowFlags( Qt::Dialog | Qt::CustomizeWindowHint );
+    msgBox.setIcon(QMessageBox::Information);
+    msgBox.addButton(QMessageBox::Ok);
+
     eParseError = ParseFile::getInstance()->parseString(fileContent);
 
     if (eParseError == ParseFile::ParseErrors::eOk)
     {
-        qInfo("Parser Information: Simple analysis passed");
+        msgBox.setText("Parser Information: Simple analysis passed ");
     }
     else
     {
-        QMessageBox msgBox(this);
-        msgBox.setWindowTitle("Project data and material data do not match.");
-        msgBox.setWindowFlags( Qt::Dialog | Qt::CustomizeWindowHint );
-        msgBox.setIcon(QMessageBox::Information);
-        msgBox.setText(ParseFile::getInstance()->makeInstruction().c_str());
-        msgBox.addButton(QMessageBox::Ok);
-        msgBox.exec();
+        msgBox.setText("<p>Project data and material data do not match.</p>");
+        msgBox.setInformativeText(ParseFile::getInstance()->makeInstruction().c_str());
     }
+
+        msgBox.exec();
 
     return eParseError;
 }
