@@ -79,6 +79,39 @@ std::string ParseFile::makeInstruction()
     return instruction;
 }
 
+std::string ParseFile::makeExample()
+{
+    std::string example;
+
+    for (int zone = 1; zone <= referenceNumberOfZones; ++zone)
+    {
+        example += "///Zone " + std::to_string(zone) + "\n";
+        example += "//Total Cross Section g (g=1.." + std::to_string(referenceEnergyGroup) + ")\n";
+        for (int g = 0; g < referenceEnergyGroup; ++g)
+        {
+            example += "0.0 ";
+        }
+
+        example += "\n";
+
+        for (int l = 0; l <= referencelegendreOrder; ++l)
+        {
+            example += "//Scattering Cross Section " + std::to_string(l) + " g'g (g row; g' colunm)\n";
+            for (int g = 0; g < referenceEnergyGroup; ++g)
+            {
+                for (int gline = 0; gline < referenceEnergyGroup; ++gline)
+                {
+                    example += "0.0 ";
+                }
+
+                example += "\n";
+            }
+        }
+    }
+
+    return example;
+}
+
 ParseFile::ParseErrors ParseFile::parseFile(std::string &fileName)
 {
     QFile file(fileName.c_str());
@@ -179,7 +212,8 @@ int ParseFile::findNumberInNextLine(std::string &input, std::regex beginPattern)
 
 int ParseFile::findLegenderOrder(const std::string &input)
 {
-    std::regex pattern(R"(//\s*Sigma\s+Espalhamento\s+(\d+))");
+    std::regex pattern(R"(//\s*(?:Sigma\s+Espalhamento|Scattering\s+Cross\s+Section)\s+(\d+))");
+
     std::sregex_iterator it(input.begin(), input.end(), pattern);
     std::sregex_iterator end;
 

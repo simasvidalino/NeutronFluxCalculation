@@ -67,14 +67,23 @@ void FileViewerDlg::openFile()
     if (eParseError == ParseFile::ParseErrors::eOk)
     {
         msgBox.setText("Parser Information: Simple analysis passed ");
+        msgBox.exec();
     }
     else
     {
+        QPushButton *exampleButton = msgBox.addButton("Generate Example", QMessageBox::ActionRole);
+
         msgBox.setText("<p>Project data and material data do not match.</p>");
         msgBox.setInformativeText(ParseFile::getInstance()->makeInstruction().c_str());
-    }
-
         msgBox.exec();
+
+        if (msgBox.clickedButton() == exampleButton)
+        {
+            QString exampleText = QString::fromStdString(ParseFile::getInstance()->makeExample());
+
+            ui->textEdit->setText(exampleText);
+        }
+    }
 
     return eParseError;
 }

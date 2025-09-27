@@ -33,6 +33,8 @@ public:
 
     std::string makeInstruction();
 
+    std::string makeExample();
+
     ParseErrors parseFile(std::string &fileName);
 
     ParseErrors parseString(std::string &str);
