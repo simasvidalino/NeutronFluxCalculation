@@ -3,9 +3,11 @@
 
 #include "ParseFile.h"
 
+#include <QKeyEvent>
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QMessageBox>
-
+#include <QRegularExpression>
 #include <QDesktopServices>
 #include <iostream>
 
@@ -170,10 +172,26 @@ void FileViewerDlg::setConnection()
     QObject::connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &FileViewerDlg::reject);
 }
 
+void FileViewerDlg::keyPressEvent(QKeyEvent *event)
+{
+    if (    (event->modifiers() & Qt::ControlModifier)
+         && (event->key() == Qt::Key_F)
+         && (!ui->textEdit->isReadOnly())) //it works only fo
+    {
+        showFindDialog();
+    }
+    else
+    {
+        QDialog::keyPressEvent(event);
+    }
+}
+
 void FileViewerDlg::loadTxtFile(std::string &file)
 {
     filePath = QString::fromStdString(file);
     readFile(filePath);
+
+    ui->textEdit->moveCursor(QTextCursor::Start);
 }
 
 void FileViewerDlg::makeReadOnly()
@@ -201,4 +219,24 @@ QString FileViewerDlg::getFilePath() const
 ParseFile::ParseErrors FileViewerDlg::getEParseError() const
 {
     return eParseError;
+}
+
+void FileViewerDlg::showFindDialog()
+{
+    bool ok      = false;
+    QString text = QInputDialog::getText(this, tr("Find"), tr("Word to find:"), QLineEdit::Normal, "", &ok);
+
+    if (ok && !text.isEmpty())
+    {
+        ui->textEdit->setFocus();
+
+        QRegularExpression rx(QRegularExpression::escape(text));
+        rx.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+        bool found = ui->textEdit->find(rx);
+
+        if (!found)
+        {
+            QMessageBox::information(this, tr("Find"), tr("No occurrence of \"%1\" found.").arg(text));
+        }
+    }
 }

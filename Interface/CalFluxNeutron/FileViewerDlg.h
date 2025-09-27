@@ -35,7 +35,7 @@ public:
     ParseFile::ParseErrors parseFile();
 
 protected:
-    virtual void accept();
+    virtual void accept() override;
     void readFile(QString &filePath); //read the txt
     void saveText();
     void writeFile(QString &filePath);
@@ -66,5 +66,9 @@ private:
     QString filePath;
     QString defaultFileName;
 
-};
+    void showFindDialog();
 
+    // QWidget interface
+protected:
+    virtual void keyPressEvent(QKeyEvent *event) override;
+};
