@@ -29,7 +29,7 @@
    <item row="1" column="2">
     <spacer name="horizontalSpacer">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
@@ -42,10 +42,10 @@
    <item row="1" column="3">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>
@@ -76,8 +76,7 @@
          <string>Clear</string>
         </property>
         <property name="icon">
-         <iconset theme="edit-delete">
-          <normaloff>.</normaloff>.</iconset>
+         <iconset theme="edit-delete"/>
         </property>
        </widget>
       </item>
@@ -99,8 +98,10 @@
          <string>Save</string>
         </property>
         <property name="icon">
-         <iconset theme="document-save-as">
-          <normaloff>.</normaloff>.</iconset>
+         <iconset theme="document-save-as"/>
+        </property>
+        <property name="shortcut">
+         <string>Ctrl+S</string>
         </property>
        </widget>
       </item>
@@ -122,8 +123,10 @@
          <string>Open</string>
         </property>
         <property name="icon">
-         <iconset theme="document-open">
-          <normaloff>.</normaloff>.</iconset>
+         <iconset theme="document-open"/>
+        </property>
+        <property name="shortcut">
+         <string>Ctrl+O</string>
         </property>
        </widget>
       </item>
@@ -140,8 +143,10 @@
 File</string>
         </property>
         <property name="icon">
-         <iconset theme="accessories-text-editor">
-          <normaloff>.</normaloff>.</iconset>
+         <iconset theme="accessories-text-editor"/>
+        </property>
+        <property name="shortcut">
+         <string>Ctrl+P</string>
         </property>
        </widget>
       </item>
