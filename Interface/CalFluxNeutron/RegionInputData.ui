@@ -115,7 +115,7 @@
    <item row="0" column="4">
     <widget class="QSpinBox" name="spinBoxRegionQtt">
      <property name="minimum">
-      <number>0</number>
+      <number>1</number>
      </property>
      <property name="maximum">
       <number>10</number>
@@ -461,9 +461,9 @@
  <resources/>
  <connections/>
  <buttongroups>
+  <buttongroup name="buttonGroupDataVisualization"/>
   <buttongroup name="buttonGroupStoppingCriterion"/>
   <buttongroup name="buttonGroupRightBoundaryConditions"/>
   <buttongroup name="buttonGroupLeftBoundaryConditions"/>
-  <buttongroup name="buttonGroupDataVisualization"/>
  </buttongroups>
 </ui>

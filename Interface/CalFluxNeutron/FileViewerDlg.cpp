@@ -60,18 +60,37 @@ void FileViewerDlg::openFile()
     msgBox.setWindowTitle("Project data information.");
     msgBox.setWindowFlags( Qt::Dialog | Qt::CustomizeWindowHint );
     msgBox.setIcon(QMessageBox::Information);
-    msgBox.addButton(QMessageBox::Ok);
 
     eParseError = ParseFile::getInstance()->parseString(fileContent);
 
     if (eParseError == ParseFile::ParseErrors::eOk)
     {
+        msgBox.addButton(QMessageBox::Ok);
         msgBox.setText("Parser Information: Simple analysis passed ");
         msgBox.exec();
     }
     else
     {
-        QPushButton *exampleButton = msgBox.addButton("Generate Example", QMessageBox::ActionRole);
+        msgBox.addButton(QMessageBox::Close);
+
+        auto exampleButton = msgBox.addButton("Generate Example", QMessageBox::ActionRole);
+        QPushButton* parseButton;
+        QString parseToolTip;
+        bool skipParse = ParseFile::getInstance()->getBSkipParse();
+
+        if (true == skipParse)
+        {
+            parseButton  = msgBox.addButton("Enable Parse", QMessageBox::ActionRole);
+            parseToolTip = "Verify that the user parameters and cross-section data are consistent.";
+        }
+        else
+        {
+            parseButton  = msgBox.addButton("Disable Parse", QMessageBox::ActionRole);
+            parseToolTip = "Allow the calculation to proceed without validating the cross-section data.";
+        }
+
+        parseButton->setToolTip(parseToolTip);
+        exampleButton->setToolTip("Generate an example file. This will overwrite any existing cross-section data.");
 
         msgBox.setText("<p>Project data and material data do not match.</p>");
         msgBox.setInformativeText(ParseFile::getInstance()->makeInstruction().c_str());
@@ -80,8 +99,11 @@ void FileViewerDlg::openFile()
         if (msgBox.clickedButton() == exampleButton)
         {
             QString exampleText = QString::fromStdString(ParseFile::getInstance()->makeExample());
-
             ui->textEdit->setText(exampleText);
+        }
+        else if (msgBox.clickedButton() == parseButton )
+        {
+            ParseFile::getInstance()->setBSkipParse(!skipParse); //toggled the parse option
         }
     }
 

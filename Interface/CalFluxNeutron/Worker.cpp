@@ -155,7 +155,10 @@ void Worker::parseCrossSectionDataFileValues()
                                              proj->legendreOrder,
                                              proj->zoneNumber);
 
-    if (ParseFile::ParseErrors::eOk != ParseFile::getInstance()->parseFile(proj->neutronMacroscopicCrossSectionsFilePath))
+    auto result = ParseFile::getInstance()->parseFile(proj->neutronMacroscopicCrossSectionsFilePath);
+
+    if (    (result != ParseFile::ParseErrors::eOk)
+         && (result != ParseFile::ParseErrors::eParseDisabled))
     {
         throw std::logic_error(ParseFile::getInstance()->makeInstruction());
     }

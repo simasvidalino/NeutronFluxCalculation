@@ -17,7 +17,8 @@ public:
         eNumberOfRegionDoesNotMatch = 1 << 3, // 8
         eLegendreOrderDoesNotMatch  = 1 << 4, // 16
         eTextIsEmpt                 = 1 << 5, // 32
-        eUnknowError                = 1 << 6  // 64
+        eUnknowError                = 1 << 6, // 64
+        eParseDisabled              = 1 << 6  // 128
     };
 
     friend ParseErrors operator&(ParseErrors lhs, ParseErrors rhs);
@@ -41,6 +42,9 @@ public:
 
     CrossSectionDataFilerParameters &getCrossSectionDataFileInfomation();
 
+    void setBSkipParse(bool newBSkipParse);
+    bool getBSkipParse() const;
+
 protected:
     int countOccurrences(std::string &str, std::string key);
     int findNumberInNextLine(std::string &input, std::regex beginPattern);
@@ -55,11 +59,13 @@ private:
     CrossSectionDataFilerParameters crossSectionDataFileInfomation;
 
     int referenceEnergyGroup;
-    int referencelegendreOrder;
+    int referenceLegendreOrder;
     int referenceNumberOfZones;
     int referenceNumberOfRegion;
 
     ParseErrors eError = ParseErrors::eOk;
+
+    bool bSkipParse;
 };
 
 inline ParseFile::ParseErrors operator&(ParseFile::ParseErrors lhs, ParseFile::ParseErrors rhs)

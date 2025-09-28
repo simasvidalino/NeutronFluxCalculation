@@ -46,18 +46,41 @@ void ParseFile::setProjectData(int energyGroup,
                                int numberOfZones)
 {
     referenceEnergyGroup    = energyGroup;
-    referencelegendreOrder  = legendreOrder;
+    referenceLegendreOrder  = legendreOrder;
     referenceNumberOfZones  = numberOfZones;
 }
 
 std::string ParseFile::makeInstruction()
 {
-    std::string instruction = "<p><strong>To create a valid text format, follow the rules below:</strong></p> <ol>"
-                              "<li><strong>Before the numerical data for material zone,</strong> start the line with <code>///</code>.</li>"
-                              "<li><strong>Right after what was done in step 1,</strong> make a line identifying the total cross section starting "
-                              "with <code>//</code>.</li><li><strong>Write the total cross section data.</strong></li>"
-                              "<li><strong>Create the scattering matrix</strong> considering that for each degree of Legendre, you will have a "
-                              "g\' x g matrix where g is the number of energy groups.</li></ol>";
+    std::string instruction =
+        "<p><strong>To create a valid cross-section data file, follow the rules below:</strong></p>"
+        "<ol style='margin-top:8px; margin-bottom:8px;'>"
+
+        "<li style='margin-bottom:12px;'><strong>Mark the beginning of a material zone:</strong><br>"
+        "Start the line with <code>///</code> followed by the zone identifier "
+        "(for example, <code>/// Zone 1</code>).</li>"
+
+        "<li style='margin-bottom:12px;'><strong>Define the total cross section:</strong><br>"
+        "Add a line starting with <code>//</code>, such as "
+        "<code>// Total Cross Section g</code>, and then provide the numerical data for "
+        "each energy group <code>g</code>.</li>"
+
+        "<li style='margin-bottom:12px;'><strong>Write the total cross section values:</strong><br>"
+        "Provide one value per energy group in the order defined above.</li>"
+
+        "<li style='margin-bottom:12px;'><strong>Define the scattering matrices:</strong><br>"
+        "Before writing the scattering data of each Legendre order <code>L</code>, "
+        "insert a line starting with <code>// Scattering Cross Section L</code>. "
+        "Here, <code>L</code> is the degree of the Legendre expansion "
+        "(e.g., <code>L = 0</code>, <code>L = 1</code>, etc.).</li>"
+
+        "<li><strong>Provide the scattering matrix values:</strong><br>"
+        "For each order <code>L</code>, write a matrix of dimensions <code>g × g′</code>, "
+        "where <code>g′</code> represents the <em>initial</em> (incident) energy group (columns) "
+        "and <code>g</code> represents the <em>final</em> (outgoing) energy group (rows).<br>"
+        "Thus, each entry corresponds to scattering from group <code>g′</code> into group <code>g</code>.</li>"
+
+        "</ol>";
 
     if ((eError & ParseFile::ParseErrors::eNumberOfGroupDoesNotMatch) == ParseFile::ParseErrors::eNumberOfGroupDoesNotMatch)
     {
@@ -94,7 +117,7 @@ std::string ParseFile::makeExample()
 
         example += "\n";
 
-        for (int l = 0; l <= referencelegendreOrder; ++l)
+        for (int l = 0; l <= referenceLegendreOrder; ++l)
         {
             example += "//Scattering Cross Section " + std::to_string(l) + " g'g (g row; g' colunm)\n";
             for (int g = 0; g < referenceEnergyGroup; ++g)
@@ -134,7 +157,14 @@ ParseFile::ParseErrors ParseFile::parseFile(std::string &fileName)
 
 ParseFile::ParseErrors ParseFile::parseString(std::string &str)
 {
+    if (true == bSkipParse)
+    {
+        crossSectionDataFileInfomation = { referenceEnergyGroup, referenceNumberOfZones, referenceLegendreOrder };
+        return ParseErrors::eParseDisabled;
+    }
+
     eError = ParseErrors::eOk;
+
     std::regex beginPattern(R"(\/\/\/.*?\n\/\/)");
 
     auto countMaterial  = countOccurrences(str, "///");
@@ -155,7 +185,7 @@ ParseFile::ParseErrors ParseFile::parseString(std::string &str)
 
     crossSectionDataFileInfomation.numberOfLegendre = findLegenderOrder(str);
 
-    if (referencelegendreOrder > crossSectionDataFileInfomation.numberOfLegendre)
+    if (referenceLegendreOrder > crossSectionDataFileInfomation.numberOfLegendre)
     {
         eError |= ParseErrors::eLegendreOrderDoesNotMatch;
     }
@@ -230,8 +260,8 @@ int ParseFile::findLegenderOrder(const std::string &input)
     return maxOrder;
 }
 
-
 ParseFile::ParseFile()
+    : bSkipParse(false)
 {
 
 }
@@ -239,6 +269,16 @@ ParseFile::ParseFile()
 ParseFile::~ParseFile()
 {
 
+}
+
+void ParseFile::setBSkipParse(bool newBSkipParse)
+{
+    bSkipParse = newBSkipParse;
+}
+
+bool ParseFile::getBSkipParse() const
+{
+    return bSkipParse;
 }
 
 CrossSectionDataFilerParameters& ParseFile::getCrossSectionDataFileInfomation()
