@@ -138,7 +138,7 @@ void FileViewerDlg::readFile(QString &filePath)
 
     if (!file.open(QIODevice::ReadOnly))
     {
-        qWarning() << "Open file failed";
+        qWarning() << "Open file failed:"<<filePath;
         return;
     }
 
@@ -168,7 +168,10 @@ void FileViewerDlg::readHTMFile(std::string filePath)
     QFile file(QString::fromStdString(filePath));
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qWarning() << "Error opening file for writing:" << filePath;
         return;
+    }
 
     ui->textEdit->setHtml(QString::fromUtf8(file.readAll()));
 }
@@ -180,7 +183,7 @@ void FileViewerDlg::writeFile(QString &filePath)
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        qWarning() << "Error opening file for writing";
+        qWarning() << "Error opening file for writing:"<<filePath;
         return;
     }
 

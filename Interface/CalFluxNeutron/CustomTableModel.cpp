@@ -121,10 +121,10 @@ Qt::ItemFlags CustomTableModel::flags(const QModelIndex &index) const
 
 QVariant CustomTableModel::dataDisplayRole(int row, int column) const
 {
-    return QVariant();  // Implemente de acordo com a lógica específica do seu modelo
+    return QVariant();
 }
 
 QVariant CustomTableModel::dataTextAlignmentRole(int column) const
 {
-    return QVariant();  // Implemente de acordo com a lógica específica do seu modelo
+    return QVariant();
 }

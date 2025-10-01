@@ -5,13 +5,10 @@
     <qresource prefix="/Default_Project">
         <file>Resources/Default_Project.txt</file>
         <file>Resources/Default_Project.json</file>
-        <file>Resources/Scattering_Cross_Section_R3_G1_L1_N4_Nod400.txt</file>
-        <file>Resources/Scalar_Flux_R3_G1_L1_N4_Nod400.txt</file>
-        <file>Resources/Integrated_Neutron_Flux_Per_Region_R3_G1_L1_N4_Nod400.txt</file>
-        <file>Resources/Integrated_Absorption_Rate_Per_Region_R3_G1_L1_N4_Nod400.txt</file>
-        <file>Resources/Average_Neutron_Flux_Per_Region_R3_G1_L1_N4_Nod400.txt</file>
-        <file>Resources/Absorption_Rate_R3_G1_L1_N4_Nod400.txt</file>
-        <file>Resources/Absorption_Rate_Per_Node_R3_G1_L1_N4_Nod400.txt</file>
-        <file>Resources/Absorption_Cross_Section_R3_G1_L1_N4_Nod400.txt</file>
+        <file>Resources/Absorption_Cross_Section_R3_G30_L0_N4_Nod72.html</file>
+        <file>Resources/Absorption_Neutron_Rate_R3_G30_L0_N4_Nod72.html</file>
+        <file>Resources/Scalar_Flux_R3_G30_L0_N4_Nod72.html</file>
+        <file>Resources/Scattering_Cross_Section_R3_G30_L0_N4_Nod72.html</file>
+        <file>Resources/Quadrature.csv</file>
     </qresource>
 </RCC>
