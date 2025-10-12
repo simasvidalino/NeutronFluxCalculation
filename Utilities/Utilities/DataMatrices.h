@@ -14,6 +14,7 @@
 
 #include <memory>
 #include <optional>
+#include <filesystem>
 
 struct CrossSectionDataFilerParameters
 {
@@ -142,7 +143,7 @@ public:
     std::tuple<std::vector<long double>, std::vector<long double> > getQuadratureValues(int NWanted);
     void saveQuadratureValueInCSV(const std::tuple<std::vector<long double>, std::vector<long double>> &value,
                                   int NNew,
-                                  std::string filePath);
+                                  std::filesystem::path filePath);
 
     std::string saveMaterialData(std::string &finalPath, std::string &oldPath);
 
@@ -185,6 +186,7 @@ protected:
     virtual void writeScatteringCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult);
 
     virtual std::string computerFileName(dados_entrada *DDValues, std::string name);
+    virtual std::filesystem::path computerFileNameHtm(dados_entrada *DDValues, std::string name);
 
 private:
     BuildMatrices();

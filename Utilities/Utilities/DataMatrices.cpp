@@ -237,10 +237,6 @@ void BuildMatrices::calculateIntegratedAbsorptionRatePerZone( dados_entrada *dat
         sumPerZone[zIndex] += integratedAbsorptionRatePerRegion[rIndex];
     }
 
-    std::cout << std::setprecision(25) << std::fixed;
-    std::cout << "Total zone " << sumPerZone[1] + sumPerZone[0] << " Doente " << sumPerZone[1] << " Sadio " << sumPerZone[0]
-              << std::endl;
-
     DDResult->integratedAbsorptionRatePerZone.swap(sumPerZone);
     DDResult->integratedAbsorptionRatePerRegion.swap(integratedAbsorptionRatePerRegion);
 }
@@ -1067,15 +1063,16 @@ std::tuple<std::vector<long double>, std::vector<long double>> BuildMatrices::ge
     std::filesystem::path jsonPath(fileName);
     std::filesystem::path parentDir = jsonPath.parent_path();
     std::filesystem::path csvPath = parentDir / "Quadrature.csv";
+    std::filesystem::path path = std::filesystem::u8path(csvPath.string());
+    std::ifstream file(path);
 
-    std::ifstream file(csvPath);
     bool quadratureFound = false;
 
     if (!file.is_open())
     {
         auto quad = get_GQ(NWanted);
 
-        saveQuadratureValueInCSV(quad, NWanted, csvPath.string());
+        saveQuadratureValueInCSV(quad, NWanted, path);
 
         return quad;
     }
@@ -1106,8 +1103,6 @@ std::tuple<std::vector<long double>, std::vector<long double>> BuildMatrices::ge
                         {
                             mu_values.push_back(mu);
                             w_values.push_back(w);
-
-                            std::cout << "mi "<<mu<<" w "<<w<<std::endl;
                         }
                     }
                 }
@@ -1127,7 +1122,7 @@ std::tuple<std::vector<long double>, std::vector<long double>> BuildMatrices::ge
     if (false == quadratureFound)
     {
         std::tie(mu_values, w_values) = get_GQ(NWanted);
-        saveQuadratureValueInCSV(std::make_tuple(mu_values, w_values), NWanted, csvPath.string());
+        saveQuadratureValueInCSV(std::make_tuple(mu_values, w_values), NWanted, path);
     }
 
     file.close();
@@ -1137,7 +1132,7 @@ std::tuple<std::vector<long double>, std::vector<long double>> BuildMatrices::ge
 
 void BuildMatrices::saveQuadratureValueInCSV(const std::tuple<std::vector<long double>, std::vector<long double>> &value,
                                              int NNew,
-                                             std::string filePath)
+                                             std::filesystem::path filePath)
 {
     std::ofstream file(filePath, std::ios::app);
 
@@ -1245,15 +1240,15 @@ void BuildMatrices::writeTXTScalarNeutronFluxData(dados_entrada *DDValues, Calcu
 
 void BuildMatrices::writeHTMLNeutronFluxFilePerPeridiocity(dados_entrada *DDValues, CalculatedData *DDResult)
 {
-    std::string titleStr = computerFileName(DDValues, SCALAR_NEUTRON_FLUX_FILE_NAME) + ".html";
-    std::ofstream out(titleStr);
+    auto title = computerFileNameHtm(DDValues, SCALAR_NEUTRON_FLUX_FILE_NAME);
+    std::ofstream out(title);
 
     if (!out.is_open())
     {
-        throw std::runtime_error("Error opening file: " + titleStr);
+        throw std::runtime_error("Error opening file: " + title.string());
     }
 
-    DDResult->scalarFluxFile = titleStr;
+    DDResult->scalarFluxFile = title.string();
 
     const int precisionPos   = 2;
     const int precisionVal   = 15;
@@ -1536,13 +1531,13 @@ void BuildMatrices::writeHTMLAbsorptionRateFilePerPeridiocity(dados_entrada *DDV
     if (DDResult->absorptionRatePerNode.empty())
         throw std::runtime_error("Absorption rate matrices are empty.");
 
-    std::string titleStr = computerFileName(DDValues, ABSORPTION_NEUTRON_RATE_FILE_NAME) + ".html";
-    std::ofstream out(titleStr);
+    auto title = computerFileNameHtm(DDValues, ABSORPTION_NEUTRON_RATE_FILE_NAME);
+    std::ofstream out(title);
 
     if (!out.is_open())
-        throw std::runtime_error("Error opening file: " + titleStr);
+        throw std::runtime_error("Error opening file: " + title.string());
 
-    DDResult->absorptionRateFile = titleStr;
+    DDResult->absorptionRateFile = title.string();
 
     const int precisionPos = 2;
     const int precisionVal = 15;
@@ -1626,7 +1621,6 @@ void BuildMatrices::writeHTMLAbsorptionRateFilePerPeridiocity(dados_entrada *DDV
             valFmt.clear();
             valFmt << std::scientific << std::setprecision(precisionVal) << DDResult->absorptionRatePerNode[g][nod];
 
-            qInfo()<<"Abs"<<t<<nod<<(double)DDResult->absorptionRatePerNode[g][nod];
             out << "<td class='num'>" << valFmt.str() << "</td>";
         }
         out << "</tr>\n";
@@ -1689,15 +1683,15 @@ void BuildMatrices::writeHTMLAbsorptionCrossSectionFile(dados_entrada *DDValues,
         throw std::runtime_error("Absorption Cross Section Matrix is empty.");
     }
 
-    std::string titleStr = computerFileName(DDValues, "Absorption_Cross_Section") + ".html";
-    std::ofstream out(titleStr);
+    auto title = computerFileNameHtm(DDValues, "Absorption_Cross_Section");
+    std::ofstream out(title);
 
     if (!out.is_open())
     {
-        throw std::runtime_error("Error opening file: " + titleStr);
+        throw std::runtime_error("Error opening file: " + title.string());
     }
 
-    DDResult->absorptionCrossSectionFile = titleStr;
+    DDResult->absorptionCrossSectionFile = title.string();
 
     const int precisionVal               = 6;
 
@@ -1754,15 +1748,15 @@ void BuildMatrices::writeHTMLScatteringCrossSectionFile(dados_entrada *DDValues,
         throw std::runtime_error("Scattering Cross Section Matrix is empty.");
     }
 
-    std::string titleStr = computerFileName(DDValues, "Scattering_Cross_Section") + ".html";
-    std::ofstream out(titleStr);
+    auto title = computerFileNameHtm(DDValues, "Scattering_Cross_Section");
+    std::ofstream out(title);
 
     if (!out.is_open())
     {
-        throw std::runtime_error("Error opening file: " + titleStr);
+        throw std::runtime_error("Error opening file: " + title.string());
     }
 
-    DDResult->totalScatteringCrossSectionFile = titleStr;
+    DDResult->totalScatteringCrossSectionFile = title.string();
 
     const int precisionVal                    = 15;
 
@@ -1814,15 +1808,15 @@ void BuildMatrices::writeHTMLScatteringCrossSectionFile(dados_entrada *DDValues,
 
 void BuildMatrices::writeHTMLNeutronFluxFilePerRegionInterface( dados_entrada *DDValues, CalculatedData *DDResult)
 {
-    std::string titleStr = computerFileName(DDValues, SCALAR_NEUTRON_FLUX_FILE_NAME) + ".html";
-    std::ofstream out(titleStr);
+    auto title = computerFileNameHtm(DDValues, SCALAR_NEUTRON_FLUX_FILE_NAME);
+    std::ofstream out(title);
 
     if (!out.is_open())
     {
-        throw std::runtime_error("Error opening file: " + titleStr);
+        throw std::runtime_error("Error opening file: " + title.string());
     }
 
-    DDResult->scalarFluxFile = titleStr;
+    DDResult->scalarFluxFile = title.string();
 
     const int precisionPos   = 2;
     const int precisionVal   = 15;
@@ -2008,8 +2002,6 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerRegionInterface( dados_entrada *D
                     << std::setprecision(precisionVal)
                     << DDValues->FLUXO_ANGULAR[g][nod][o];
                 out << "<td class='num'>" << valFmt.str() << "</td>";
-
-                qInfo()<<(double)DDValues->FLUXO_ANGULAR[g][nod][o]; ;
             }
             out << "</tr>\n";
 
@@ -2036,13 +2028,13 @@ void BuildMatrices::writeHTMLAbsorptionRateFilePerRegionInterface(dados_entrada 
     if (DDResult->absorptionRatePerNode.empty())
         throw std::runtime_error("Absorption rate matrices are empty.");
 
-    std::string titleStr = computerFileName(DDValues, ABSORPTION_NEUTRON_RATE_FILE_NAME) + ".html";
-    std::ofstream out(titleStr);
+    auto title = computerFileNameHtm(DDValues, ABSORPTION_NEUTRON_RATE_FILE_NAME);
+    std::ofstream out(title);
 
     if (!out.is_open())
-        throw std::runtime_error("Error opening file: " + titleStr);
+        throw std::runtime_error("Error opening file: " + title.string());
 
-    DDResult->absorptionRateFile = titleStr;
+    DDResult->absorptionRateFile = title.string();
 
     const int precisionPos = 2;
     const int precisionVal = 15;
@@ -2285,7 +2277,6 @@ void BuildMatrices::writeAbsorptionRateFile(dados_entrada *DDValues, CalculatedD
 std::string BuildMatrices::computerFileName(dados_entrada* DDValues, std::string name)
 {
     std::ostringstream title;
-    std::string titleStr;
     std::string directory;
 
     std::filesystem::path filePath(fileName);
@@ -2309,22 +2300,31 @@ std::string BuildMatrices::computerFileName(dados_entrada* DDValues, std::string
           << "_N"            << DDValues->n
           << "_Nod"          << DDValues->NODOSX;
 
-    titleStr = title.str();
+    std::string finalTitle = title.str();
 
-    return titleStr;
+    return finalTitle;
+}
+
+std::filesystem::path BuildMatrices::computerFileNameHtm(dados_entrada *DDValues, std::string name)
+{
+    auto title = computerFileName(DDValues, name) + ".html";
+
+    std::filesystem::path htmlPath = std::filesystem::u8path(title);
+
+    return htmlPath;
 }
 
 void BuildMatrices::writeAverageNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult)
 {
-    std::string titleStr = computerFileName(DDValues, SCALAR_NEUTRON_FLUX_FILE_NAME) + ".txt";
-    std::ofstream outFile(titleStr, std::ios::app);
+    auto title = computerFileName(DDValues, SCALAR_NEUTRON_FLUX_FILE_NAME) + ".txt";
+    std::ofstream outFile(title, std::ios::app);
 
     if (!outFile.is_open())
     {
-        throw std::runtime_error("Error opening file: " + titleStr);
+        throw std::runtime_error("Error opening file: " + title);
     }
 
-    DDResult->scalarFluxFile = titleStr;
+    DDResult->scalarFluxFile = title;
 
     // Iterate over zones
     for (size_t rIndex = 0; rIndex < DDValues->n_R; ++rIndex)
@@ -2356,15 +2356,15 @@ void BuildMatrices::writeAverageNeutronFluxPerRegion(dados_entrada *DDValues, Ca
 
 void BuildMatrices::writeintegratedNeutronFluxPerGroupPerRegion(dados_entrada *DDValues, CalculatedData *DDResult)
 {
-    std::string titleStr = computerFileName(DDValues, "Scalar_Flux") + ".txt";
-    std::ofstream outFile(titleStr);
+    auto title = computerFileName(DDValues, "Scalar_Flux") + ".txt";
+    std::ofstream outFile(title);
 
     if (!outFile.is_open())
     {
-        throw std::runtime_error("Error opening file: " + titleStr);
+        throw std::runtime_error("Error opening file: " + title);
     }
 
-    DDResult->scalarFluxFile = titleStr;
+    DDResult->scalarFluxFile = title;
 
     // Iterate over zones
     for (size_t rIndex = 0; rIndex < DDValues->n_R; ++rIndex)
@@ -2401,15 +2401,15 @@ void BuildMatrices::writeIntegratedAbsorptionRatePerRegionFile(dados_entrada *DD
         throw std::runtime_error("Absorption Matrix is empty.");
     }
 
-    std::string titleStr = computerFileName(DDValues, ABSORPTION_NEUTRON_RATE_FILE_NAME) + ".txt";
-    std::ofstream outFile(titleStr);
+    auto title = computerFileName(DDValues, ABSORPTION_NEUTRON_RATE_FILE_NAME) + ".txt";
+    std::ofstream outFile(title);
 
     if (!outFile.is_open())
     {
-        throw std::runtime_error("Error opening file: " + titleStr);
+        throw std::runtime_error("Error opening file: " + title);
     }
 
-    DDResult->absorptionRateFile = titleStr;
+    DDResult->absorptionRateFile = title;
 
     // Iterate over zones
     for (size_t rIndex = 0; rIndex < DDValues->n_R; ++rIndex)
@@ -2446,15 +2446,15 @@ void BuildMatrices::writeAverageAbsorptionRateFile(dados_entrada *DDValues, Calc
         throw std::runtime_error("Absorption Matrix is empty.");
     }
 
-    std::string titleStr = computerFileName(DDValues, ABSORPTION_NEUTRON_RATE_FILE_NAME) + ".txt";
-    std::ofstream outFile(titleStr);
+    auto title = computerFileName(DDValues, ABSORPTION_NEUTRON_RATE_FILE_NAME) + ".txt";
+    std::ofstream outFile(title);
 
     if (!outFile.is_open())
     {
-        throw std::runtime_error("Error opening file: " + titleStr);
+        throw std::runtime_error("Error opening file: " + title);
     }
 
-    DDResult->absorptionRateFile = titleStr;
+    DDResult->absorptionRateFile = title;
 
     // Iterate over zones
     for (size_t rIndex = 0; rIndex < DDValues->n_R; ++rIndex)
@@ -2495,15 +2495,15 @@ void BuildMatrices::writeAbsorptionCrossSectionFile(dados_entrada *DDValues, Cal
     auto zoneNumber  = DDValues->n_Z;
     auto groupNumber = DDValues->G;
 
-    std::string titleStr = computerFileName(DDValues, "Absorption_Cross_Section") + ".txt";
-    std::ofstream outFile(titleStr);
+    auto title = computerFileName(DDValues, "Absorption_Cross_Section") + ".txt";
+    std::ofstream outFile(title);
 
     if (!outFile.is_open())
     {
-        throw std::runtime_error("Error opening file: " + titleStr);
+        throw std::runtime_error("Error opening file: " + title);
     }
 
-    DDResult->absorptionCrossSectionFile = titleStr;
+    DDResult->absorptionCrossSectionFile = title;
 
     // Iterate over zones
     for (size_t zoneIndex = 0; zoneIndex < zoneNumber; ++zoneIndex)
@@ -2539,15 +2539,15 @@ void BuildMatrices::writeNeutronFluxFile(dados_entrada *DDValues, CalculatedData
         throw std::runtime_error("NeutronFlux Matrix is null.");
     }
 
-    std::string titleStr = computerFileName(DDValues, "Scalar_Flux") + ".txt";
-    std::ofstream output(titleStr);
+    auto title = computerFileName(DDValues, "Scalar_Flux") + ".txt";
+    std::ofstream output(title);
 
     if (!output.is_open())
     {
-        throw std::runtime_error( "Error opening file: " + titleStr);
+        throw std::runtime_error( "Error opening file: " + title);
     }
 
-    DDResult->scalarFluxFile = titleStr;
+    DDResult->scalarFluxFile = title;
 
     int colWidth = 25;
     int precision = 2;
@@ -2611,15 +2611,15 @@ void BuildMatrices::writeScatteringCrossSectionFile(dados_entrada *DDValues, Cal
     auto zoneNumber       = DDValues->n_Z;
     auto groupNumber      = DDValues->G;
 
-    std::string titleStr = computerFileName(DDValues, "Scattering_Cross_Section") + ".txt";
-    std::ofstream output(titleStr);
+    auto title = computerFileName(DDValues, "Scattering_Cross_Section") + ".txt";
+    std::ofstream output(title);
 
     if (!output.is_open())
     {
-        throw std::runtime_error( "Error opening file: " + titleStr);
+        throw std::runtime_error( "Error opening file: " + title);
     }
 
-    DDResult->totalScatteringCrossSectionFile = titleStr;
+    DDResult->totalScatteringCrossSectionFile = title;
 
     // Iterate over zones
     for (size_t zoneIndex = 0; zoneIndex < zoneNumber; ++zoneIndex)
