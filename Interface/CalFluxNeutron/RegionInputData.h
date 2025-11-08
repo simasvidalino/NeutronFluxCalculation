@@ -61,8 +61,6 @@ public:
 
     void setPushButtonCalculateFluxEnable(bool enable);
 
-    QStringList getAllZonasStr() const;
-
     bool getInvalidZone() const;
 
 private slots:
@@ -73,6 +71,7 @@ private slots:
     void onOpenBCRightInputTable();
     void setGraphicScene(int region);
     void onSelectionRegionChange();
+    void updateZoneListWithRegionData(QStringList& zoneList);
 
 signals:
     void onCalculateScalarNeutronFlux();
@@ -141,6 +140,7 @@ private:
     std::shared_ptr<ProjectData> proj;
 
     QStringList allZonasStr;
+    QStringList zonasStr;
     QString scatteringPath = "";
     std::optional<std::vector<double>> bcLeft;
     std::optional<std::vector<double>> bcRight;

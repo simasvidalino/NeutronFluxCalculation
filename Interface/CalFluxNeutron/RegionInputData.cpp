@@ -120,7 +120,9 @@ void RegionInputData::onCreateCrossSectionFile()
 {
     int group = ui->spinBoxGroup->value();
 
-    FileViewerDlg dlg(this, allZonasStr.size(),
+    updateZoneListWithRegionData(zonasStr);
+
+    FileViewerDlg dlg(this, zonasStr.size(),
                             group,
                             ui->spinBoxLegendreOrder->value());
 
@@ -195,7 +197,7 @@ void RegionInputData::onSelectionRegionChange()
             rectItem->setSelected(false);
 
             // Create the dialog
-            MapRegion dlg(this, regionQuant, groupNumber);
+            MapRegion dlg(this, groupNumber);
             auto regionPtr = std::make_unique<RegionData>(regionArray.at(number));
             dlg.loadData(allZonasStr, std::move(regionPtr));
 
@@ -242,6 +244,24 @@ void RegionInputData::onSelectionRegionChange()
     }
 }
 
+void RegionInputData::updateZoneListWithRegionData(QStringList &zoneList)
+{
+    zoneList.clear();
+
+    for (int i = 0; i < ui->spinBoxRegionQtt->value(); ++i)
+    {
+        if (i < regionArray.size())
+        {
+            auto zoneStr = QString::fromStdString(regionArray[i].zoneStr);
+
+            if (!zoneList.contains(zoneStr))
+            {
+                zoneList.append(zoneStr);
+            }
+        }
+    }
+}
+
 void RegionInputData::init()
 {
     ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -275,7 +295,6 @@ void RegionInputData::init()
 
     ui->pushButtonCreateCrossSection->setToolTip(Interface::getCrossSessionDataToolTip());
 
-
     //Accepts only even quadrature values.
     QLineEdit *lineEdit = ui->spinBoxQuadratureOrder->findChild<QLineEdit*>();
 
@@ -300,6 +319,7 @@ void RegionInputData::setConnections()
     connect(ui->pushButtonCreateCrossSection, &QPushButton::clicked, this, &RegionInputData::onCreateCrossSectionFile);
 
     connect(ui->spinBoxRegionQtt, &QSpinBox::valueChanged, this, &RegionInputData::setGraphicScene);
+
     connect(ui->pushButtonClear, &QPushButton::clicked, this, &RegionInputData::clearRegions);
 
     //all operations are done in the MainWindow so as not to overload this window.
@@ -540,20 +560,8 @@ void RegionInputData::loadGUI()
 
     ui->spinBoxStopOrder->setValue(proj->stopOrder);
 
-    allZonasStr.clear();
-
-    for (int iIndex = 0; iIndex < proj->regionNumber; ++iIndex)
-    {
-        if (!regionArray.empty() || regionArray.size() > iIndex)
-        {
-            auto zoneStr = QString::fromStdString(regionArray[iIndex].zoneStr);
-
-            if (allZonasStr.contains(zoneStr))
-                continue;
-
-            allZonasStr.append(zoneStr);
-        }
-    }
+    updateZoneListWithRegionData(allZonasStr);
+    updateZoneListWithRegionData(zonasStr);
 
     ui->spinBoxLegendreOrder->setValue(proj->legendreOrder);
     ui->doubleSpinBoxPeriodicity->setValue(proj->periodicity);
@@ -604,7 +612,10 @@ void RegionInputData::saveGUI()
     proj->leftBoundaryConditionsType = eBoundaryConditionsType(leftBC);
     proj->rightBoundaryConditionsType = eBoundaryConditionsType(rightBC);
     proj->neutronMacroscopicCrossSectionsFilePath = scatteringPath.toStdString();
-    proj->zoneNumber = allZonasStr.size();
+
+    updateZoneListWithRegionData(zonasStr);
+    proj->zoneNumber = zonasStr.size();
+
     proj->legendreOrder = ui->spinBoxLegendreOrder->value();
     proj->quadratureOrder = ui->spinBoxQuadratureOrder->value();
     proj->maximumIterationsNumber = ui->spinBoxMaxNumberIteration->value();
@@ -643,11 +654,6 @@ void RegionInputData::updateRegionsIfZonesChanged()
 bool RegionInputData::getInvalidZone() const
 {
     return invalidZone;
-}
-
-QStringList RegionInputData::getAllZonasStr() const
-{
-    return allZonasStr;
 }
 
 void RegionInputData::setPeriodicity(double newPeriodicity)

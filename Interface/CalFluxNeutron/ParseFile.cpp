@@ -167,11 +167,9 @@ ParseFile::ParseErrors ParseFile::parseString(std::string &str)
 
     std::regex beginPattern(R"(\/\/\/.*?\n\/\/)");
 
-    auto countMaterial  = countOccurrences(str, "///");
+    crossSectionDataFileInfomation.numberOfZones = countOccurrences(str, "///");
 
-    crossSectionDataFileInfomation.numberOfZones = countMaterial;
-
-    if ( countMaterial != referenceNumberOfZones  )
+    if (referenceNumberOfZones > crossSectionDataFileInfomation.numberOfZones)
     {
         eError |= ParseErrors::eNumberOfZoneDoesNotMatch;
     }

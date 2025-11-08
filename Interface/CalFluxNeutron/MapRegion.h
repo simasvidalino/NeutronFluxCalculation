@@ -33,7 +33,6 @@ class MapRegion : public QDialog
 
 public:
     explicit MapRegion(QWidget *parent = nullptr,
-                       int regionNumber = 1,
                        int groupNumber = 1);
     ~MapRegion();
 
@@ -74,7 +73,6 @@ private:
 
     QString currentMatZone;
 
-    int regionNumber;
     int groupNumber;
 
     void setRegionNumber(int newRegionNumber);

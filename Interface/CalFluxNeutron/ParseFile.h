@@ -61,7 +61,6 @@ private:
     int referenceEnergyGroup;
     int referenceLegendreOrder;
     int referenceNumberOfZones;
-    int referenceNumberOfRegion;
 
     ParseErrors eError = ParseErrors::eOk;
 

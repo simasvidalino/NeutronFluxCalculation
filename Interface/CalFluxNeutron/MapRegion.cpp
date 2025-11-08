@@ -12,11 +12,9 @@
 #include <QMessageBox>
 
 MapRegion::MapRegion(QWidget *parent,
-                     int regionNumber,
                      int groupNumber) :
     QDialog(parent),
     ui(new Ui::MapRegion),
-    regionNumber(regionNumber),
     groupNumber(groupNumber)
 {
     ui->setupUi(this);
@@ -32,15 +30,12 @@ MapRegion::~MapRegion()
 
 void MapRegion::addZones()
 {
-    if (ui->listWidget->count() < regionNumber)
-    {
-        auto item = new QListWidgetItem;
+    auto item = new QListWidgetItem;
 
-        item->setText(Interface::getDefaultZoneString());
-        item->setFlags(item->flags() | Qt::ItemIsEditable);
+    item->setText(Interface::getDefaultZoneString());
+    item->setFlags(item->flags() | Qt::ItemIsEditable);
 
-        ui->listWidget->addItem(item);
-    }
+    ui->listWidget->addItem(item);
 }
 
 void MapRegion::deleteZones()
