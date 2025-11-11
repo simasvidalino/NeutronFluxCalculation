@@ -62,16 +62,22 @@ void BuildMatrices::calculateScalarNeutronFluxData(dados_entrada *data, Calculat
 
 std::unique_ptr<dados_entrada> BuildMatrices::copyProjectDataToRawPointers(ProjectData &proj, CrossSectionDataFilerParameters& fileParameter)
 {
-    auto data = std::make_unique<dados_entrada>();
     fileName  = proj.neutronMacroscopicCrossSectionsFilePath;
-    std::filesystem::directory_entry entry{fileName};
 
-    if (   ( true == fileName.empty() )
-        || (    ( false == entry.exists() )
-             && ( fileName != ":/Default_Project/Resources/Default_Project.txt") ) )
+    if ( true == fileName.empty() )
     {
         throw std::invalid_argument("Error: Material Data File issue. \nYou need to set a Cross Section File.");
     }
+
+    std::filesystem::directory_entry entry{fileName};
+
+    if (    ( false == entry.exists() )
+         && ( fileName != ":/Default_Project/Resources/Default_Project.txt"))
+    {
+        throw std::invalid_argument("Error: Cross Section File Path issue.");
+    }
+
+    auto data = std::make_unique<dados_entrada>();
 
     dataVisualizationType = proj.dataVisualizationType;
 
