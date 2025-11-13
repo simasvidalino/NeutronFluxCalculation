@@ -115,6 +115,8 @@ private:
 
     void updateRegionsIfZonesChanged();
 
+    void setPhysicalFontInRect( int iIndex );
+
     std::unique_ptr<QGraphicsScene> scene;
     std::array<RegionData, 10> regionArray;
     std::array<QDoubleSpinBox *, 10> quoteSpinBoxes;

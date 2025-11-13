@@ -388,8 +388,10 @@ void RegionInputData::setGraphicScene(int region)
         int height = heights.at(iIndex);
 
         setRegionGraphicsRectItem(iIndex, left, top, width, height);
+        setPhysicalFontInRect(iIndex);
         setQuotaLinesGraphicsItem(iIndex, left, top, width, height);
         setSpinBoxQuota(iIndex, left, top, width, height);
+
         top += height;
     }
 
@@ -649,6 +651,62 @@ void RegionInputData::updateRegionsIfZonesChanged()
             otherRegion.materialColor = QColor(Qt::gray).rgb() & 0x00FFFFFF;
         }
     }
+}
+
+void RegionInputData::setPhysicalFontInRect( int iIndex)
+{
+    if (regionArray.size() <= iIndex)
+    {
+        return;
+    }
+
+    const auto &region = regionArray[iIndex];
+    bool hasSource     = false;
+
+    if (region.physicalSource.has_value())
+    {
+        const auto &sourceVec = region.physicalSource.value();
+        hasSource = std::any_of(sourceVec.begin(), sourceVec.end(), [](double val) { return std::abs(val) > 1e-10; });
+    }
+
+    if (!hasSource)
+    {
+        return;
+    }
+
+    QGraphicsRectItem *rectItem = nullptr;
+    for (auto *item : scene->items())
+    {
+        if (auto *rect = qgraphicsitem_cast<QGraphicsRectItem *>(item))
+        {
+            QVariant data = rect->data(0);
+            if (data.isValid() && data.toInt() == iIndex)
+            {
+                rectItem = rect;
+                break;
+            }
+        }
+    }
+
+    if (!rectItem)
+    {
+        return;
+    }
+
+    auto rect = rectItem->rect();
+
+    QGraphicsSimpleTextItem *qText = new QGraphicsSimpleTextItem("Q", rectItem);
+    qText->setData(0, iIndex);
+    qText->setFont(QFont("Arial", 10));
+    qText->setBrush(QBrush(Qt::darkCyan));
+
+    QRectF textRect = qText->boundingRect();
+
+    qText->setTransformOriginPoint(textRect.center());
+
+    qText->setPos(rect.center().x() - textRect.width() / 2, rect.center().y() - textRect.height() / 2);
+
+    qText->setRotation(90);
 }
 
 bool RegionInputData::getInvalidZone() const

@@ -45,14 +45,14 @@ void MainWindow::calculateNeutronFluxUsingDD()
 
     std::lock_guard<std::mutex> lock(m_projMutex);
 
+    this->statusBar()->showMessage("Calculating...");
+
     //Update proj values before going to the thread
     proj = ui->widgetRegion->getGeneralProjectData();
 
     startWork();
 
     worker->setProjData(*proj);
-
-    this->statusBar()->showMessage("Calculating...");
 
     ui->widgetRegion->setPushButtonCalculateFluxEnable(false);
 
