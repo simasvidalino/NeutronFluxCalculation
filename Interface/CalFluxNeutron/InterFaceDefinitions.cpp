@@ -125,7 +125,7 @@ const char *getAbsorptionChartUnit()
 
 const char *getScalarFluxChartUnit()
 {
-    return "Scalar Flux ( neutrons/c².s )";
+    return "Scalar Flux ( neutrons/cm².s )";
 }
 
 const char *getXChart()

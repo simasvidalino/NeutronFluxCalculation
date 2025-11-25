@@ -287,7 +287,7 @@ void BuildMatrices::calculateAbsorptionRatePerNode(dados_entrada *data, Calculat
         const int zone = data->Map_R[r] - 1;
         const int nodeRegion = data->n_nodos[r];
 
-        for (int n = 0; n <= nodeRegion && data->NODOSX >= nodeIndex; ++n)
+        for (int n = 0; n < nodeRegion; ++n)
         {
             for (int g = 0; g < data->G; ++g)
             {
@@ -295,6 +295,19 @@ void BuildMatrices::calculateAbsorptionRatePerNode(dados_entrada *data, Calculat
                                                       * DDResult->nodalScalarFlux[g][nodeIndex];
             }
 
+            nodeIndex++;
+        }
+    }
+    int lastRegionIndex = data->n_R - 1;
+    int lastZone        = data->Map_R[lastRegionIndex] - 1;
+
+    //Last node
+    for (int g = 0; g < data->G; ++g)
+    {
+        if (nodeIndex <= data->NODOSX)
+        {
+            absorptionRatePerNode[g][nodeIndex] = DDResult->matrices.absorptionCrossSection[lastZone][g]
+                                                  * DDResult->nodalScalarFlux[g][nodeIndex];
             nodeIndex++;
         }
     }
@@ -762,75 +775,6 @@ std::vector<double> BuildMatrices::saveFileDataInVector()
     return vector;
 }
 
-int BuildMatrices::getDataVisualizationType() const
-{
-    return dataVisualizationType;
-}
-
-void BuildMatrices::setDataVisualizationType(int newDataVisualizationType)
-{
-    dataVisualizationType = newDataVisualizationType;
-}
-
-int BuildMatrices::getMaterialNumber() const
-{
-    return materialNumber;
-}
-
-void BuildMatrices::setMaterialNumber(int newMaterialNumber)
-{
-    materialNumber = newMaterialNumber;
-}
-
-int BuildMatrices::getRegionsNumber() const
-{
-    return regionsNumber;
-}
-
-void BuildMatrices::setRegionsNumber(int newRegionsNumber)
-{
-    regionsNumber = newRegionsNumber;
-}
-
-int BuildMatrices::getAnisotropyOrder() const
-{
-    return anisotropyOrder;
-}
-
-void BuildMatrices::setAnisotropyOrder(int newAnisotropyOrder)
-{
-    anisotropyOrder = newAnisotropyOrder;
-}
-
-int BuildMatrices::getStopOrder() const
-{
-    return stopOrder;
-}
-
-void BuildMatrices::setStopOrder(int newStopOrder)
-{
-    stopOrder = newStopOrder;
-}
-
-int BuildMatrices::getQuadratureOrder() const
-{
-    return quadratureOrder;
-}
-
-void BuildMatrices::setQuadratureOrder(int newQuadratureOrder)
-{
-    quadratureOrder = newQuadratureOrder;
-}
-
-int BuildMatrices::getEnergyGroupQtt() const
-{
-    return energyGroupQtt;
-}
-
-void BuildMatrices::setEnergyGroupQtt(int newEnergyGroupQtt)
-{
-    energyGroupQtt = newEnergyGroupQtt;
-}
 
 std::vector<std::vector<long double>> BuildMatrices::calculateAbsorptionCrossSectionMatrix(dados_entrada *data,
                                                                                            std::vector<std::vector<long double>>& sigmaScattering)
@@ -1051,16 +995,6 @@ void BuildMatrices::calculateDataMatrices(dados_entrada *data)
     calculateLegendreMatrix(data);
 }
 
-int BuildMatrices::getIterationNumber() const
-{
-    return iterationNumber;
-}
-
-void BuildMatrices::setIterationNumber(int newIterationNumber)
-{
-    iterationNumber = newIterationNumber;
-}
-
 std::tuple<std::vector<long double>, std::vector<long double>> BuildMatrices::getQuadratureValues(int NWanted)
 {
     std::vector<long double> mu_values;
@@ -1182,7 +1116,9 @@ std::string BuildMatrices::saveMaterialData(std::string &finalPath, std::string 
 
     while (fs::exists(destinationPath))
     {
-        destinationPath = filePath.parent_path() / (scatteringFile.stem().string() + " (copy " + std::to_string(counter) + ")" + scatteringFile.extension().string());
+        destinationPath = filePath.parent_path()
+                          / (scatteringFile.stem().string() + " (copy " + std::to_string(counter) + ")"
+                             + scatteringFile.extension().string());
         counter++;
     }
 
@@ -1228,20 +1164,6 @@ void BuildMatrices::writeHTMLCrossSectionMatrices(dados_entrada *DDValues, Calcu
 {
     writeHTMLAbsorptionCrossSectionFile(DDValues, matrices);
     writeHTMLScatteringCrossSectionFile(DDValues, matrices);
-}
-
-void BuildMatrices::writeTXTAbsorptionRateData(dados_entrada *DDValues, CalculatedData *DDResult)
-{
-    writeAbsorptionRateFile(DDValues, DDResult);
-    writeIntegratedAbsorptionRatePerRegionFile(DDValues, DDResult);
-    writeAverageAbsorptionRateFile(DDValues, DDResult);
-}
-
-void BuildMatrices::writeTXTScalarNeutronFluxData(dados_entrada *DDValues, CalculatedData *DDResult)
-{
-    writeNeutronFluxFile(DDValues, DDResult);
-    writeAverageNeutronFluxPerRegion(DDValues, DDResult);
-    writeintegratedNeutronFluxPerGroupPerRegion(DDValues, DDResult);
 }
 
 void BuildMatrices::writeHTMLNeutronFluxFilePerPeridiocity(dados_entrada *DDValues, CalculatedData *DDResult)
@@ -1293,9 +1215,6 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerPeridiocity(dados_entrada *DDValu
         << "</pre>\n"
         << "<hr/>\n";
 
-    // Inline CSS for table styling: Ensures tables are responsive, full-width, and scrollable if needed
-    // Added fixed row height (tr { height: 40px; }) for consistent row sizing
-    // Added white-space: nowrap to prevent text wrapping, allowing columns to expand horizontally to the right
     out << "<style>"
            "table { width: 100%; border-collapse: collapse; margin-bottom: 20px; overflow-x: auto; display: block; }"
            "th, td { border: 1px solid #ddd; padding: 8px; text-align: right; white-space: nowrap; }" // No wrapping: Expands columns to the right instead of increasing height
@@ -1306,14 +1225,13 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerPeridiocity(dados_entrada *DDValu
            ".grp { text-align: center; }"
            "</style>\n";
 
-    // Calculate total region size by summing up all region sizes (used to limit the loop to the physical domain, e.g., 18 cm)
     double totalRegionSize = 0.0;
     for (int r = 0; r < DDValues->n_R; ++r)
     {
         totalRegionSize += DDValues->TAM[r];
     }
 
-    out << "<h2>Nodal Scalar Flux </h2>\n";
+    out << "<h2>Scalar Flux Distribution [neutrons/cm².s] </h2>\n";
     out << "<table><thead><tr><th>Position x (cm)</th>";
     for (size_t g = 0; g < DDValues->G; ++g)
     {
@@ -1338,7 +1256,6 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerPeridiocity(dados_entrada *DDValu
         throw std::invalid_argument(warning.toStdString());
     }
 
-    // Loop over positions while within total region size, incrementing by periodicity
     while (t <= totalRegionSize)
     {
         posFmt.str("");
@@ -1362,70 +1279,8 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerPeridiocity(dados_entrada *DDValu
 
     out << "</tbody></table><hr/>\n";
 
-    // // Cell-Average Scalar Flux section: Table with positions at cell centers, sampled by periodicity, groups as columns
-    // out << "<h2>Cell-Average Scalar Flux at Cell Centers</h2>\n";
-    // out << "<table><thead><tr><th>Cell Center x (cm)</th>";
-    // for (size_t g = 0; g < DDValues->G; ++g)
-    // {
-    //     out << "<th>G " << (g + 1) << "</th>"; // Shortened header to "G X" as per user change
-    // }
-    // out << "</tr></thead><tbody>\n";
-
-    // int cell = 0;
-    // t = 0.0;
-    // double next_sample_pos = 0.0;
-
-    // for (size_t r = 0; r < DDValues->n_R; ++r)
-    // {
-    //     double region_dx = DDValues->PASSO[r];
-    //     int nodes_in_region = DDValues->n_nodos[r];
-    //     int cells_in_region = nodes_in_region;
-
-    //     double region_start_pos = t;
-
-    //     for (int node = 0; node < cells_in_region; ++node)
-    //     {
-    //         double cell_start = region_start_pos + node * region_dx;
-    //         double cell_center = cell_start + (region_dx / 2.0);
-
-    //         // Check if this cell center aligns with periodic sampling
-    //         if (cell_center >= next_sample_pos - 1e-10)
-    //         {
-    //             double cell_end = cell_start + region_dx;
-
-    //             posFmt.str("");
-    //             posFmt.clear();
-    //             posFmt << std::fixed << std::setprecision(precisionPos) << "["
-    //                    << cell_start << "," << cell_end << "]";
-
-    //             out << "<tr><td class='num'>" << posFmt.str() << "</td>";
-
-    //             for (size_t g = 0; g < DDValues->G; ++g)
-    //             {
-    //                 valFmt.str("");
-    //                 valFmt.clear();
-    //                 valFmt << std::scientific << std::setprecision(precisionVal) << DDResult->cellAverageScalarFlux[g][cell];
-    //                 out << "<td class='num'>" << valFmt.str() << "</td>";
-    //             }
-    //             out << "</tr>\n";
-
-    //             next_sample_pos += DDValues->periodicidade;
-    //         }
-
-    //         cell++;
-    //         if (cell > DDValues->NODOSX)
-    //         {
-    //             break;
-    //         }
-    //     }
-
-    //     t += nodes_in_region * region_dx;
-    // }
-
-    // out << "</tbody></table><hr/>\n";
-
     // Average Neutron Flux per Region: Single table with regions as rows, groups as columns
-    out << "<h2>Average Neutron Flux per Region</h2>\n";
+    out << "<h2>Average Neutron Flux per Region [neutrons/cm².s]</h2>\n";
     out << "<table><thead><tr><th>Region</th>";
     for (size_t g = 0; g < DDValues->G; ++g)
     {
@@ -1448,8 +1303,7 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerPeridiocity(dados_entrada *DDValu
     }
     out << "</tbody></table><hr/>\n";
 
-    // Integrated Neutron Flux per Region: Similar single table with regions as rows, groups as columns
-    out << "<h2>Integrated Neutron Flux per Region</h2>\n";
+    out << "<h2>Integrated Neutron Flux per Region [neutrons/cm.s]</h2>\n";
     out << "<table><thead><tr><th>Region</th>";
 
     for (size_t g = 0; g < DDValues->G; ++g)
@@ -1458,7 +1312,6 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerPeridiocity(dados_entrada *DDValu
     }
     out << "</tr></thead><tbody>\n";
 
-    // Loop over regions to fill the table
     for (size_t r = 0; r < DDValues->n_R; ++r)
     {
         out << "<tr><td class='grp'>Region " << (r + 1) << "</td>";
@@ -1473,17 +1326,14 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerPeridiocity(dados_entrada *DDValu
     }
     out << "</tbody></table><hr/>\n";
 
-    // Angular Flux section: Added here as per user request, with tables per group for angular flux
-    // Loop over groups for angular flux
     for (size_t g = 0; g < DDValues->G; ++g)
     {
-        out << "<h2>Angular Flux for Group " << (g + 1) << "</h2>\n";
+        out << "<h2>Angular Flux for Group " << (g + 1) << " [neutrons/cm².s.sr]</h2>\n";
         out << "<table><thead><tr><th>Position x (cm)</th>";
 
         // Headers for directions with shortened format "D X (mu=Y.YY)"
         for (int o = 0; o < DDValues->n; ++o)
         {
-            // Assume DDValues->mi[o] holds the mu (cosine) values from quadrature; adjust if different
             double mu = DDValues->mi[o]; // Replace with actual mu access (e.g., from get_GQ())
             std::ostringstream muFmt;
             muFmt << std::fixed << std::setprecision(precisionPos) << mu;
@@ -1491,7 +1341,6 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerPeridiocity(dados_entrada *DDValu
         }
         out << "</tr></thead><tbody>\n";
 
-        // Sample nodes respecting periodicity
         t            = 0.0; // Reset starting position
         nod          = 0;   // Reset starting node index
 
@@ -1567,12 +1416,9 @@ void BuildMatrices::writeHTMLAbsorptionRateFilePerPeridiocity(dados_entrada *DDV
     // Title section: Outputs the main report header
     out << "<h1>Absorption Rate Report</h1>\n";
 
-    // Inline CSS for table styling: Ensures tables are responsive, full-width, and scrollable if needed
-    // Added fixed row height (tr { height: 40px; }) for consistent row sizing
-    // Added white-space: nowrap to prevent text wrapping, allowing columns to expand horizontally to the right
     out << "<style>"
            "table { width: 100%; border-collapse: collapse; margin-bottom: 20px; overflow-x: auto; display: block; }"
-           "th, td { border: 1px solid #ddd; padding: 8px; text-align: right; white-space: nowrap; }" // No wrapping: Expands columns to the right instead of increasing height
+           "th, td { border: 1px solid #ddd; padding: 8px; text-align: right; white-space: nowrap; }"
            "tr { height: 40px; }" // Fixed row height for consistent layout
            "th { background-color: #f2f2f2; }"
            "caption { font-weight: bold; margin-bottom: 10px; }"
@@ -1580,7 +1426,6 @@ void BuildMatrices::writeHTMLAbsorptionRateFilePerPeridiocity(dados_entrada *DDV
            ".grp { text-align: center; }"
            "</style>\n";
 
-    // Calculate total region size by summing up all region sizes (used to limit the loop to the physical domain, e.g., 18 cm)
     double totalRegionSize = 0.0;
     for (int r = 0; r < DDValues->n_R; ++r)
     {
@@ -1588,7 +1433,7 @@ void BuildMatrices::writeHTMLAbsorptionRateFilePerPeridiocity(dados_entrada *DDV
     }
 
     // Absorption Rate per Node section: Table with positions at mesh points, sampled by periodicity, groups as columns
-    out << "<h2>Absorption Rate per Node</h2>\n";
+    out << "<h2>Absorption Rate Density [Absorptions/cm³.s] </h2>\n";
     out << "<table><thead><tr><th>Position x (cm)</th>";
     for (size_t g = 0; g < DDValues->G; ++g)
     {
@@ -1613,7 +1458,6 @@ void BuildMatrices::writeHTMLAbsorptionRateFilePerPeridiocity(dados_entrada *DDV
         throw std::invalid_argument(warning.toStdString());
     }
 
-    // Loop over positions while within total region size, incrementing by periodicity
     while (t <= totalRegionSize)
     {
         posFmt.str("");
@@ -1638,7 +1482,7 @@ void BuildMatrices::writeHTMLAbsorptionRateFilePerPeridiocity(dados_entrada *DDV
     out << "</tbody></table><hr/>\n";
 
     // Average Absorption Rate per Region: Single table with regions as rows, groups as columns for compactness
-    out << "<h2>Average Absorption Rate per Region</h2>\n";
+    out << "<h2>Average Absorption Rate per Region [Absorptions/cm³.s]</h2>\n";
     out << "<table><thead><tr><th>Region</th>";
     for (size_t g = 0; g < DDValues->G; ++g)
     {
@@ -1662,21 +1506,25 @@ void BuildMatrices::writeHTMLAbsorptionRateFilePerPeridiocity(dados_entrada *DDV
     out << "</tbody></table><hr/>\n";
 
     // Integrated Absorption Rate per Zone: Single table with zones as rows (not multi-group, so kept vertical but styled)
-    out << "<h2>Integrated Absorption Rate per Zone</h2>\n";
+    out << "<h2>Integrated Absorption Rate [Absorptions/s] </h2>\n";
     out << "<table><thead><tr><th>Zone</th><th>Integrated Absorption Rate</th></tr></thead><tbody>\n";
 
-    // Loop over zones to fill the table
+    long double totalAbs = 0.0;
     for (size_t z = 0; z < DDValues->n_Z; ++z)
     {
         valFmt.str("");
         valFmt.clear();
         valFmt << std::scientific << std::setprecision(precisionVal) << DDResult->integratedAbsorptionRatePerZone[z];
 
+        totalAbs += DDResult->integratedAbsorptionRatePerZone[z];
         out << "<tr><td class='grp'>Zone " << (z + 1) << "</td><td class='num'>" << valFmt.str() << "</td></tr>\n";
     }
-    out << "</tbody></table>\n";
+    valFmt.str("");
+    valFmt.clear();
+    valFmt << std::scientific << std::setprecision(precisionVal) << totalAbs;
+    out << "<tr><td class='grp'>Total </td><td class='num'>" << valFmt.str() << "</td></tr>\n";
 
-    // Close the HTML body and the output stream
+    out << "</tbody></table>\n";
     out << "</body></html>";
 
     out.close();
@@ -1723,7 +1571,7 @@ void BuildMatrices::writeHTMLAbsorptionCrossSectionFile(dados_entrada *DDValues,
     for (size_t z = 0; z < static_cast<size_t>(DDValues->n_Z); ++z)
     {
         out << "<section>\n";
-        out << "<h2>Zone " << (z + 1) << "</h2>\n";
+        out << "<h2>Zone " << (z + 1) << " [1/cm]</h2>\n";
         out << "<table>\n<thead><tr><th>Energy Group</th><th>Absorption Cross-Section</th></tr></thead>\n<tbody>\n";
 
         for (size_t g = 0; g < static_cast<size_t>(DDValues->G); ++g)
@@ -1788,7 +1636,7 @@ void BuildMatrices::writeHTMLScatteringCrossSectionFile(dados_entrada *DDValues,
     for (size_t z = 0; z < static_cast<size_t>(DDValues->n_Z); ++z)
     {
         out << "<section>\n";
-        out << "<h2>Zone " << (z + 1) << "</h2>\n";
+        out << "<h2>Zone " << (z + 1) << " [1/cm] </h2>\n";
         out << "<table>\n<thead><tr><th>Energy Group</th><th>Scattering Cross-Section</th></tr></thead>\n<tbody>\n";
 
         for (size_t g = 0; g < static_cast<size_t>(DDValues->G); ++g)
@@ -1843,10 +1691,8 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerRegionInterface( dados_entrada *D
             </style>
             </head><body>)";
 
-    // Title section: Outputs the main report header
     out << "<h1>Neutron Flux Report</h1>\n";
 
-    // Preformatted block for iteration and time info
     out
         << "<pre style='white-space:pre-wrap;background:#1b1b1b;border:1px solid #444;"
            "padding:8px;border-radius:8px'>"
@@ -1861,9 +1707,6 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerRegionInterface( dados_entrada *D
         << "</pre>\n"
         << "<hr/>\n";
 
-    // Inline CSS for table styling: Ensures tables are responsive, full-width, and scrollable if needed
-    // Added fixed row height (tr { height: 40px; }) for consistent row sizing
-    // Added white-space: nowrap to prevent text wrapping, allowing columns to expand horizontally to the right
     out << "<style>"
            "table { width: 100%; border-collapse: collapse; margin-bottom: 20px; overflow-x: auto; display: block; }"
            "th, td { border: 1px solid #ddd; padding: 8px; text-align: right; white-space: nowrap; }" // No wrapping: Expands columns to the right instead of increasing height
@@ -1874,19 +1717,17 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerRegionInterface( dados_entrada *D
            ".grp { text-align: center; }"
            "</style>\n";
 
-    // Calculate total region size by summing up all region sizes (used to limit the loop to the physical domain, e.g., 18 cm)
     double totalRegionSize = 0.0;
     for (int r = 0; r < DDValues->n_R; ++r)
     {
         totalRegionSize += DDValues->TAM[r];
     }
 
-    // Nodal Scalar Flux section: Table with positions at mesh points, sampled by periodicity, groups as columns
-    out << "<h2>Nodal Scalar Flux</h2>\n";
+    out << "<h2>Scalar Flux Distribution [neutrons/cm².s] </h2>\n";
     out << "<table><thead><tr><th>Position x (cm)</th>";
     for (size_t g = 0; g < DDValues->G; ++g)
     {
-        out << "<th>G " << (g + 1) << "</th>"; // Shortened header to "G X" as per user change
+        out << "<th>G " << (g + 1) << "</th>";
     }
     out << "</tr></thead><tbody>\n";
 
@@ -1920,8 +1761,7 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerRegionInterface( dados_entrada *D
 
     out << "</tbody></table><hr/>\n";
 
-    // Average Neutron Flux per Region: Single table with regions as rows, groups as columns
-    out << "<h2>Average Neutron Flux per Region</h2>\n";
+    out << "<h2>Average Neutron Flux per Region [neutrons/cm².s] </h2>\n";
     out << "<table><thead><tr><th>Region</th>";
     for (size_t g = 0; g < DDValues->G; ++g)
     {
@@ -1929,7 +1769,6 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerRegionInterface( dados_entrada *D
     }
     out << "</tr></thead><tbody>\n";
 
-    // Loop over regions to fill the table
     for (size_t r = 0; r < DDValues->n_R; ++r)
     {
         out << "<tr><td class='grp'>Region " << (r + 1) << "</td>";
@@ -1945,7 +1784,7 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerRegionInterface( dados_entrada *D
     out << "</tbody></table><hr/>\n";
 
     // Integrated Neutron Flux per Region: Similar single table with regions as rows, groups as columns
-    out << "<h2>Integrated Neutron Flux per Region</h2>\n";
+    out << "<h2>Integrated Neutron Flux per Region [neutrons/cm.s]</h2>\n";
     out << "<table><thead><tr><th>Region</th>";
 
     for (size_t g = 0; g < DDValues->G; ++g)
@@ -1971,10 +1810,9 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerRegionInterface( dados_entrada *D
     out << "</tbody></table><hr/>\n";
 
     // Angular Flux section: Added here as per user request, with tables per group for angular flux
-    // Loop over groups for angular flux
     for (size_t g = 0; g < DDValues->G; ++g)
     {
-        out << "<h2>Angular Flux for Group " << (g + 1) << "</h2>\n";
+        out << "<h2>Angular Flux for Group " << (g + 1) << " [neutrons/cm².s.sr]</h2>\n";
         out << "<table><thead><tr><th>Position x (cm)</th>";
 
         // Headers for directions with shortened format "D X (mu=Y.YY)"
@@ -1988,7 +1826,6 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerRegionInterface( dados_entrada *D
         }
         out << "</tr></thead><tbody>\n";
 
-        // Sample nodes respecting periodicity
         t            = 0.0; // Reset starting position
         nod          = 0;   // Reset starting node index
 
@@ -2023,7 +1860,6 @@ void BuildMatrices::writeHTMLNeutronFluxFilePerRegionInterface( dados_entrada *D
         out << "</tbody></table><hr/>\n";
     }
 
-    // Close the HTML body
     out << "</body></html>";
 
     out.close();
@@ -2064,12 +1900,9 @@ void BuildMatrices::writeHTMLAbsorptionRateFilePerRegionInterface(dados_entrada 
     // Title section: Outputs the main report header
     out << "<h1>Absorption Rate Report</h1>\n";
 
-    // Inline CSS for table styling: Ensures tables are responsive, full-width, and scrollable if needed
-    // Added fixed row height (tr { height: 40px; }) for consistent row sizing
-    // Added white-space: nowrap to prevent text wrapping, allowing columns to expand horizontally to the right
     out << "<style>"
            "table { width: 100%; border-collapse: collapse; margin-bottom: 20px; overflow-x: auto; display: block; }"
-           "th, td { border: 1px solid #ddd; padding: 8px; text-align: right; white-space: nowrap; }" // No wrapping: Expands columns to the right instead of increasing height
+           "th, td { border: 1px solid #ddd; padding: 8px; text-align: right; white-space: nowrap; }"
            "tr { height: 40px; }" // Fixed row height for consistent layout
            "th { background-color: #f2f2f2; }"
            "caption { font-weight: bold; margin-bottom: 10px; }"
@@ -2077,15 +1910,13 @@ void BuildMatrices::writeHTMLAbsorptionRateFilePerRegionInterface(dados_entrada 
            ".grp { text-align: center; }"
            "</style>\n";
 
-    // Calculate total region size by summing up all region sizes (used to limit the loop to the physical domain, e.g., 18 cm)
     double totalRegionSize = 0.0;
     for (int r = 0; r < DDValues->n_R; ++r)
     {
         totalRegionSize += DDValues->TAM[r];
     }
 
-    // Absorption Rate per Node section: Table with positions at mesh points, sampled by periodicity, groups as columns
-    out << "<h2>Absorption Rate per Node</h2>\n";
+    out << "<h2>Absorption Rate Density [Absorptions/cm³.s] </h2>\n";
     out << "<table><thead><tr><th>Position x (cm)</th>";
     for (size_t g = 0; g < DDValues->G; ++g)
     {
@@ -2124,7 +1955,7 @@ void BuildMatrices::writeHTMLAbsorptionRateFilePerRegionInterface(dados_entrada 
     out << "</tbody></table><hr/>\n";
 
     // Average Absorption Rate per Region: Single table with regions as rows, groups as columns for compactness
-    out << "<h2>Average Absorption Rate per Region</h2>\n";
+    out << "<h2>Average Absorption Rate per Region [Absorptions/cm³.s]</h2>\n";
     out << "<table><thead><tr><th>Region</th>";
     for (size_t g = 0; g < DDValues->G; ++g)
     {
@@ -2148,20 +1979,25 @@ void BuildMatrices::writeHTMLAbsorptionRateFilePerRegionInterface(dados_entrada 
 
     out << "</tbody></table><hr/>\n";
 
-    // Integrated Absorption Rate per Zone: Single table with zones as rows (not multi-group, so kept vertical but styled)
-    out << "<h2>Integrated Absorption Rate per Zone</h2>\n";
+    out << "<h2>Integrated Absorption Rate [Absorptions/s] </h2>\n";
     out << "<table><thead><tr><th>Zone</th><th>Integrated Absorption Rate</th></tr></thead><tbody>\n";
 
     // Loop over zones to fill the table
+    long double totalAbs = 0.0;
     for (size_t z = 0; z < DDValues->n_Z; ++z)
     {
         valFmt.str("");
         valFmt.clear();
         valFmt << std::scientific << std::setprecision(precisionVal) << DDResult->integratedAbsorptionRatePerZone[z];
 
+        totalAbs += DDResult->integratedAbsorptionRatePerZone[z];
         out << "<tr><td class='grp'>Zone " << (z + 1) << "</td><td class='num'>" << valFmt.str() << "</td></tr>\n";
     }
-    out << "</tbody></table>\n";
+    valFmt.str("");
+    valFmt.clear();
+    valFmt << std::scientific << std::setprecision(precisionVal) << totalAbs;
+    out << "<tr><td class='grp'>Total </td><td class='num'>" << valFmt.str() << "</td></tr>\n";
+
 
     // Close the HTML body and the output stream
     out << "</body></html>";
@@ -2183,101 +2019,6 @@ void BuildMatrices::determinePositionIncrement(std::vector<int> &nodeIndices,
         nod += DDValues->n_nodos[r];
         nodeIndices.push_back(nod);
     }
-}
-
-void BuildMatrices::writeAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult)
-{
-    if (DDResult->absorptionRatePerNode.empty())
-    {
-        throw std::runtime_error("absorptionRatePerNode is empty");
-    }
-
-    std::string fileName = computerFileName(DDValues, "Absorption_Rate_Report") + ".html";
-    std::ofstream out(fileName);
-
-    if (!out.is_open())
-        throw std::runtime_error("Error opening file: " + fileName);
-
-    const int precisionPos = 2;
-    const int precisionVal = 15;
-    std::ostringstream posFmt, valFmt;
-
-    out << R"(<!doctype html>
-            <html lang="en"><head><meta charset="utf-8">
-            <style>
-            html,body{margin:0;padding:16px;background:#121212;color:#ddd;font:14px/1.4 system-ui,Segoe UI,Arial,sans-serif}
-            table{border-collapse:collapse;width:100%;margin-top:8px}
-            th,td{border:1px solid #555;padding:6px 10px}
-            th{text-align:center;background:#1f1f1f;color:#ddd}
-            td.num{text-align:right;font-family:ui-monospace,Consolas,monospace}
-            td.grp{text-align:center}
-            caption{caption-side:top;text-align:left;margin:8px 0;font-weight:600}
-            h2{margin-top:24px}
-            hr{margin:24px 0;border:0;border-top:1px solid #444}
-            </style>
-            </head><body>)";
-
-    out << "<h1>Absorption Rate Report</h1>\n";
-
-    // Rate per node
-    out << "<h2>Absorption Rate per Node</h2>";
-    out << "<table><caption>Node-wise Absorption Rate</caption><thead><tr><th>Position x (cm)</th><th>Group</th><th>Absorption Rate</th></tr></thead><tbody>";
-
-    double t = 0.0;
-    int nodStep = 1;
-    for (size_t nod = 0; nod <= DDValues->NODOSX; nod += nodStep)
-    {
-        for (size_t g = 0; g < DDValues->G; ++g)
-        {
-            posFmt.str(""); posFmt.clear();
-            posFmt << std::fixed << std::setprecision(precisionPos) << t;
-
-            valFmt.str(""); valFmt.clear();
-            valFmt << std::scientific << std::setprecision(precisionVal)
-                   << DDResult->absorptionRatePerNode[g][nod];
-
-            out << "<tr>"
-                << "<td class='num'>" << (g==0 ? posFmt.str() : "") << "</td>"
-                << "<td class='grp'>" << (g+1) << "</td>"
-                << "<td class='num'>" << valFmt.str() << "</td>"
-                << "</tr>";
-        }
-        t += DDValues->periodicidade;
-    }
-    out << "</tbody></table><hr/>";
-
-    // Média por região
-    out << "<h2>Average Absorption Rate per Region</h2>";
-    for (size_t r = 0; r < DDValues->n_R; ++r)
-    {
-        out << "<table><caption>Region " << (r+1) << "</caption><thead><tr><th>Group</th><th>Average "
-                                                       "Absorption Rate</th></tr></thead><tbody>";
-        for (size_t g = 0; g < DDValues->G; ++g)
-        {
-            valFmt.str(""); valFmt.clear();
-            valFmt << std::scientific << std::setprecision(precisionVal)
-                   << DDResult->averageAbsorptionRatePerRegion[r][g];
-
-            out << "<tr><td class='grp'>" << (g+1) << "</td><td class='num'>" << valFmt.str() << "</td></tr>";
-        }
-        out << "</tbody></table><br/>";
-    }
-
-    // Integrada por zona
-    out << "<h2>Integrated Absorption Rate per Zone</h2>";
-    out << "<table><thead><tr><th>Zone</th><th>Integrated Absorption Rate</th></tr></thead><tbody>";
-    for (size_t z = 0; z < DDValues->n_Z; ++z)
-    {
-        valFmt.str(""); valFmt.clear();
-        valFmt << std::scientific << std::setprecision(precisionVal)
-               << DDResult->integratedAbsorptionRatePerZone[z];
-
-        out << "<tr><td class='grp'>Zone " << (z+1) << "</td><td class='num'>" << valFmt.str() << "</td></tr>";
-    }
-    out << "</tbody></table>";
-
-    out << "</body></html>";
-    out.close();
 }
 
 std::string BuildMatrices::computerFileName(dados_entrada* DDValues, std::string name)
@@ -2318,337 +2059,5 @@ std::filesystem::path BuildMatrices::computerFileNameHtm(dados_entrada *DDValues
     std::filesystem::path htmlPath = std::filesystem::u8path(title);
 
     return htmlPath;
-}
-
-void BuildMatrices::writeAverageNeutronFluxPerRegion(dados_entrada *DDValues, CalculatedData *DDResult)
-{
-    auto title = computerFileName(DDValues, SCALAR_NEUTRON_FLUX_FILE_NAME) + ".txt";
-    std::ofstream outFile(title, std::ios::app);
-
-    if (!outFile.is_open())
-    {
-        throw std::runtime_error("Error opening file: " + title);
-    }
-
-    DDResult->scalarFluxFile = title;
-
-    // Iterate over zones
-    for (size_t rIndex = 0; rIndex < DDValues->n_R; ++rIndex)
-    {
-        // Write zoneIndex as table title
-        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
-        outFile << "Region " << rIndex + 1 << std::endl;
-
-        // Write table headers
-        outFile << std::left << std::setw(15) << "Group" << "Average Neutron Flux Per Region" << std::endl;
-
-        for (size_t group = 0; group < DDValues->G; ++group)
-        {
-            outFile << std::left << std::setw(15) << group + 1
-                    << DDResult->averageNeutronFluxPerGroupPerRegion[rIndex][group] << std::endl;
-        }
-
-        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
-
-        // Add a newline for separation between Region if there are multiple Regions
-        if (rIndex < DDResult->averageNeutronFluxPerGroupPerRegion.size() - 1)
-        {
-            outFile << std::endl;
-        }
-    }
-
-    outFile.close();
-}
-
-void BuildMatrices::writeintegratedNeutronFluxPerGroupPerRegion(dados_entrada *DDValues, CalculatedData *DDResult)
-{
-    auto title = computerFileName(DDValues, "Scalar_Flux") + ".txt";
-    std::ofstream outFile(title);
-
-    if (!outFile.is_open())
-    {
-        throw std::runtime_error("Error opening file: " + title);
-    }
-
-    DDResult->scalarFluxFile = title;
-
-    // Iterate over zones
-    for (size_t rIndex = 0; rIndex < DDValues->n_R; ++rIndex)
-    {
-        // Write zoneIndex as table title
-        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
-        outFile << "Region " << rIndex + 1 << std::endl;
-
-        // Write table headers
-        outFile << std::left << std::setw(15) << "Group" << "Integrated Neutron Flux Per Region" << std::endl;
-
-        for (size_t group = 0; group < DDValues->G; ++group)
-        {
-            outFile << std::left << std::setw(15) << group + 1
-                    << DDResult->integratedNeutronFluxPerGroupPerRegion[rIndex][group] << std::endl;
-        }
-
-        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
-
-        // Add a newline for separation between Region if there are multiple Regions
-        if (rIndex < DDResult->integratedNeutronFluxPerGroupPerRegion.size() - 1)
-        {
-            outFile << std::endl;
-        }
-    }
-
-    outFile.close();
-}
-
-void BuildMatrices::writeIntegratedAbsorptionRatePerRegionFile(dados_entrada *DDValues, CalculatedData *DDResult)
-{
-    if (DDResult->integratedAbsorptionRatePerGroupPerRegion.empty())
-    {
-        throw std::runtime_error("Absorption Matrix is empty.");
-    }
-
-    auto title = computerFileName(DDValues, ABSORPTION_NEUTRON_RATE_FILE_NAME) + ".txt";
-    std::ofstream outFile(title);
-
-    if (!outFile.is_open())
-    {
-        throw std::runtime_error("Error opening file: " + title);
-    }
-
-    DDResult->absorptionRateFile = title;
-
-    // Iterate over zones
-    for (size_t rIndex = 0; rIndex < DDValues->n_R; ++rIndex)
-    {
-        // Write zoneIndex as table title
-        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
-        outFile << "Region " << rIndex + 1 << std::endl;
-
-        // Write table headers
-        outFile << std::left << std::setw(15) << "Group" << "Integrated Absorption Rate Per Region" << std::endl;
-
-        for (size_t group = 0; group < DDValues->G; ++group)
-        {
-            outFile << std::left << std::setw(15) << group + 1
-                    << DDResult->integratedAbsorptionRatePerGroupPerRegion[rIndex][group] << std::endl;
-        }
-
-        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
-
-        // Add a newline for separation between Region if there are multiple Regions
-        if (rIndex < DDResult->integratedAbsorptionRatePerGroupPerRegion.size() - 1)
-        {
-            outFile << std::endl;
-        }
-    }
-
-    outFile.close();
-}
-
-void BuildMatrices::writeAverageAbsorptionRateFile(dados_entrada *DDValues, CalculatedData *DDResult)
-{
-    if (DDResult->averageAbsorptionRatePerRegion.empty())
-    {
-        throw std::runtime_error("Absorption Matrix is empty.");
-    }
-
-    auto title = computerFileName(DDValues, ABSORPTION_NEUTRON_RATE_FILE_NAME) + ".txt";
-    std::ofstream outFile(title);
-
-    if (!outFile.is_open())
-    {
-        throw std::runtime_error("Error opening file: " + title);
-    }
-
-    DDResult->absorptionRateFile = title;
-
-    // Iterate over zones
-    for (size_t rIndex = 0; rIndex < DDValues->n_R; ++rIndex)
-    {
-        // Write zoneIndex as table title
-        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
-        outFile << "Region " << rIndex + 1 << std::endl;
-
-        // Write table headers
-        outFile << std::left << std::setw(15) << "Group" << "Average Absorption Rate" << std::endl;
-
-        for (size_t group = 0; group < DDValues->G; ++group)
-        {
-            outFile << std::left << std::setw(15) << group + 1
-                    << DDResult->averageAbsorptionRatePerRegion[rIndex][group] << std::endl;
-        }
-
-        outFile << "-----------------------------------------------------------------------------------------" << std::endl;
-
-        // Add a newline for separation between Region if there are multiple Regions
-        if (rIndex < DDResult->averageAbsorptionRatePerRegion.size() - 1)
-        {
-            outFile << std::endl;
-        }
-    }
-
-    outFile.close();
-}
-
-void BuildMatrices::writeAbsorptionCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult)
-{
-    if (DDResult->absorptionCrossSection.empty())
-    {
-        throw std::runtime_error("Absorption Cross Section Matrix is empty.");
-    }
-
-    auto absorptionCrossSection = DDResult->absorptionCrossSection;
-    auto zoneNumber  = DDValues->n_Z;
-    auto groupNumber = DDValues->G;
-
-    auto title = computerFileName(DDValues, "Absorption_Cross_Section") + ".txt";
-    std::ofstream outFile(title);
-
-    if (!outFile.is_open())
-    {
-        throw std::runtime_error("Error opening file: " + title);
-    }
-
-    DDResult->absorptionCrossSectionFile = title;
-
-    // Iterate over zones
-    for (size_t zoneIndex = 0; zoneIndex < zoneNumber; ++zoneIndex)
-    {
-        // Write zoneIndex as table title
-        outFile << "Zone " << zoneIndex + 1 << std::endl;
-
-        // Write table headers
-        outFile << std::left << std::setw(15) << "Energy Group" << "Absorption Cross-Section" << std::endl;
-
-        // Iterate over energy groups within each zone
-        for (size_t group = 0; group < groupNumber; ++group)
-        {
-            // Write the energy group and corresponding absorption cross-section
-            outFile << std::left << std::setw(15) << group + 1
-                    << absorptionCrossSection[zoneIndex][group] << std::endl;
-        }
-
-        // Add a newline for separation between zones if there are multiple zones
-        if (zoneIndex < DDResult->absorptionCrossSection.size() - 1)
-        {
-            outFile << std::endl;
-        }
-    }
-
-    outFile.close();
-}
-
-void BuildMatrices::writeNeutronFluxFile(dados_entrada *DDValues, CalculatedData *DDResult)
-{
-    if (nullptr == DDValues->FLUXO_ESCALAR)
-    {
-        throw std::runtime_error("NeutronFlux Matrix is null.");
-    }
-
-    auto title = computerFileName(DDValues, "Scalar_Flux") + ".txt";
-    std::ofstream output(title);
-
-    if (!output.is_open())
-    {
-        throw std::runtime_error( "Error opening file: " + title);
-    }
-
-    DDResult->scalarFluxFile = title;
-
-    int colWidth = 25;
-    int precision = 2;
-
-    const int precisionScalar = 30;
-
-    //Write compile information
-    output << std::string(colWidth * 3, '-') << std::endl;
-    output << "Iteration Number: "
-           << DDValues->iteracaoFinal<<"\nTime: "
-           << DDValues->tempoFinalDeProcessamento<<"s\n";
-
-    output << std::string(colWidth * 3, '-') << std::endl;
-
-    // Write table headers
-    output << std::left << std::setw(colWidth) << "Position x (cm)"
-           << std::setw(colWidth) << "Group"
-           << std::setw(colWidth) << "Scalar Neutron Flux" << std::endl;
-    output << std::string(colWidth * 3, '-') << std::endl;
-
-    double t = 0;
-    int nod  = 0;
-    double totalRegionSize = 0.0;
-
-    for (int r = 0; r < DDValues->n_R; ++r)
-        totalRegionSize += DDValues->TAM[r];
-
-    while (t <= totalRegionSize)
-    {
-        for (int g = 0; g < DDValues->G; ++g)
-        {
-            if (g == 0)
-            {
-                output << std::left << std::setw(colWidth) << std::fixed << std::setprecision(precision) << t
-                       << std::setw(colWidth) << g + 1
-                       << std::fixed << std::setprecision(precisionScalar) << DDValues->FLUXO_ESCALAR[g][nod] << std::endl;
-            }
-            else
-            {
-                output << std::left << std::setw(colWidth) << ""
-                       << std::setw(colWidth) << g + 1
-                       << std::fixed << std::setprecision(precisionScalar) << DDValues->FLUXO_ESCALAR[g][nod] << std::endl;
-            }
-        }
-
-        t += DDValues->periodicidade;
-        nod += static_cast<int>((DDValues->NODOSX * DDValues->periodicidade) / DDValues->TAM_TOTAL);
-        output << std::string(colWidth * 3, '-') << std::endl;
-    }
-
-}
-
-void BuildMatrices::writeScatteringCrossSectionFile(dados_entrada *DDValues, CalculatedCrossSectionMatrices *DDResult)
-{
-    if (DDResult->scatteringCrossSection.empty())
-    {
-        throw std::runtime_error("scattering Cross Section Matrix is empty.");
-    }
-
-    auto scttCrossSection = DDResult->scatteringCrossSection;
-    auto zoneNumber       = DDValues->n_Z;
-    auto groupNumber      = DDValues->G;
-
-    auto title = computerFileName(DDValues, "Scattering_Cross_Section") + ".txt";
-    std::ofstream output(title);
-
-    if (!output.is_open())
-    {
-        throw std::runtime_error( "Error opening file: " + title);
-    }
-
-    DDResult->totalScatteringCrossSectionFile = title;
-
-    // Iterate over zones
-    for (size_t zoneIndex = 0; zoneIndex < zoneNumber; ++zoneIndex)
-    {
-        // Write zoneIndex as table title
-        output << "Zone " << zoneIndex << std::endl;
-        // Write table headers
-        output << std::left << std::setw(15) << "Energy Group" << "Scattering Cross-Section" << std::endl;
-
-        // Iterate over energy groups within each zone
-        for (size_t group = 0; group < groupNumber; ++group)
-        {
-            // Write the energy group and corresponding absorption cross-section
-            output << std::left << std::setw(15) << group + 1 << scttCrossSection[zoneIndex][group] << std::endl;
-        }
-
-        // Add a newline for separation between zones if there are multiple zones
-        if (zoneIndex < DDResult->absorptionCrossSection.size() - 1)
-        {
-            output << std::endl;
-        }
-    }
-
-    output.close();
 }
 

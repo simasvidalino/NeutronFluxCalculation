@@ -264,6 +264,9 @@ void RegionInputData::updateZoneListWithRegionData(QStringList &zoneList)
 
 void RegionInputData::init()
 {
+    ui->spinBoxStopOrder->setRange(0, 20);
+    ui->spinBoxStopOrder->setSingleStep(1);
+
     ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
