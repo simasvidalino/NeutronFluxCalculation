@@ -35,7 +35,7 @@ void Worker::process()
         //Update struct data
         updateDDValues();
 
-        //Calculate scalar neutron Flux
+        //Calculate scalar neutron FluxrunDDMethodWithOneThread
         DDMethod::getInstance()->runDDMethodWithOneThread(*DDValues);
 
         //The order metters

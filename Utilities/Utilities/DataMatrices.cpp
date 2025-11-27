@@ -23,6 +23,10 @@ BuildMatrices::BuildMatrices()
 {
 }
 
+BuildMatrices::~BuildMatrices()
+{
+}
+
 BuildMatrices *BuildMatrices::getInstance()
 {
     if (nullptr == m_ptr)
@@ -506,14 +510,9 @@ std::vector<std::vector<long double>> BuildMatrices::calculateScatteringCrossSec
 
                 if (value > 0.0L)
                 {
-                    // std::cout << "g" << gIndex << " g'" << gLineIndex
-                    //<< " legendre = " << lIndex << " value = " << value << std::endl;
-
                     sum += value; // Add the current value to the total sum
                 }
             }
-
-            //std::cout << "sum for g " << gIndex << " = " << sum << std::endl;
 
             // Store the total sum for the current group gIndex
             scattering_g.push_back(sum);
@@ -565,15 +564,6 @@ void BuildMatrices::allocateMatrices(dados_entrada &valor)
     valor.n_R = vector[i]; i++;
 
     valor.n_Z = vector[i]; i++;
-
-    // std::cout<<"Main data ordem da quadratura "<< valor.n
-    //           << "\nordem de parada " << valor.ordem_parada
-    //           <<"\nOrdem de iteracao " << valor.iteracao
-    //           << "\nGropu de energia "<<valor.G
-    //           << "\n valor.L "<<valor.L
-    //           <<"\nNumero de zonas"<<valor.n_Z
-    //           <<"\nNumero de Região"<<valor.n_R
-    //           <<std::endl;
 
 
     //Tamanho de cada Regiao
@@ -747,7 +737,6 @@ std::vector<double> BuildMatrices::saveFileDataInVector()
 
         if (!line.isEmpty() && line[0] == '/') // Skip comment lines
         {
-            std::cout << line.toStdString() << std::endl;
             continue;
         }
 
@@ -765,8 +754,7 @@ std::vector<double> BuildMatrices::saveFileDataInVector()
     {
         if (v < 0.0)
         {
-            std::cout << "Negative cross section value detected. It will be replaced with zero." << std::endl;
-            //v = 0.0;
+            std::cout << "Negative Cross section value detected." << std::endl;
         }
     }
 
@@ -875,9 +863,6 @@ void BuildMatrices::buildCrossSectionMatrices(dados_entrada *data)
 
     auto vector = saveFileDataInVector();
 
-    // for (auto v:vector)
-    //     std::cout<<v<< std::endl;
-
     int i = 0;
 
     for (int j = 0; j < data->G; j++)
@@ -898,8 +883,6 @@ void BuildMatrices::buildCrossSectionMatrices(dados_entrada *data)
     //Total and Scattering cross section
     for (int h = 0; h < data->n_Z; h++)
     {
-        //std::cout<<"\nZona "<<h<<std::endl;
-
         for (int j = 0; j < data->G; j++)
         {
             data->s_t[j][h] = vector[i];
@@ -908,14 +891,11 @@ void BuildMatrices::buildCrossSectionMatrices(dados_entrada *data)
 
         for (int k = 0; k < data->L + 1; k++)
         {
-            //std::cout<<"\nLegendre "<<k<<std::endl;
             for (int m = 0; m < data->G; m++)
             {
                 for (int n = 0; n<data->G; n ++)
                 {
                     data->s_s[m][n][h][k] = vector[i];
-                    //std::cout<<data->s_s[m][n][h][k] <<" "<<std::endl;
-
                     i++;
                 }
             }
@@ -955,7 +935,7 @@ void BuildMatrices::calculateLegendreMatrix(dados_entrada* data)
         }
     }
 
-    delete [] legendre_n;
+   delete [] legendre_n;
 }
 
 void BuildMatrices::calculateDataMatrices(dados_entrada *data)
@@ -2020,44 +2000,52 @@ void BuildMatrices::determinePositionIncrement(std::vector<int> &nodeIndices,
         nodeIndices.push_back(nod);
     }
 }
+#include <QStandardPaths>
+#include <QDir>
+
 
 std::string BuildMatrices::computerFileName(dados_entrada* DDValues, std::string name)
 {
     std::ostringstream title;
-    std::string directory;
 
-    std::filesystem::path filePath(fileName);
-
-    if (QString(fileName.c_str()).contains(":/Default"))
-    {
-        std::string binaryDir = QCoreApplication::applicationDirPath().toStdString();
-
-        directory = binaryDir;
-    }
-    else
-    {
-        directory = filePath.parent_path().string();
-    }
-
-    title << directory       <<"/"
-          << name
+    title << name
           << "_R"            << DDValues->n_R
           << "_G"            << DDValues->G
           << "_L"            << DDValues->L
           << "_N"            << DDValues->n
           << "_Nod"          << DDValues->NODOSX;
 
-    std::string finalTitle = title.str();
-
-    return finalTitle;
+    return title.str();
 }
 
 std::filesystem::path BuildMatrices::computerFileNameHtm(dados_entrada *DDValues, std::string name)
 {
-    auto title = computerFileName(DDValues, name) + ".html";
+    std::string baseName = computerFileName(DDValues, name);
+    QString finalFileName = QString::fromStdString(baseName + ".html");
 
-    std::filesystem::path htmlPath = std::filesystem::u8path(title);
+    QString currentProjectFile = QString::fromStdString(this->fileName);
+    QString targetDir;
 
-    return htmlPath;
+    if (currentProjectFile.startsWith(":/"))
+    {
+        targetDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    }
+    else
+    {
+        QFileInfo fileInfo(currentProjectFile);
+        QDir projectDir = fileInfo.absoluteDir();
+
+        if (projectDir.exists() && QFileInfo(projectDir.absolutePath()).isWritable())
+        {
+            targetDir = projectDir.absolutePath();
+        }
+        else
+        {
+            targetDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+        }
+    }
+
+    QDir dir(targetDir);
+    QString fullPath = dir.filePath(finalFileName);
+    return std::filesystem::u8path(fullPath.toStdString());
 }
-

@@ -124,6 +124,7 @@ protected:
 
 private:
     BuildMatrices();
+    ~BuildMatrices();
 
     void allocateMatrices(dados_entrada &valor);
 

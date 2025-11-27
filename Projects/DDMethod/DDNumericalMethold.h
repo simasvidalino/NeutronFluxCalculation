@@ -151,13 +151,6 @@ a tolerânicia para o processo parar.
             }
         }
 
-//        cout<<"\n\n\n\n"<<aux<<"\n\n\n\n";
-//for(int g=0;g<valor.G;g++){
-//         cout<<" Grupo "<<valor.G<<"\n\n";
-//    for(int n=0;n<=valor.NODOSX;n++){
-//    cout<<" nodo "<<n<< "fluxo "<<valor.FLUXO_ESCALAR[g][n]<<endl;
-//    }}
-
 
         if(aux<tolerancia){//se a diferença entre os fluxos da iteração atual e anterior respeitar uma tolerância, então o programa para.
             break;

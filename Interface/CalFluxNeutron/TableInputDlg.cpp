@@ -141,8 +141,6 @@ void TableInputDlg::onPasteFromClipboard()
     auto values = text.split(delimiterRegExp, Qt::SkipEmptyParts);
 
     feedTable(values);
-
-    qInfo()<<"testo colado"<<text;
 }
 
 void TableInputDlg::onClearAll()

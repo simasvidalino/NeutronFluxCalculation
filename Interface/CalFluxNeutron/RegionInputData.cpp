@@ -42,6 +42,7 @@ void RegionInputData::setEnableGUI(bool enable)
     ui->groupBoxIterativeProcess->setEnabled(enable);
     ui->spinBoxRegionQtt->setEnabled(enable);
     ui->pushButtonClear->setEnabled(enable);
+    ui->groupBoxDataVisualization->setEnabled(enable);
 }
 
 void RegionInputData::setFileName(QString &name)
