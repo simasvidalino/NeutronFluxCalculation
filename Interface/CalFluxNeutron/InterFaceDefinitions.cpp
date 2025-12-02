@@ -45,7 +45,7 @@ const char* getDefaultZoneString()
 const char *getAboutApp()
 {
     const char* str = "<p><strong>Welcome to NeutronFluxPro</strong></p>"
-                      "<p><strong>Version:</strong> 1.0.0</p>"
+                      "<p><strong>Version:</strong> 1.3</p>"
                       "<p><strong>Description:</strong></p>"
                       "<div align='justify'>NeutronFluxPro — One-Dimensional Neutron Scalar Flux Simulator — is a didactic and user-friendly tool designed to calculate the scalar flux of neutrons "
                       "and the neutron absorption rate using the Diamond Difference Method for one-dimensional neutron transport problems. "
