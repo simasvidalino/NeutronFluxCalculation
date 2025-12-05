@@ -1,23 +1,13 @@
 # NeutronFluxCalculation
 User interface for Neutron Flux Calculation
 
+## Cloning the Repository
 
-# Deploy the app
-- cmake -S . -B build -DENABLE_DEPLOY=ON
+This repository contains a **Git submodule**, so it is important to clone it using the `--recursive` option to ensure all dependencies are properly fetched.
 
-- Change CMakeList
+```bash
+git clone --recursive git@github.com:simasvidalino/NeutronFluxCalculation.git
 
-- To enable deploy:
-  - Change `ENABLE_DEPLOY` to **<span style="color:green;">ON</span>**
-- To enable desable:
-  - Change `ENABLE_DEPLOY` to **<span style="color:red;">OFF</span>**
 
-- To use the .appImage
-    - The computer must be updated:
-    sudo do-release-upgrade -d
-    - Turn Neutron_Scalar_Flux_Calculator-x86_64.AppImage a executable: 
-      chmod +x Neutron_Scalar_Flux_Calculator-x86_64.AppImage
-    - Run: 
-      ./Neutron_Scalar_Flux_Calculator-x86_64.AppImage
 
 
