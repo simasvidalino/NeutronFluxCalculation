@@ -1,7 +1,7 @@
 {
     "CalculationResults": {
-        "AbsorptionCrossSectionFilePath": "/home/andreia-simas/Documents/Arquivos usados TCC/Vanessa/Absorption_Cross_Section_R3_G30_L0_N4_Nod72.html",
-        "AbsorptionRateFile": "/home/andreia-simas/Documents/Arquivos usados TCC/Vanessa/Absorption_Neutron_Rate_R3_G30_L0_N4_Nod72.html",
+        "AbsorptionCrossSectionFilePath": ":/Default_Project/Resources/Absorption_Cross_Section_R3_G30_L0_N4_Nod72.html",
+        "AbsorptionRateFile": ":/Default_Project/Resources/Absorption_Neutron_Rate_R3_G30_L0_N4_Nod72.html",
         "AbsorptionRatePerNode": [
             {
                 "EnergyGroup": 1,
@@ -17907,7 +17907,7 @@
                 ]
             }
         ],
-        "ScalarFluxFile": "/home/andreia-simas/Documents/Arquivos usados TCC/Vanessa/Scalar_Flux_R3_G30_L0_N4_Nod72.html",
+        "ScalarFluxFile": ":/Default_Project/Resources/Scalar_Flux_R3_G30_L0_N4_Nod72.html",
         "TotalAbsorptionRatePerGroupPerRegion": [
             {
                 "RegionFlux": 1,
@@ -18150,7 +18150,7 @@
                 "Value": 4.078318812169225
             }
         ],
-        "TotalScatteringCrossSectionFilePath": "/home/andreia-simas/Documents/Arquivos usados TCC/Vanessa/Scattering_Cross_Section_R3_G30_L0_N4_Nod72.html"
+        "TotalScatteringCrossSectionFilePath": ":/Default_Project/Resources/Scattering_Cross_Section_R3_G30_L0_N4_Nod72.html"
     },
     "DataPerRegion": [
         {
@@ -18214,7 +18214,7 @@
         ],
         "LegendreOrder": "0",
         "MaximumIterationsNumber": "4050",
-        "NeutronMacroscopicCrossSections": "/home/andreia-simas/Documents/Arquivos usados TCC/Vanessa/vanessaFernando.txt",
+        "NeutronMacroscopicCrossSections": ":/Default_Project/Resources/Default_Project.txt",
         "Palette": "Color scheme to Dark",
         "Periodicity": 5,
         "QuadratureOrder": "4",
