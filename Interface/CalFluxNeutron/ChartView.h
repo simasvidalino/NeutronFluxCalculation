@@ -26,6 +26,7 @@ public:
     void setProjectionTitle(const QString &title);
 
     void setRegionLimit(QList<long double> &limit);
+    void setZonesNames(QStringList &zones);
 
     void setTickNumber(int newTickNumber);
     void setYRange(double min, double max);
@@ -50,6 +51,7 @@ private:
     void createLegend();
     void setRegionLabelsChart();
     void setRegionsZonesInChart();
+    void setZoneLabelsChart();
 
     QString xLabel;
     QString yLabel;
@@ -66,6 +68,7 @@ private:
     QGraphicsProxyWidget* legendButtonProxy;
     QToolButton* legendButton;
     QList<long double> limit;
+    QStringList zoneNames;
     // QWidget interface
 protected:
     virtual void resizeEvent(QResizeEvent *event) override;

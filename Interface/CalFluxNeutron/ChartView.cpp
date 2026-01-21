@@ -31,11 +31,16 @@ void ChartView::init()
     setDragMode(QGraphicsView::ScrollHandDrag);
 
     QShortcut *resetShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Z), this);
-    QObject::connect(resetShortcut, &QShortcut::activated, this, [this]() {
-        chart()->zoomReset();
-        setRegionLabelsChart();
-
-    });
+    QObject::connect(resetShortcut,
+                     &QShortcut::activated,
+                     this,
+                     [this]()
+                     {
+                         chart()->zoomReset();
+                         clearLabelsChart();
+                         setRegionLabelsChart();
+                         setZoneLabelsChart();
+                     });
 
     this->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
     this->setRenderHint(QPainter::Antialiasing);
@@ -142,6 +147,11 @@ void ChartView::setRegionLimit(QList<long double> &limit)
     this->limit = limit;
 }
 
+void ChartView::setZonesNames(QStringList &zones)
+{
+    zoneNames = zones;
+}
+
 void ChartView::setTickNumber(int newTickNumber)
 {
     tickNumber = newTickNumber;
@@ -166,8 +176,11 @@ void ChartView::setChart()
     chart()->zoomReset();
     chart()->removeAllSeries();
 
+    clearLabelsChart();
+
     setRegionsZonesInChart();
     setRegionLabelsChart();
+    setZoneLabelsChart();
 
     if (option == 0)  // All groups
     {
@@ -227,7 +240,8 @@ void ChartView::addSeries(const SeriesData &data, int group)
 
 void ChartView::clearLabelsChart()
 {
-    for (QGraphicsItem *item : chart()->scene()->items())
+    const auto items = chart()->scene()->items();
+    for (const auto& item : items)
     {
         auto *textItem = qgraphicsitem_cast<QGraphicsSimpleTextItem *>(item);
         if (textItem && textItem->zValue() == 1000)
@@ -235,33 +249,6 @@ void ChartView::clearLabelsChart()
             chart()->scene()->removeItem(textItem);
             delete textItem;
         }
-    }
-}
-
-void ChartView::setRegionLabelsChart()
-{
-    double yCenter = (axisY->min() + axisY->max()) * 0.5;
-    double xBeg    = 0;
-    double xEnd    = 0;
-
-    clearLabelsChart();
-
-    for (int i = 0; i < limit.size(); ++i)
-    {
-        xEnd    = limit[i];
-        double xCenter = xBeg + ((xEnd - xBeg) * 0.5);
-
-        auto textItem = new QGraphicsSimpleTextItem(QString("Region %1").arg(i + 1));
-        textItem->setBrush(Qt::lightGray);
-
-        QPointF scenePos = chart()->mapToPosition(QPointF(xCenter, yCenter));
-        textItem->setPos(scenePos);
-
-        textItem->setZValue(1000);
-
-        chart()->scene()->addItem(textItem);
-
-        xBeg = xEnd;
     }
 }
 
@@ -284,7 +271,86 @@ void ChartView::setRegionsZonesInChart()
 
         auto markers = chart()->legend()->markers(boundaryLine);
         if (!markers.isEmpty())
+        {
             markers.first()->setVisible(false);
+        }
+    }
+}
+
+void ChartView::setRegionLabelsChart()
+{
+    double yMiddle = axisY->min() + ((axisY->max() - axisY->min()) * 0.7);
+    double xBeg    = axisX->min();
+    double xEnd    = 0;
+
+    for (int i = 0; i < limit.size(); ++i)
+    {
+        xEnd           = limit[i];
+        double xCenter = xBeg + ((xEnd - xBeg) * 0.5);
+
+        auto textItem = new QGraphicsSimpleTextItem(QString("Region %1").arg(i + 1));
+        textItem->setBrush(QColor(150, 150, 150));
+
+        QFont font = textItem->font();
+        font.setPointSize(9);
+        textItem->setFont(font);
+
+        QPointF scenePos = chart()->mapToPosition(QPointF(xCenter, yMiddle));
+        scenePos.setX(scenePos.x() - textItem->boundingRect().width() / 2);
+
+        textItem->setPos(scenePos);
+        textItem->setZValue(1000);
+
+        chart()->scene()->addItem(textItem);
+
+        xBeg = xEnd;
+    }
+}
+
+void ChartView::setZoneLabelsChart()
+{
+    if (zoneNames.isEmpty() || limit.isEmpty())
+    {
+        return;
+    }
+
+    double yTop = axisY->min() + ((axisY->max() - axisY->min()) * 0.5);
+    double xBeg = axisX->min();
+    double xEnd = 0;
+
+    auto normalizeText = [](QString& text)
+    {
+        if (!text.isEmpty())
+        {
+            text = text.toLower();
+            text[0] = text[0].toUpper();
+        }
+    };
+
+    for (int i = 0; i < limit.size() && i < zoneNames.size(); ++i)
+    {
+        xEnd           = limit[i];
+        double xCenter = xBeg + ((xEnd - xBeg) * 0.5);
+
+        QString zoneName = zoneNames[i];
+        normalizeText(zoneName);
+
+        auto textItem = new QGraphicsSimpleTextItem(zoneName);
+        textItem->setBrush(Qt::darkBlue);
+
+        QFont font = textItem->font();
+        font.setPointSize(11);
+        textItem->setFont(font);
+
+        QPointF scenePos = chart()->mapToPosition(QPointF(xCenter, yTop));
+        scenePos.setX(scenePos.x() - textItem->boundingRect().width() / 2);
+
+        textItem->setPos(scenePos);
+        textItem->setZValue(1000);
+
+        chart()->scene()->addItem(textItem);
+
+        xBeg = xEnd;
     }
 }
 
@@ -312,13 +378,15 @@ void ChartView::mousePressEvent(QMouseEvent *event)
     QPointF cursorPoint = chart()->mapToValue(event->pos());
     QString tooltipText;
     const double proximityThreshold = 1.0;
+    const auto series = chart()->series();
 
-    for (auto *series : chart()->series())
+    for (const auto series : series)
     {
-        auto *lineSeries = qobject_cast<QLineSeries *>(series);
+        auto lineSeries = qobject_cast<QLineSeries *>(series);
         if (lineSeries)
         {
-            for (const QPointF &point : lineSeries->points())
+            const auto points = lineSeries->points();
+            for (const auto& point : points)
             {
                 if (QLineF(point, cursorPoint).length() < proximityThreshold)
                 {
@@ -347,7 +415,10 @@ void ChartView::wheelEvent(QWheelEvent *event)
             chart()->zoomOut();
         }
 
+        clearLabelsChart();
+
         setRegionLabelsChart();
+        setZoneLabelsChart();
 
         event->accept();
     }
@@ -367,6 +438,8 @@ void ChartView::resizeEvent(QResizeEvent *event)
         QRectF plotArea = chart()->plotArea();
 
         legendButtonProxy->setPos(plotArea.topRight().x() - legendButton->width(), legendButton->height());
+        clearLabelsChart();
         setRegionLabelsChart();
+        setZoneLabelsChart();
     }
 }

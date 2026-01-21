@@ -294,6 +294,7 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
     double totalRegionSize = 0.0;
     int nodex = 0;
     QList<long double> regionLimit;
+    QStringList zoneNames;
 
     for (int rIndex = 0; rIndex < regionNumber; ++rIndex)
     {
@@ -301,6 +302,8 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
         regionLimit.push_back(totalRegionSize);
 
         nodex += proj->regionArray[rIndex].node;
+
+        zoneNames.append(regionArray[rIndex].zoneStr.c_str());
     }
 
     ui->widgetNeutronAbsorpt->clearChart();
@@ -330,6 +333,7 @@ void MainWindow::updateAbsRateChart(std::shared_ptr<CalculatedData> DDResult)
     ui->widgetNeutronAbsorpt->setPeriodicityValue(proj->periodicity);
     ui->widgetNeutronAbsorpt->setFilteredByGroup(group);
     ui->widgetNeutronAbsorpt->setRegionLimit(regionLimit);
+    ui->widgetNeutronAbsorpt->setZonesNames(zoneNames);
 }
 
 void MainWindow::updateAbsRateTable(std::shared_ptr<CalculatedData> DDResult)
@@ -539,6 +543,7 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
     int nodex = 0;
     const auto nodalScalarFlux = DDResult->nodalScalarFlux;
     QList<long double> regionLimit;
+    QStringList zoneNames;
 
     for (int rIndex = 0; rIndex < regionNumber; ++rIndex)
     {
@@ -546,6 +551,8 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
         regionLimit.push_back(totalRegionSize);
 
         nodex += proj->regionArray[rIndex].node;
+
+        zoneNames.append(regionArray[rIndex].zoneStr.c_str());
     }
 
     double stepSize = totalRegionSize / static_cast<double>(nodex);
@@ -576,6 +583,7 @@ void MainWindow::updateFluxChart(std::shared_ptr<CalculatedData> DDResult)
     ui->widgetNeutronScalarFlux->setPeriodicityValue(proj->periodicity);
     ui->widgetNeutronScalarFlux->setFilteredByGroup(group);
     ui->widgetNeutronScalarFlux->setRegionLimit(regionLimit);
+    ui->widgetNeutronScalarFlux->setZonesNames(zoneNames);
 
     ui->tabWidget->setCurrentIndex(TabResult);
 }

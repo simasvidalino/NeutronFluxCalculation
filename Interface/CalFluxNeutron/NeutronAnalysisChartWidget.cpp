@@ -76,6 +76,11 @@ void NeutronAnalysisChartWidget::setRegionLimit(QList<long double> &limit)
     ui->widgetChart->setRegionLimit(limit);
 }
 
+void NeutronAnalysisChartWidget::setZonesNames(QStringList& zone)
+{
+    ui->widgetChart->setZonesNames(zone);
+}
+
 void NeutronAnalysisChartWidget::setTableItemsByGroup(std::vector<std::vector<long double> > &item)
 {
     tableItemByGroup = item;

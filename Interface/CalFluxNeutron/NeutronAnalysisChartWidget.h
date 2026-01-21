@@ -41,6 +41,8 @@ public:
 
     void setRegionLimit(QList<long double> &limit);
 
+    void setZonesNames(QStringList& zone);
+
     void setTableItemsByGroup(std::vector<std::vector<long double>> &item);
 
     void setTotalByRegion(std::vector<long double> &item);
