@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    saveProject();
+
     stopWork();
 
     BuildMatrices::getInstance()->destroyInstance();
